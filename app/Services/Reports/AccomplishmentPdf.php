@@ -14,6 +14,7 @@ class AccomplishmentPdf
     public const DIVIDER = 256.85;
     public const RIGHT = 561.96;
     public const TABLE_TOP = 192.62;
+    public const CONTINUATION_TABLE_TOP = 108.5;
     public const HEADER_HEIGHT = 14.64;
     public const LETTERHEAD_TOP_MARGIN = 33.48;
     public const TABLE_BOTTOM = self::PAGE_HEIGHT - self::LETTERHEAD_TOP_MARGIN;
@@ -62,6 +63,7 @@ class AccomplishmentPdf
                 throw \Illuminate\Validation\ValidationException::withMessages(['content_html' => 'Keep the report introduction short enough to leave room for the accomplishment table.']);
             }
         }
+        $firstPageTableTop = $this->tableTop;
         $rows = $this->rows($groups);
         $pages = [[]];
         $y = $this->tableTop + self::HEADER_HEIGHT;
@@ -72,13 +74,13 @@ class AccomplishmentPdf
                 $available = $tableBottom - $y;
                 $fit = (int) floor(($available - 0.42) / self::LINE_HEIGHT);
                 if ($fit < 1 || ($fit < 2 && count($remaining) > 1)) {
-                    $pages[] = []; $y = $this->tableTop + self::HEADER_HEIGHT; continue;
+                    $pages[] = []; $y = self::CONTINUATION_TABLE_TOP + self::HEADER_HEIGHT; continue;
                 }
                 $part = array_slice($remaining, 0, $fit);
                 $firstRow = count($pages) === 1 && ! $pages[0];
                 $height = max($continued ? 28.8 : ($firstRow ? 21.60 : 18.96), count($part) * self::LINE_HEIGHT + 0.42);
                 if ($height > $available) {
-                    $pages[] = []; $y = $this->tableTop + self::HEADER_HEIGHT; continue;
+                    $pages[] = []; $y = self::CONTINUATION_TABLE_TOP + self::HEADER_HEIGHT; continue;
                 }
                 $pages[count($pages) - 1][] = ['date' => $row['date'], 'continued' => $continued,
                     'lines' => $part, 'height' => $height];
@@ -92,6 +94,7 @@ class AccomplishmentPdf
         if ($signaturePage) { $pages[] = []; }
         $period = $this->period($from, $to);
         foreach ($pages as $index => $pageRows) {
+            $this->tableTop = $index === 0 ? $firstPageTableTop : self::CONTINUATION_TABLE_TOP;
             $pdf->AddPage('P', [self::PAGE_WIDTH, self::PAGE_HEIGHT]);
             // Reuse the original PDF at its native dimensions. Never rebuild or scale its letterhead.
             $pdf->useImportedPage($template, 0, 0, self::PAGE_WIDTH, self::PAGE_HEIGHT);

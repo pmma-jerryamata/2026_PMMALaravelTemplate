@@ -15,7 +15,7 @@
             <div><label for="technician_id">Technician</label><select id="technician_id" name="technician_id"><option value="">All technicians</option>@foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected((string) $technicianId === (string) $technician->id)>{{ $technician->name }}</option>@endforeach</select></div>
         </div>
         <p class="field-hint">Dates follow the completion/update date of completed tickets. Accomplishment text uses recorded findings, with concern details as the fallback.</p>
-        <p class="field-hint">The red sidebar label below the department is hidden. The report title, period and introduction remain editable below and print only on the first page. The bottom margin matches the letterhead's top inset.</p>
+        <p class="field-hint">The red sidebar label below the department is hidden. The report title, period and introduction remain editable below and print only on the first page. Continuation tables start directly below the letterhead without reserving introduction space. The bottom margin matches the letterhead's top inset.</p>
         <fieldset class="report-signatories report-content-editor"><legend>Report title and introduction</legend>
             <p class="field-hint">Edit the title and introductory paragraphs below. Cambria 12 pt is fixed for printing; the official letterhead stays unchanged. Clear the editor to use the standard title and date-based introduction.</p>
             <div class="report-editor-toolbar" role="toolbar" aria-label="Text formatting" hidden>
