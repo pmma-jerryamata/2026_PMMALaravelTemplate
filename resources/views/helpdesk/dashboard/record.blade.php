@@ -1,0 +1,11 @@
+@extends('helpdesk.layouts.dashboard')
+@section('title', ($record->exists ? 'Edit ' : 'Add ').['employees' => 'Employee', 'departments' => 'Department', 'technicians' => 'Technician', 'services' => 'Service'][$type])
+@section('content')
+<section class="dashboard-heading"><h1>@yield('title')</h1><p>Keep your helpdesk directory up to date.</p></section>
+<section class="portal-panel adapter-record"><form class="portal-form" action="{{ route('dashboard.settings.save', ['type' => $type, 'id' => $record->id]) }}" method="post">@csrf
+<label for="name">{{ $type === 'services' ? 'Service Name' : ($type === 'departments' ? 'Department / Office Name' : 'Full Name') }}</label><input id="name" name="name" value="{{ old('name', $record->name) }}" required maxlength="255">
+@if(in_array($type, ['employees', 'technicians']))<label for="record-email">Email Address</label><input type="email" id="record-email" name="email" value="{{ old('email', $record->email) }}" required maxlength="255">@endif
+@if($type === 'employees')<label for="department_id">Department / Office</label><select name="department_id" id="department_id" required><option value="">Choose department</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected((string) old('department_id', $record->department_id) === (string) $department->id)>{{ $department->name }}</option>@endforeach</select><label for="active">Employee Status</label><select id="active" name="active"><option value="1" @selected((string) old('active', $record->deleted_at ? '0' : '1') === '1')>Active</option><option value="0" @selected((string) old('active', $record->deleted_at ? '0' : '1') === '0')>Inactive</option></select>@endif
+@if($type === 'services')<label for="content">Description</label><textarea id="content" name="content" required maxlength="255" rows="4">{{ old('content', $record->content) }}</textarea><label for="icon">Icon Class</label><input id="icon" name="icon" required maxlength="255" value="{{ old('icon', $record->icon ?? 'bi bi-headset') }}">@endif
+<div class="dialog-actions"><a class="btn btn-secondary" href="{{ route('dashboard.settings', ['tab' => $type]) }}">Cancel</a><button class="btn btn-primary ui-action" type="submit"><x-action-icon name="floppy" /><span>Save Changes</span></button></div></form></section>
+@endsection

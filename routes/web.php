@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HelpdeskController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 use App\Mail\Mailer;
@@ -9,7 +11,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SupportController;
-use App\Http\Controllers\StudentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,20 +27,19 @@ Route::get('/feedback', function () {
 });
 
 //---CADETS-----------------------------------------------------------------------------//
-Route::get('/student', [StudentController::class, 'indexViews'])->name('student');
 //Route::get('/student-2', [StudentController::class, 'indexViews'])->name('student-2');
-Route::get('/student-2', [StudentController::class, 'indexViews2'])->name('student-2');
+Route::redirect('/student-2', '/student')->name('student-2');
 //--------------------------------------------------------------------------------------//
 
-Route::get('/test', [Controller::class, 'employeeSupport']);
+Route::redirect('/test', '/dashboard')->middleware('auth');
 
-Route::get('/', [LoginController::class, 'indexViews'])->name('index');
+Route::get('/', [HelpdeskController::class, 'home'])->name('home');
 
-Route::get('/info', [LoginController::class, 'jobRequest'])->name('info');
+Route::get('/info', [HelpdeskController::class, 'create'])->name('info');
 
-Route::view('/phone', 'phone')->name('phone');
+Route::view('/phone', 'helpdesk.portal.phone')->name('phone');
 
-Route::get('/notify', [SupportController::class, 'notifyUser'])->name('notify');
+Route::redirect('/notify', '/tickets/create')->name('notify');
 
 //Route::get('/index', [SupportController::class, 'view'])->name('support'); JAN 10 2025
 
@@ -53,13 +53,9 @@ Route::view('/failed', 'failed')->name('failed');
 
 //Route::get('/support', [SupportController::class, 'view'])->name('support');
 
-Route::get('/ticket', [SupportController::class, 'ticket'])->name('ticket');
+Route::redirect('/ticket', '/track')->name('ticket');
 
-Route::get('/mailer', function (){
-    Mail::to('iversehmy.44@gmail.com')
-        ->send(new Mailer());
-    //return view('mailer');
-});
+Route::redirect('/mailer', '/contact');
 
 ////////////////////////////  SURVERY - FORM  ////////////////////////////////////////
 //Route::get('/take-survey', [SurveyController::class, 'surveyForm'])->name('take-survey');
@@ -67,7 +63,8 @@ Route::get('/take-survey', [SurveyController::class, 'surveyForm'])
     ->name('take-survey')
     ->middleware('signed'); // <-- Require signed URLs
 
-Route::get('/survey', [SurveyController::class, 'store'])->name('survey');
+Route::post('/survey', [SurveyController::class, 'store'])->middleware('signed')->name('survey');
+Route::get('/survey', fn () => redirect()->route('home'))->name('survey.legacy');
 Route::view('done', 'survey.done')->name('done');
 
 
@@ -87,9 +84,8 @@ Route::view('done', 'survey.done')->name('done');
 Route::middleware('auth')->group(function () {
 
     
-    Route::get('/edit', [SupportController::class, 'getSpecificSupport'])->name('edit');
+    Route::get('/edit', [HelpdeskController::class, 'legacyEdit'])->name('edit');
     Route::post('/save', [SupportController::class, 'saveSpecificSupport'])->name('save');
-    Route::get('/add', [SupportController::class, 'addSupport'])->name('add');
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -100,24 +96,29 @@ Route::middleware('auth')->group(function () {
     //Route::get('/admin', function () {
     //    return view('/auth/login');
     //});
-    Route::view('/admin', 'admin.index');
+    Route::redirect('/admin', '/dashboard')->name('admin');
+    Route::redirect('/admin.php', '/dashboard');
+    Route::redirect('/admin/index.php', '/dashboard');
     //////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////SUPPORT MAIN PAGE/////////////////////////////////////////////////////
     Route::post('/support-admin', [SupportController::class, 'saveSupportAdmin'])->name('support-admin');
-    Route::view('/support', 'support')->name('support');
-    Route::get('/report', [SupportController::class, 'reportSupportAdmin'])->name('report');
-    Route::get('/add', [SupportController::class, 'addSupport'])->name('add');
+    Route::get('/support', [HelpdeskController::class, 'dashboard'])->name('support');
+    Route::match(['get', 'post'], '/report', [ReportController::class, 'index'])->name('report');
+    Route::match(['get', 'post'], '/report/pdf', [ReportController::class, 'pdf'])->name('report.pdf');
+    Route::get('/add', [HelpdeskController::class, 'create'])->name('add');
 
     ////////////////ADMIN CONFIGURATIONS - CONTROLLER/////////////////////////////////////
-    Route::view('/admin/index', 'admin.index')->name('admin.index');
-    Route::view('/admin/add-employee', 'admin.add-employee')->name('admin.add-employee');
+    Route::get('/admin/index', [HelpdeskController::class, 'dashboard'])->name('admin.index');
+    Route::redirect('/admin/add-employee', '/dashboard/settings/employees/create')->name('admin.add-employee');
     //Route::view('/admin/index', 'admin.index')->name('admin.index');
 
     ////////////////TECHNICIAN MOBILE - CONTROLLER////////////////////////////////////////
     //Route::view('tech/index', 'tech.index')->name('tech.index');
-    Route::view('/tech', 'layouts.maintech')->name('tech.index');
+    Route::get('/tech', [HelpdeskController::class, 'dashboard'])->name('tech.index');
 
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 require __DIR__.'/auth.php';
+require __DIR__.'/helpdesk.php';
+Route::redirect('/admin/login', '/login');

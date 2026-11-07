@@ -1,0 +1,64 @@
+/* DataTables controls and readable mobile cards. No horizontal scrolling on dashboard tables. */
+.admin-workspace .dashboard-table-wrap { min-width: 0; max-width: 100%; overflow-x: visible; }
+.admin-workspace .dashboard-datatable { width: 100% !important; min-width: 0 !important; border-collapse: collapse; }
+.admin-workspace .dashboard-datatable th,.admin-workspace .dashboard-datatable td { white-space: normal; overflow-wrap: anywhere; }
+.admin-workspace .dashboard-datatable td.dt-empty { text-align: center; padding: 32px 16px; color: #64748b; }
+.admin-workspace .dt-container { width: 100%; min-width: 0; font-size: 13px; }
+.admin-workspace .dt-container .dt-layout-cell { min-width: 0; }
+.admin-workspace .dt-container .dt-layout-table,.admin-workspace .dt-container .dt-layout-full { width: 100%; min-width: 0; display: block; }
+.admin-workspace .dt-container .dt-layout-row:not(.dt-layout-table) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin: 18px 0; }
+.admin-workspace .dt-container .dt-input { border: 1px solid #cdd9e8; border-radius: 7px; background: #fff; color: #17385e; padding: 9px 11px; font: inherit; min-height: 39px; }
+.admin-workspace .dt-container .dt-input:focus { outline: 2px solid #5484c3; outline-offset: 1px; }
+.admin-workspace .dt-search { display: flex; align-items: center; gap: 9px; }
+.admin-workspace .dt-search .dt-input { width: 240px; max-width: 100%; margin: 0; }
+.admin-workspace .dt-length { display: flex; align-items: center; gap: 8px; }
+.admin-workspace .dt-info { color: #64748b; font-size: 12px; }
+.admin-workspace .dt-paging nav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button { min-width: 34px; margin: 0; padding: 8px 11px; border: 1px solid #d5dfed; border-radius: 6px; background: #fff; color: #17385e !important; font-size: 12px; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button.current { background: #17385e; border-color: #17385e; color: white !important; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button:hover:not(.disabled) { background: #e7eef9; color: #17385e !important; border-color: #aec1de; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button.disabled { opacity: .45; cursor: default; }
+.dashboard-table-notice { margin: 16px 0; padding: 12px 16px; border: 1px solid #e7c9bd; border-radius: 8px; background: #fff3ed; color: #8c3a25; }
+.dashboard-mobile-sort { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 8px; margin: 16px 0; }
+.dashboard-mobile-sort label { grid-column: 1 / -1; color: #64748b; font-size: 12px; font-weight: 650; }
+.dashboard-mobile-sort select { width: 100%; min-width: 0; padding: 10px; border: 1px solid #cdd9e8; border-radius: 7px; background: #fff; color: #17385e; font: inherit; }
+.dashboard-mobile-sort button { min-height: 40px; font-size: 11px; padding: 9px 10px; white-space: nowrap; }
+.admin-workspace .settings-tabs.adapter-tabs { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); width: 100%; max-width: 100%; gap: 6px; padding: 6px; border: 1px solid #d7e1ee; border-radius: 10px; background: #fff; overflow: visible; white-space: normal; }
+.admin-workspace .settings-tabs.adapter-tabs a { min-width: 0; justify-content: center; align-items: center; padding: 12px 8px; border: 1px solid transparent; border-radius: 7px; color: #617087; font-size: 12px; text-align: center; overflow-wrap: anywhere; text-decoration: none; }
+.admin-workspace .settings-tabs.adapter-tabs a[aria-current] { background: #edf3fd; color: #17385e; border-color: #c7d8ee; }
+.admin-workspace .settings-tabs.adapter-tabs a:focus-visible { outline: 2px solid #5484c3; outline-offset: 1px; }
+@media(max-width:1100px) {
+    .admin-workspace .dt-search .dt-input { width: 210px; }
+    .admin-workspace .settings-tabs.adapter-tabs { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:768px) {
+    .admin-workspace .admin-shell,.admin-workspace .admin-content,.admin-workspace .portal-panel { min-width: 0; max-width: 100%; }
+    .admin-workspace .dt-container .dt-layout-row:not(.dt-layout-table) { flex-direction: column; align-items: stretch; gap: 12px; }
+    .admin-workspace .dt-container .dt-layout-cell { display: block; width: 100%; text-align: left; }
+    .admin-workspace .dt-search { flex-direction: column; align-items: stretch; gap: 6px; }
+    .admin-workspace .dt-search .dt-input { width: 100%; box-sizing: border-box; }
+    .admin-workspace .dt-length { justify-content: flex-start; flex-wrap: wrap; }
+    .admin-workspace .dt-container .dt-layout-cell.dt-layout-end { text-align: left; }
+    .admin-workspace .dt-paging nav { justify-content: center; }
+    .admin-workspace .dt-container .dt-paging .dt-paging-button { min-width: 30px; padding: 8px; font-size: 11px; }
+    .admin-workspace .dashboard-datatable { display: block; table-layout: auto; width: 100% !important; min-width: 0 !important; }
+    .admin-workspace .dashboard-datatable colgroup { display: none; }
+    .admin-workspace .dashboard-datatable thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .admin-workspace .dashboard-datatable tbody { display: grid; gap: 12px; width: 100%; }
+    .admin-workspace .dashboard-datatable tbody tr { display: block; width: 100%; margin: 0; padding: 12px; background: white; border: 1px solid #dce5ef; border-radius: 10px; }
+    .admin-workspace .dashboard-datatable tbody td { display: grid; grid-template-columns: minmax(75px,30%) minmax(0,1fr); gap: 4px 12px; width: auto !important; min-width: 0; border: 0; padding: 9px 2px; white-space: normal !important; overflow-wrap: anywhere; text-align: left !important; }
+    .admin-workspace .dashboard-datatable tbody td::before { content: attr(data-label); font-size: 11px; font-weight: 650; color: #64748b; }
+    .admin-workspace .dashboard-datatable tbody td small { grid-column: 2; min-width: 0; overflow-wrap: anywhere; }
+    .admin-workspace .dashboard-datatable tbody td > * { min-width: 0; max-width: 100%; }
+    .admin-workspace .dashboard-datatable tbody td a.icon-action { width: fit-content; }
+    .admin-workspace .dashboard-datatable tbody td.dt-empty { display: block; padding: 24px 10px; text-align: center !important; }
+    .admin-workspace .dashboard-datatable tbody td.dt-empty::before { content: none; }
+    .admin-workspace .dashboard-datatable .report-entry-list { margin: 0; padding-left: 16px; }
+    .admin-workspace .settings-tabs.adapter-tabs { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 5px; padding: 5px; }
+    .admin-workspace .settings-tabs.adapter-tabs a { display: flex; gap: 7px; padding: 12px 8px; font-size: 12px; line-height: 1.4; }
+    .admin-workspace .settings-tabs.adapter-tabs a:last-child { grid-column: 1 / -1; }
+    .admin-workspace .settings-tabs.adapter-tabs a i { flex-shrink: 0; }
+    .admin-workspace .adapter-filters { grid-template-columns: minmax(0,1fr); }
+    .admin-workspace .section-heading-row > *, .admin-workspace .report-actions > * { max-width: 100%; }
+}
+@media print { .dt-layout-row:not(.dt-layout-table),.dashboard-mobile-sort,.dashboard-table-notice { display: none !important; } }

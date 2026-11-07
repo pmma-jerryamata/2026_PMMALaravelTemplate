@@ -51,4 +51,6 @@ Route::get('create-ticket', [SupportController::class, 'createTicket'])->name('c
 Route::get('get-survey', [SurveyController::class, 'getSurvey'])->name('get-survey');
 Route::get('get-survey-by-support', [SurveyController::class, 'getSurveyBySupport'])->name('get-survey-by-support');
 
-URL::forceScheme('https');
+if (app()->environment('production')) {
+    URL::forceScheme('https');
+}

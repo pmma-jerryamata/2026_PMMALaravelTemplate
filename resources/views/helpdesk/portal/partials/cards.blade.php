@@ -1,0 +1,3 @@
+@foreach($services as $slug => $service)
+<a href="{{ ($directRequest ?? false) ? route('tickets.create', ['category' => $slug]) : route('services.show', $slug) }}" class="home-service-card"><div class="home-service-icon"><i class="bi bi-{{ $service['icon'] }}" aria-hidden="true"></i></div><div class="home-service-content"><h3>{{ $service['title'] }}</h3><p>{{ $service['description'] }}</p></div>@if($directRequest ?? false)<span class="support-card-action" title="Request Support">Request Support <i class="bi bi-arrow-right" aria-hidden="true"></i></span>@else<i class="bi bi-arrow-right home-service-arrow" aria-hidden="true"></i>@endif</a>
+@endforeach

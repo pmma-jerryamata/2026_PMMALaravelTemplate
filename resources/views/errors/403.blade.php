@@ -1,0 +1,1 @@
+@include('errors.helpdesk', ['code' => 403, 'title' => 'Access Not Available', 'description' => 'This link may have expired, or you may not have permission to open it. Sign in or request a new link.'])

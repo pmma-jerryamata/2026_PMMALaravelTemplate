@@ -1,0 +1,34 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+let JSDOM;
+try { ({JSDOM} = require('jsdom')); }
+catch { ({JSDOM} = require(path.join(process.env.LOCALAPPDATA, 'PMMA-Support-Local/dom-tests/node_modules/jsdom'))); }
+const dom = new JSDOM(`<form><div class="report-editor-toolbar" hidden><button type="button" data-editor-command="bold">Bold</button><button type="button" id="report-html-toggle"></button></div><div id="report-content-editor" hidden></div><label class="report-source-label"></label><textarea id="content_html"></textarea></form>`, {runScripts:'outside-only'});
+const {document, Event} = dom.window;
+const source = document.getElementById('content_html');
+source.value = '<p align="center" style="font-size:80px" onclick="bad()"><b>Title</b></p><script>bad()</script><img src="https://example.com/private">';
+dom.window.eval(fs.readFileSync(path.resolve(__dirname, '../../public/helpdesk/js/report-editor.js'), 'utf8'));
+const editor = document.getElementById('report-content-editor');
+assert.equal(editor.hidden, false);
+assert.equal(source.hidden, true);
+assert.equal(editor.querySelector('p').style.textAlign, 'center');
+assert.equal(editor.querySelector('p').style.fontSize, '');
+assert.equal(editor.querySelector('[onclick],script,img'), null);
+editor.innerHTML = '<p><i>Changed introduction</i></p>';
+editor.dispatchEvent(new Event('input'));
+assert.equal(source.value, editor.innerHTML);
+const toggle = document.getElementById('report-html-toggle');
+toggle.click();
+assert.equal(source.hidden, false);
+assert.equal(document.querySelector('[data-editor-command]').disabled, true);
+source.value = '<p style="text-align:right;font-family:Arial">Source edit</p><iframe src="https://example.com"></iframe>';
+toggle.click();
+assert.equal(editor.textContent, 'Source edit');
+assert.equal(editor.querySelector('iframe'), null);
+assert.equal(editor.querySelector('p').style.textAlign, 'right');
+assert.equal(editor.querySelector('p').style.fontFamily, '');
+source.form.dispatchEvent(new Event('submit', {cancelable:true}));
+assert.equal(source.value, editor.innerHTML);
+dom.window.close();
+console.log('PASS: report editor formatting, source mode, sanitization and submission.');

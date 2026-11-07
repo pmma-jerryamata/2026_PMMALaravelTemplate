@@ -472,22 +472,9 @@ class SupportController extends Controller
         return view('success');
     }
     //TEMPORARY FUNCTION FOR RETRIEVING REPORT
-    public function reportSupportAdmin(){
-        $allDepartments = Department::all();
-        $allTasks = Task::all();
-
-        $supports = Support::with(
-            [ 
-                'task', 
-                'employee' => function ($query) {
-                    $query->withTrashed()->with('department'); // Include soft-deleted employees and load the department relationship
-                }
-            ])
-            ->where('status','Completed')->whereBetween('created_at', ['2026-01-01', now()])->get();
-            //->where('status','Completed')->whereBetween('created_at', ['2026-03-02', '2026-06-16 23:59:59'])->get();
-            //->where('status','Completed')->whereBetween('created_at', ['2025-03-01', '2025-05-31 23:59:59'])->get();
-            //->where('status','Completed')->whereBetween('created_at', ['2025-06-17', '2025-09-16 23:59:59'])->get();
-        return view('report', ['supports' => $supports, 'departments' => $allDepartments, 'tasks' => $allTasks]);
+    public function reportSupportAdmin()
+    {
+        return app(ReportController::class)->index(request());
     }
     //CREATE TICKET FOR TECHNICAN
     public function createTicket(Request $request){

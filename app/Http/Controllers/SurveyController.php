@@ -27,6 +27,7 @@ class SurveyController extends Controller
         return view('survey.index', ['task_id'=>$request->taskId, 'support'=>$support, 'ratings'=>$result['ratings'], 'ratings_measure'=>$result['ratings_measure']]);
     }*/
     public function surveyForm(Request $request){
+        $request->validate(['taskId' => 'required|integer|exists:supports,id']);
         /*dd($request);
         // Ensure the request is valid (prevents tampering)
         if (!$request->hasValidSignature()) {
@@ -66,7 +67,7 @@ class SurveyController extends Controller
         $ratingIds = Rating::pluck('id')->toArray();
         $result = [];
 
-        if(empty($ratingsIds)){
+        if(empty($ratingIds)){
             return [$result, $ratings, $ratingMeasures];
         }
 
@@ -143,19 +144,25 @@ class SurveyController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request);
-        $result = RatingResult::create([
-            'support_id' => $request->support_id,
-            'rating_id' => $request->satisfactionRating, //for s1, s2.. .. .., s6
-            'feedback' => $request->feedback,
-            'rating_measure_id' => 0,
+        $data = $request->validate([
+            'satisfactionRating' => 'required|integer|exists:ratings,id',
+            'feedback' => 'nullable|string|max:255',
         ]);
-        if (!$result){
-            //return view('survey.done', ['message'=>"There is an error in submitting your response."]);
-            return redirect()->route('index')->with('alert', 'There is an error in submitting your response!'); //To avoid duplication of survey
-        }
-        //return view('survey.done', ['message'=>"Thank you for taking the time to complete the survey. ER"]);
-        return redirect()->route('index')->with('alert', 'Thank you for taking the time to complete the survey. Your feedback is greatly appreciated.'); //To avoid duplication of survey
+        // The signed URL identifies the ticket; a posted ID cannot override it.
+        $supportId = filter_var($request->query('support_id'), FILTER_VALIDATE_INT);
+        abort_unless($supportId && $supportId > 0, 404);
+        $created = \Illuminate\Support\Facades\DB::transaction(function () use ($supportId, $data) {
+            Support::whereKey($supportId)->lockForUpdate()->firstOrFail();
+            if (RatingResult::where('support_id', $supportId)->exists()) { return false; }
+            RatingResult::create([
+                'support_id' => $supportId, 'rating_id' => $data['satisfactionRating'],
+                'feedback' => $data['feedback'] ?? null, 'rating_measure_id' => 0,
+            ]);
+            return true;
+        });
+        return redirect()->route('home')->with('alert', $created
+            ? 'Thank you for your feedback. Your response has been recorded.'
+            : 'Feedback has already been recorded for this ticket.');
     }
 
     /**

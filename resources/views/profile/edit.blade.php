@@ -1,29 +1,8 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+@extends('helpdesk.layouts.dashboard')
+@section('title', 'My Account')
+@section('content')
+<section class="dashboard-heading"><h1>My Account</h1><p>Manage your staff profile and sign-in details.</p></section>
+@if(session('status'))<div class="portal-alert dashboard-success" role="status">{{ session('status') === 'password-updated' ? 'Password updated.' : 'Profile saved.' }}</div>@endif
+<div class="portal-two-column"><section class="portal-panel"><h2>Profile Information</h2><form class="portal-form" action="{{ route('profile.update') }}" method="post">@csrf @method('patch')<label for="profile-name">Full Name</label><input id="profile-name" name="name" value="{{ old('name', $user->name) }}" required maxlength="255" autocomplete="name"><label for="profile-email">Email Address</label><input type="email" id="profile-email" name="email" value="{{ old('email', $user->email) }}" required maxlength="255" autocomplete="email"><button type="submit" class="btn btn-primary">Save Profile</button></form></section>
+<section class="portal-panel"><h2>Update Password</h2>@if($errors->updatePassword->any())<div class="portal-alert error" role="alert"><ul>@foreach($errors->updatePassword->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif<form class="portal-form" method="post" action="{{ route('password.update') }}">@csrf @method('put')<label for="current_password">Current Password</label><input id="current_password" type="password" name="current_password" required autocomplete="current-password"><label for="new-password">New Password</label><input id="new-password" type="password" name="password" required autocomplete="new-password"><label for="password_confirmation">Confirm New Password</label><input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"><button type="submit" class="btn btn-primary">Update Password</button></form></section></div>
+@endsection

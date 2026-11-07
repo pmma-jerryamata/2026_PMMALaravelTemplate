@@ -1,0 +1,71 @@
+/* Standalone ticket queue, using the ZIP's PMMA navy, blue, and orange palette. */
+.helpdesk-queue { margin: 0; background: #edf3fb; color: #172c49; font-family: Inter, 'Segoe UI', Arial, sans-serif; line-height: 1.5; }
+.helpdesk-queue *, .helpdesk-queue *::before, .helpdesk-queue *::after { box-sizing: border-box; }
+.helpdesk-queue .queue-topbar { background: linear-gradient(110deg,#10264b,#123c77); border-top: 4px solid #ff8c12; color: white; padding: 20px 32px; }
+.helpdesk-queue .queue-header-row { max-width: 1540px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.helpdesk-queue .queue-brand { display: flex; align-items: center; gap: 14px; min-width: 0; color: white; text-decoration: none; }
+.helpdesk-queue .queue-brand img { width: 56px; height: 56px; object-fit: contain; flex: 0 0 56px; }
+.helpdesk-queue .queue-brand strong { display: block; color: white; font-size: 24px; font-weight: 750; letter-spacing: -.5px; line-height: 1.25; }
+.helpdesk-queue .queue-brand small { display: block; margin-top: 6px; color: #b9cce5; font-size: 10px; letter-spacing: 1.7px; }
+.helpdesk-queue .queue-clock { flex-shrink: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.helpdesk-queue .queue-clock strong { display: block; font-size: 24px; color: white; line-height: 1.3; }
+.helpdesk-queue .queue-clock small { color: #bdcee4; font-size: 12px; }
+.helpdesk-queue .queue-main { max-width: 1604px; margin: auto; padding: 32px; min-height: calc(100vh - 104px); }
+.helpdesk-queue .queue-page-heading { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 26px; }
+.helpdesk-queue .queue-eyebrow { color: #43648e; font-size: 10px; font-weight: 750; letter-spacing: 1.8px; }
+.helpdesk-queue h1 { margin: 5px 0 6px; color: #10264b; font-size: clamp(26px,3vw,34px); line-height: 1.2; letter-spacing: -.8px; }
+.helpdesk-queue .queue-page-heading p { margin: 0; color: #65768c; font-size: 13px; }
+.helpdesk-queue .queue-heading-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 16px; }
+.helpdesk-queue .queue-refresh-note { display: inline-flex; align-items: center; gap: 7px; color: #65768c; font-size: 11px; }
+.helpdesk-queue .queue-refresh-note > span { width: 7px; height: 7px; border-radius: 50%; background: #229a70; }
+.helpdesk-queue .queue-back { display: inline-flex; align-items: center; gap: 9px; padding: 10px 15px; border: 1px solid #cad7e8; border-radius: 8px; background: white; color: #17385e; text-decoration: none; font-size: 12px; font-weight: 650; }
+.helpdesk-queue .queue-back:hover { background: #e5eefb; border-color: #95b0d3; }
+.helpdesk-queue .queue-columns { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px; align-items: start; }
+.helpdesk-queue .queue-column { min-width: 0; overflow: hidden; border: 1px solid #d3dfed; border-top: 3px solid #d89c39; border-radius: 12px; background: #f6f9fe; box-shadow: 0 3px 16px #10264b06; }
+.helpdesk-queue .queue-column[data-status="Completed"] { border-top-color: #339b79; }
+.helpdesk-queue .queue-column[data-status="Cancelled"] { border-top-color: #9a7182; }
+.helpdesk-queue .queue-column-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px; border-bottom: 1px solid #dce5f0; background: #fff; }
+.helpdesk-queue .queue-column-heading h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 15px; font-weight: 700; color: #17385e; }
+.helpdesk-queue .queue-column-heading h2 i { color: #b27b20; font-size: 17px; }
+.helpdesk-queue .queue-column[data-status="Completed"] h2 i { color: #258365; }
+.helpdesk-queue .queue-column[data-status="Cancelled"] h2 i { color: #925a70; }
+.helpdesk-queue .queue-count { display: grid; place-items: center; min-width: 30px; min-height: 28px; padding: 3px 8px; border-radius: 7px; color: #64748b; background: #edf2f8; font-size: 12px; font-weight: 750; }
+.helpdesk-queue .queue-ticket-list { max-height: 69vh; min-height: 280px; overflow-y: auto; padding: 14px; scrollbar-width: thin; scrollbar-color: #c5d3e4 transparent; }
+.helpdesk-queue .queue-ticket { min-width: 0; padding: 17px; background: #fff; border: 1px solid #dde6f0; border-radius: 9px; box-shadow: 0 2px 5px #10264b03; }
+.helpdesk-queue .queue-ticket + .queue-ticket { margin-top: 12px; }
+.helpdesk-queue .queue-ticket-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.helpdesk-queue .queue-ticket-heading strong { color: #17385e; font-size: 15px; font-weight: 750; }
+.helpdesk-queue .queue-status { padding: 4px 8px; border-radius: 5px; background: #fff2d8; color: #8c6419; font-size: 10px; font-weight: 650; }
+.helpdesk-queue [data-status="Completed"] .queue-status { background: #e3f5ec; color: #267d5e; }
+.helpdesk-queue [data-status="Cancelled"] .queue-status { background: #f3e8ee; color: #8f526b; }
+.helpdesk-queue .queue-ticket h3 { margin: 16px 0 9px; color: #233b5b; font-size: 14px; font-weight: 650; line-height: 1.5; overflow-wrap: anywhere; }
+.helpdesk-queue .queue-department { display: flex; align-items: flex-start; gap: 7px; margin: 0; color: #6a7c93; font-size: 11px; line-height: 1.6; }
+.helpdesk-queue .queue-department span { min-width: 0; overflow-wrap: anywhere; }
+.helpdesk-queue .queue-ticket-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px 10px; margin-top: 17px; padding-top: 12px; border-top: 1px solid #edf1f6; color: #8290a3; font-size: 10px; }
+.helpdesk-queue .queue-empty { display: grid; place-content: center; min-height: 250px; padding: 24px 12px; text-align: center; }
+.helpdesk-queue .queue-empty > i { color: #b8c7da; font-size: 28px; }
+.helpdesk-queue .queue-empty h3 { margin: 14px 0 5px; color: #65758b; font-size: 14px; font-weight: 600; }
+.helpdesk-queue .queue-empty p { margin: 0; color: #8492a4; font-size: 12px; }
+.helpdesk-queue .queue-bottom-note { margin: 24px 0 0; text-align: center; color: #8a98ac; font-size: 10px; }
+.helpdesk-queue a:focus-visible,.helpdesk-queue .queue-ticket-list:focus-visible { outline: 3px solid #ff9b30; outline-offset: 3px; }
+@media(max-width:1000px) {
+    .helpdesk-queue .queue-main { padding: 24px 20px; }
+    .helpdesk-queue .queue-columns { gap: 14px; }
+    .helpdesk-queue .queue-ticket-list { padding: 10px; }
+    .helpdesk-queue .queue-ticket { padding: 13px; }
+}
+@media(max-width:760px) {
+    .helpdesk-queue .queue-topbar { padding: 18px 16px; }
+    .helpdesk-queue .queue-header-row { flex-wrap: wrap; gap: 16px; }
+    .helpdesk-queue .queue-brand strong { font-size: 20px; }
+    .helpdesk-queue .queue-brand small { font-size: 8px; letter-spacing: 1px; }
+    .helpdesk-queue .queue-brand img { width: 46px; height: 46px; flex-basis: 46px; }
+    .helpdesk-queue .queue-clock strong { font-size: 19px; }
+    .helpdesk-queue .queue-main { padding: 24px 16px; }
+    .helpdesk-queue .queue-page-heading { align-items: flex-start; flex-direction: column; gap: 16px; }
+    .helpdesk-queue .queue-heading-actions { justify-content: flex-start; }
+    .helpdesk-queue .queue-columns { grid-template-columns: minmax(0,1fr); gap: 22px; }
+    .helpdesk-queue .queue-ticket-list { max-height: 480px; min-height: 180px; padding: 14px; }
+    .helpdesk-queue .queue-empty { min-height: 155px; }
+}
+@media(prefers-reduced-motion:reduce) { .helpdesk-queue * { scroll-behavior: auto; } }

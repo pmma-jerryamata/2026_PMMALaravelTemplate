@@ -1,0 +1,6 @@
+@extends('helpdesk.layouts.portal')
+@section('title', 'Privacy Notice')
+@section('content')
+@include('helpdesk.portal.partials.heading', ['title' => 'Privacy Notice', 'subtitle' => 'How information submitted through this portal is used.'])
+<section class="section"><div class="container faq-container portal-panel"><h2>Information Used</h2><p>The portal uses your existing PMMA directory name, email address, and department to record support requests. A request contains a service category, concern details, ticket number, status, assigned technician, findings, originating IP address, and timestamps.</p><h2>Purpose</h2><p>This information is used to process your campus support request and check its status. Enter only the information needed to explain your concern.</p><h2>Tracking</h2><p>Keep your ticket number private. Tracking displays the concern, department, status, technician, and findings. The recent-ticket list and queue show service categories and departments without requester names or email addresses.</p><h2>Need Assistance?</h2><p>Do not submit passwords, financial information, or sensitive personal records. Contact ITSU regarding your request or directory information.</p><a href="{{ route('contact') }}">Contact & Support →</a></div></section>
+@endsection
