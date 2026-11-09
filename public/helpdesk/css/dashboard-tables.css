@@ -54,9 +54,13 @@
 .admin-workspace .dt-info { color: #64748b; font-size: 12px; }
 .admin-workspace .dt-paging nav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .admin-workspace .dt-container .dt-paging .dt-paging-button { min-width: 34px; margin: 0; padding: 8px 11px; border: 1px solid #d5dfed; border-radius: 6px; background: #fff; color: #17385e !important; font-size: 12px; }
-.admin-workspace .dt-container .dt-paging .dt-paging-button.current { background: #17385e; border-color: #17385e; color: white !important; }
-.admin-workspace .dt-container .dt-paging .dt-paging-button:hover:not(.disabled) { background: #e7eef9; color: #17385e !important; border-color: #aec1de; }
-.admin-workspace .dt-container .dt-paging .dt-paging-button.disabled { opacity: .45; cursor: default; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button.current,
+.admin-workspace .dt-container .dt-paging .dt-paging-button.current:hover,
+.admin-workspace .dt-container .dt-paging .dt-paging-button.current:active { background: #17385e !important; border-color: #17385e !important; color: #fff !important; font-weight: 700; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button:hover:not(.disabled):not(.current) { background: #e7eef9; color: #17385e !important; border-color: #aec1de; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button.disabled,
+.admin-workspace .dt-container .dt-paging .dt-paging-button.disabled:hover { opacity: 1; background: #f3f5f8; border-color: #e1e7ef; color: #738095 !important; cursor: default; box-shadow: none; }
+.admin-workspace .dt-container .dt-paging .dt-paging-button:focus-visible { outline: 2px solid #0032a0; outline-offset: 2px; }
 .dashboard-table-notice { margin: 16px 0; padding: 12px 16px; border: 1px solid #e7c9bd; border-radius: 8px; background: #fff3ed; color: #8c3a25; }
 .dashboard-mobile-sort { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 8px; margin: 16px 0; }
 .dashboard-mobile-sort label { grid-column: 1 / -1; color: #64748b; font-size: 12px; font-weight: 650; }
