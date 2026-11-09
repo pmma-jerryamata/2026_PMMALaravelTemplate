@@ -19,6 +19,7 @@ Route::view('/privacy', 'helpdesk.portal.privacy')->name('privacy');
 Route::get('/time', fn () => response()->json(['timestamp' => (int) round(microtime(true) * 1000), 'synced' => false])->header('Cache-Control', 'no-store'))->name('time');
 
 Route::middleware('auth')->group(function () {
+    Route::view('/dashboard/user-guide', 'helpdesk.dashboard.user-guide')->name('dashboard.user-guide');
     Route::get('/dashboard/tables/tickets', [DashboardTableController::class, 'tickets'])->name('dashboard.tables.tickets');
     Route::get('/dashboard/tables/catalog/{type}', [DashboardTableController::class, 'catalog'])
         ->where('type', 'employees|departments|technicians|services')->name('dashboard.tables.catalog');

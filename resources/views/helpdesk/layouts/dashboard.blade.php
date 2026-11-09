@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="@yield('language', 'en')"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#10264b"><meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Dashboard') | {{ $systemSettings['app_name'] }}</title><link rel="icon" href="{{ asset('helpdesk/images/pmma-seal.png') }}">
 @foreach(['style', 'accessibility', 'pmma', 'dashboard-theme', 'legacy-adapter'] as $sheet)<link rel="stylesheet" href="{{ asset('helpdesk/css/'.$sheet.'.css') }}?v={{ $designVersion }}">@endforeach
@@ -21,6 +21,7 @@
 <a href="{{ route('report') }}" @class(['selected' => request()->routeIs('report')])><i class="bi bi-bar-chart" aria-hidden="true"></i> Reports</a>
 <a href="{{ route('dashboard.surveys') }}" @class(['selected' => request()->routeIs('dashboard.surveys')])><i class="bi bi-star" aria-hidden="true"></i> Survey Results</a>
 <a href="{{ route('dashboard.settings') }}" @class(['selected' => request()->routeIs('dashboard.settings*')])><i class="bi bi-gear" aria-hidden="true"></i> System Settings</a>
+<a href="{{ route('dashboard.user-guide') }}" @class(['selected' => request()->routeIs('dashboard.user-guide')])><i class="bi bi-book" aria-hidden="true"></i> User Guide</a>
 <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
 </nav><div class="admin-sidebar-bottom"><span>Information Technology Services Unit</span></div></aside>
 <button type="button" class="admin-menu-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
