@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ asset('helpdesk/css/legacy-adapter.css') }}?v={{ $designVersion }}">
     <script src="{{ asset('helpdesk/js/legacy-adapter.js') }}?v={{ $designVersion }}" defer></script>
     @stack('page-assets')
+    <link rel="stylesheet" href="{{ asset('helpdesk/css/government-footer.css') }}?v={{ filemtime(public_path('helpdesk/css/government-footer.css')) }}">
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -36,8 +37,9 @@
 @if($errors->any())<div class="container"><div class="portal-alert error" role="alert"><strong>Please check the following:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div></div>@endif
 @yield('content')
 </main>
+@include('helpdesk.partials.government-footer')
 <footer class="site-footer"><div class="container"><div class="footer-main-new">
-    <div class="footer-brand"><a class="portal-brand footer-pmma" href="{{ route('home') }}"><img class="brand-seal" src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="PMMA seal" width="64" height="64" loading="lazy"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>{{ $systemSettings['portal_subtitle'] }}</small></span></a><p class="footer-tagline">A simpler way to connect.<br>A better way to get support.</p></div>
+    <div class="footer-brand"><a class="portal-brand footer-pmma" href="{{ route('home') }}"><img class="brand-seal" src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="PMMA seal" width="64" height="64" loading="lazy"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>{{ $systemSettings['portal_subtitle'] }}</small></span></a><address class="footer-contact"><strong>{{ config('footer.organization.name') }}</strong><span>{{ config('footer.organization.address') }}</span><a href="mailto:{{ config('footer.organization.email') }}"><i class="bi bi-envelope" aria-hidden="true"></i><span>{{ config('footer.organization.email') }}</span></a><a href="tel:{{ str_replace(' ', '', config('footer.organization.telephone')) }}"><i class="bi bi-telephone" aria-hidden="true"></i><span>{{ config('footer.organization.telephone') }}</span></a></address></div>
     <div class="footer-column"><h4>Quick Links</h4><ul class="footer-links-new"><li><a href="{{ route('services') }}">Browse Services</a></li><li><a href="{{ route('tickets.create') }}">Submit a Ticket</a></li><li><a href="{{ route('track') }}">Track Your Ticket</a></li></ul></div>
     <div class="footer-column"><h4>Help & Resources</h4><ul class="footer-links-new"><li><a href="{{ route('faq') }}">Frequently Asked Questions</a></li><li><a href="{{ route('contact') }}">Contact & Support</a></li><li><a href="{{ route('privacy') }}">Privacy Notice</a></li></ul></div>
     <div class="footer-column"><h4>PMMA Service Portal</h4><p>For cadets, faculty, and staff.<br>Submit. Track. Stay informed.</p><a href="{{ route('tickets.create') }}" class="footer-contribute">How Can We Help? <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div>
