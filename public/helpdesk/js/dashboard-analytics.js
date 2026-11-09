@@ -32,7 +32,7 @@
                     x: {beginAtZero: true, ticks: {precision: 0}, grid: {color: '#e5ebf3'}},
                     y: {grid: {display: false}, ticks: {font: {size: narrow ? 10 : 11}, callback: function (value) {
                         const text = this.getLabelForValue(value);
-                        const limit = narrow ? 20 : (department ? 44 : 30);
+                        const limit = narrow ? 20 : 26;
                         return text.length > limit ? text.slice(0, limit - 1) + '…' : text;
                     }}},
                 },
