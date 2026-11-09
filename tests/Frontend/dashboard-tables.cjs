@@ -38,6 +38,36 @@ function fixture({mobile = false, rows = '', server = false, fetch} = {}) {
 
 async function main() {
     let checks = 0;
+    const confirmation = new JSDOM(`<form data-ticket-delete-confirmation data-confirmation="DELETE #2998">
+        <input name="confirmation"><input name="password" type="password">
+        <input name="acknowledge" type="checkbox"><button type="submit">Delete</button></form>`,
+        {runScripts: 'outside-only'});
+    confirmation.window.eval(scripts[2]);
+    const deleteForm = confirmation.window.document.querySelector('form');
+    const deleteButton = deleteForm.querySelector('button');
+    const updateConfirmation = () => deleteForm.dispatchEvent(new confirmation.window.Event('input', {bubbles: true}));
+    assert.equal(deleteButton.disabled, true); checks++;
+    deleteForm.elements.confirmation.value = 'DELETE #2997';
+    deleteForm.elements.password.value = 'test-password';
+    deleteForm.elements.acknowledge.checked = true;
+    updateConfirmation();
+    assert.equal(deleteButton.disabled, true); checks++;
+    const rejected = new confirmation.window.Event('submit', {cancelable: true});
+    deleteForm.dispatchEvent(rejected);
+    assert.equal(rejected.defaultPrevented, true); checks++;
+    deleteForm.elements.confirmation.value = 'DELETE #2998';
+    updateConfirmation();
+    assert.equal(deleteButton.disabled, false); checks++;
+    deleteForm.elements.acknowledge.checked = false;
+    updateConfirmation();
+    assert.equal(deleteButton.disabled, true); checks++;
+    deleteForm.elements.acknowledge.checked = true;
+    updateConfirmation();
+    const accepted = new confirmation.window.Event('submit', {cancelable: true});
+    deleteForm.dispatchEvent(accepted);
+    assert.equal(accepted.defaultPrevented, false); checks++;
+    assert.equal(deleteButton.disabled, true); checks++;
+    confirmation.window.close();
     const clientRows = Array.from({length: 31}, (_, index) => `<tr><td data-order="2026-10-${String(index + 1).padStart(2, '0')}">October ${index + 1}, 2026</td><td>${index === 30 ? 'Unique final accomplishment' : 'Technical support ' + index}</td></tr>`).join('');
     const desktop = fixture({rows: clientRows});
     assert.equal(desktop.api.page.info().recordsTotal, 31); checks++;

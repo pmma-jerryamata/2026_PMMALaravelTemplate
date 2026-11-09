@@ -96,6 +96,48 @@ class HelpdeskPresentationTest extends TestCase
             'support_specifics' => 'The network is unavailable in the office.', 'ip' => '127.0.0.1']);
     }
 
+    public function test_ticket_deletion_requires_authentication_and_matching_confirmation(): void
+    {
+        $ticket = $this->ticket();
+        $url = '/dashboard/tickets/'.$ticket->id;
+        $this->get($url.'/delete')->assertRedirect('/login');
+        $this->deleteJson($url)->assertUnauthorized();
+        $this->actingAs($this->staff());
+        $this->get($url.'/delete')->assertOk()->assertSee('DELETE #'.$ticket->id)
+            ->assertSee('name="password"', false);
+        $this->deleteJson($url, ['confirmation' => 'DELETE #999999', 'password' => 'test-password', 'acknowledge' => '1'])
+            ->assertUnprocessable()->assertJsonValidationErrors('confirmation');
+        $this->deleteJson($url, ['confirmation' => 'DELETE #'.$ticket->id, 'password' => 'wrong', 'acknowledge' => '1'])
+            ->assertUnprocessable()->assertJsonValidationErrors('password');
+        $this->deleteJson($url, ['confirmation' => 'DELETE #'.$ticket->id, 'password' => 'test-password'])
+            ->assertUnprocessable()->assertJsonValidationErrors('acknowledge');
+        $this->assertDatabaseHas('supports', ['id' => $ticket->id]);
+    }
+
+    public function test_ticket_deletion_removes_only_the_confirmed_ticket_and_its_feedback(): void
+    {
+        $ticket = $this->ticket();
+        $other = $this->ticket();
+        foreach ([$ticket, $other] as $record) {
+            DB::table('ratings_result')->insert(['support_id' => $record->id, 'rating_id' => 1,
+                'rating_measure_id' => 1, 'feedback' => 'Test feedback', 'created_at' => now()]);
+        }
+        $this->actingAs($this->staff());
+        $this->get('/dashboard')->assertOk()->assertSee('aria-label="Delete ticket '.$ticket->id.'"', false);
+        $this->getJson('/dashboard/tables/tickets')->assertOk()
+            ->assertJson(fn ($json) => $json->has('rows')->etc());
+        $this->delete('/dashboard/tickets/'.$ticket->id, [
+            'confirmation' => 'DELETE #'.$ticket->id, 'password' => 'test-password', 'acknowledge' => '1',
+        ])->assertRedirect('/dashboard')->assertSessionHas('success');
+        $this->assertDatabaseMissing('supports', ['id' => $ticket->id]);
+        $this->assertDatabaseMissing('ratings_result', ['support_id' => $ticket->id]);
+        $this->assertDatabaseHas('supports', ['id' => $other->id]);
+        $this->assertDatabaseHas('ratings_result', ['support_id' => $other->id]);
+        $this->assertDatabaseCount('employees', 1);
+        $this->assertDatabaseCount('tasks', 1);
+        $this->get('/dashboard/tickets/'.$ticket->id.'/delete')->assertNotFound();
+    }
+
     public function test_portal_uses_existing_categories_and_omits_unsupported_fields(): void
     {
         $this->get('/')->assertOk()->assertSee('What Do You Need Help With?')->assertSee('Internet/Network Connectivity');

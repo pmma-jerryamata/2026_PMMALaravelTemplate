@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/tickets/create', [HelpdeskController::class, 'create'])->name('dashboard.tickets.create');
     Route::post('/dashboard/tickets', [HelpdeskController::class, 'store'])->name('dashboard.tickets.store');
     Route::get('/dashboard/tickets/{ticket}', [HelpdeskController::class, 'show'])->whereNumber('ticket')->name('dashboard.tickets.show');
+    Route::get('/dashboard/tickets/{ticket}/delete', [HelpdeskController::class, 'confirmDelete'])->whereNumber('ticket')->name('dashboard.tickets.confirm-delete');
+    Route::delete('/dashboard/tickets/{ticket}', [HelpdeskController::class, 'destroy'])->whereNumber('ticket')->middleware('throttle:5,1')->name('dashboard.tickets.destroy');
     Route::post('/dashboard/tickets/{ticket}', [HelpdeskController::class, 'update'])->whereNumber('ticket')->name('dashboard.tickets.update');
     Route::get('/dashboard/settings', [HelpdeskController::class, 'settings'])->name('dashboard.settings');
     Route::get('/dashboard/settings/{type}/create', [HelpdeskController::class, 'editRecord'])->name('dashboard.settings.create');

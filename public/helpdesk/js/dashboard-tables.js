@@ -1,5 +1,21 @@
 'use strict';
 
+document.querySelectorAll('[data-ticket-delete-confirmation]').forEach(form => {
+    const submit = form.querySelector('button[type="submit"]');
+    const matches = () => form.elements.confirmation.value === form.dataset.confirmation &&
+        form.elements.password.value.length > 0 && form.elements.acknowledge.checked;
+    const update = () => { submit.disabled = !matches(); };
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+    form.addEventListener('submit', event => {
+        if (!matches()) { event.preventDefault(); update(); return; }
+        submit.disabled = true;
+        submit.textContent = 'Deleting ticket…';
+    });
+    window.addEventListener('pageshow', update);
+    update();
+});
+
 document.querySelectorAll('[data-dashboard-table]').forEach(table => {
     if (typeof DataTable === 'undefined' || DataTable.isDataTable(table)) return;
     const headings = [...table.querySelectorAll('thead th')].map(cell => cell.textContent.trim());
@@ -44,6 +60,10 @@ document.querySelectorAll('[data-dashboard-table]').forEach(table => {
         drawCallback: function () { labelRows(this.api()); },
         initComplete: function () { if (fallback) fallback.hidden = true; },
     };
+    if (table.id === 'tickets-table') {
+        const widths = ['8%', '16%', '16%', '22%', '8%', '12%', '10%', '8%'];
+        options.columnDefs.push(...widths.map((width, targets) => ({targets, width})));
+    }
     if (table.dataset.tableSource) {
         options.serverSide = true;
         options.processing = true;

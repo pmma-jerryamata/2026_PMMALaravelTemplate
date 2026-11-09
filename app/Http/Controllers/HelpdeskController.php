@@ -240,6 +240,34 @@ class HelpdeskController extends Controller
         return redirect()->route('dashboard.tickets.show', $support->id)->with('success', 'Ticket updated successfully.');
     }
 
+    public function confirmDelete($ticket)
+    {
+        return $this->page('dashboard.delete-ticket', [
+            'ticket' => $this->tickets()->findOrFail($ticket),
+        ]);
+    }
+
+    public function destroy(Request $request, $ticket)
+    {
+        $support = Support::findOrFail($ticket);
+        $request->validate([
+            'confirmation' => ['required', 'string', Rule::in(['DELETE #'.$support->id])],
+            'password' => ['required', 'string', 'current_password'],
+            'acknowledge' => ['accepted'],
+        ], [
+            'confirmation.in' => 'Type DELETE #'.$support->id.' exactly to confirm this ticket.',
+            'acknowledge.accepted' => 'Confirm that you understand this deletion is permanent.',
+        ]);
+
+        DB::transaction(function () use ($support) {
+            $locked = Support::whereKey($support->id)->lockForUpdate()->firstOrFail();
+            RatingResult::where('support_id', $locked->id)->delete();
+            $locked->delete();
+        });
+
+        return redirect()->route('dashboard')->with('success', 'Ticket #'.$support->id.' and its feedback were permanently deleted.');
+    }
+
     private function catalogModel($type)
     {
         abort_unless(in_array($type, ['employees', 'departments', 'technicians', 'services'], true), 404);
