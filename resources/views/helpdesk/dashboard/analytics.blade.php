@@ -1,0 +1,30 @@
+<section class="dashboard-analytics" aria-labelledby="analytics-heading">
+    <div class="analytics-header"><div><h2 id="analytics-heading">Ticket Analytics</h2><p>Requests by service category, status, and department / office.</p></div></div>
+    <form class="analytics-filters" action="{{ route('dashboard') }}#analytics-heading" method="get">
+        @foreach(request()->only(['status', 'task_id', 'department_id', 'technician_id', 'q']) as $name => $value)<input type="hidden" name="{{ $name }}" value="{{ $value }}">@endforeach
+        <div><label for="analytics-period">Submitted date</label><select id="analytics-period" name="analytics_period">@foreach(['all' => 'All time', 'today' => 'Today', '7days' => 'Last 7 days', '30days' => 'Last 30 days', 'month' => 'This month', 'year' => 'This year', 'custom' => 'Custom dates'] as $value => $label)<option value="{{ $value }}" @selected(($analytics['filters']['analytics_period'] ?? 'all') === $value)>{{ $label }}</option>@endforeach</select></div>
+        <div><label for="analytics-from">From (custom)</label><input type="date" name="analytics_from" id="analytics-from" value="{{ $analytics['filters']['analytics_from'] ?? '' }}" data-analytics-date></div>
+        <div><label for="analytics-to">To (custom)</label><input type="date" name="analytics_to" id="analytics-to" value="{{ $analytics['filters']['analytics_to'] ?? '' }}" data-analytics-date></div>
+        <div><label for="analytics-status">Status</label><select id="analytics-status" name="analytics_status"><option value="">All statuses</option>@foreach($statuses as $status)<option @selected(($analytics['filters']['analytics_status'] ?? '') === $status)>{{ $status }}</option>@endforeach</select></div>
+        <div><label for="analytics-service">Service</label><select id="analytics-service" name="analytics_task_id"><option value="">All services</option>@foreach($services as $service)<option value="{{ $service['id'] }}" @selected((string) ($analytics['filters']['analytics_task_id'] ?? '') === (string) $service['id'])>{{ $service['title'] }}</option>@endforeach</select></div>
+        <div><label for="analytics-department">Department / Office</label><select id="analytics-department" name="analytics_department_id"><option value="">All departments / offices</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected((string) ($analytics['filters']['analytics_department_id'] ?? '') === (string) $department->id)>{{ $department->name }}</option>@endforeach</select></div>
+        <div><label for="analytics-technician">Technician</label><select id="analytics-technician" name="analytics_technician_id"><option value="">All technicians</option>@foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected((string) ($analytics['filters']['analytics_technician_id'] ?? '') === (string) $technician->id)>{{ $technician->name }}</option>@endforeach</select></div>
+        <div class="analytics-filter-actions"><button type="submit" class="btn btn-primary">Apply to graphs</button><a class="btn btn-secondary" href="{{ route('dashboard', request()->only(['status', 'task_id', 'department_id', 'technician_id', 'q'])) }}#analytics-heading">Reset graphs</a></div>
+    </form>
+    <p class="analytics-filter-note">These filters apply to all three graphs using the ticket submission date (Philippine time). Ticket-table filters and all-time metric cards are separate.</p>
+    <p class="analytics-summary" role="status">{{ number_format($analytics['total']) }} {{ Str::plural('ticket', $analytics['total']) }} · {{ $analytics['rangeLabel'] }}</p>
+    @if(!$analytics['total'])<p class="analytics-empty">No tickets match these graph filters. Change the filters or choose Reset graphs.</p>@endif
+    <div class="analytics-grid">
+        <article class="portal-panel chart-card"><h3>Tickets by Concern Category</h3><p>Requests across the matching service categories.</p><div class="chart-area"><canvas id="category-chart" role="img" aria-label="Tickets by service category" aria-describedby="analytics-category-data"></canvas></div></article>
+        <article class="portal-panel chart-card"><h3>Ticket Status</h3><p>Status distribution for the matching requests.</p><div class="chart-area"><canvas id="status-chart" role="img" aria-label="Tickets by status" aria-describedby="analytics-status-data"></canvas></div></article>
+    </div>
+    <div class="analytics-department">
+        <article class="portal-panel chart-card"><h3>Tickets by Department / Office</h3><p>All matching departments, ordered by ticket count. Scroll within the graph when the list is long.</p><div class="department-chart-scroll" tabindex="0" role="region" aria-label="Department chart, scroll to view all offices"><div class="chart-area" style="height: {{ max(300, count($analytics['departments']) * 32 + 40) }}px"><canvas id="department-chart" role="img" aria-label="Tickets by department or office" aria-describedby="analytics-department-data"></canvas></div></div></article>
+    </div>
+    <details class="analytics-data"><summary>View Chart Data</summary><div class="analytics-values">
+        @foreach(['category' => ['Tickets by Concern Category', 'categories', 'categoryCounts'], 'status' => ['Ticket Status', 'statuses', 'statusCounts'], 'department' => ['Tickets by Department / Office', 'departments', 'departmentCounts']] as $key => [$title, $labels, $values])
+        <div><h3 id="analytics-{{ $key }}-data">{{ $title }}</h3><table><thead><tr><th scope="col">{{ $key === 'department' ? 'Department / Office' : ($key === 'status' ? 'Status' : 'Category') }}</th><th scope="col">Tickets</th></tr></thead><tbody>@forelse($analytics[$labels] as $index => $label)<tr><th scope="row">{{ $label }}</th><td>{{ number_format($analytics[$values][$index]) }}</td></tr>@empty<tr><td colspan="2">No matching tickets.</td></tr>@endforelse</tbody></table></div>
+        @endforeach
+    </div></details>
+    <script type="application/json" id="helpdesk-chart-data">@json(\Illuminate\Support\Arr::except($analytics, ['filters']))</script>
+</section>

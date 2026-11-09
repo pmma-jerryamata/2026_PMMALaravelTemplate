@@ -186,14 +186,11 @@ class HelpdeskController extends Controller
             });
         }
         $counts = Support::select('status', DB::raw('COUNT(*) AS total'))->groupBy('status')->pluck('total', 'status');
-        $categoryCounts = Support::select('task_id', DB::raw('COUNT(*) AS total'))->groupBy('task_id')->pluck('total', 'task_id');
         $services = $this->services();
+        $analytics = app(\App\Services\DashboardAnalytics::class)->summarize($request);
         return $this->page('dashboard.index', [
             'tickets' => $query->orderByDesc('created_at')->orderByDesc('id')->paginate(15)->withQueryString(),
-            'counts' => $counts, 'categoryCounts' => $categoryCounts, 'services' => $services,
-            'chartData' => ['categories' => $services->values()->pluck('title'),
-                'categoryCounts' => $services->values()->map(fn ($service) => $categoryCounts->get($service['id'], 0)),
-                'statuses' => $counts->keys(), 'statusCounts' => $counts->values()],
+            'counts' => $counts, 'services' => $services, 'analytics' => $analytics,
             'departments' => Department::orderBy('name')->get(), 'technicians' => Technician::orderBy('name')->get(),
             'statuses' => self::STATUSES,
         ]);

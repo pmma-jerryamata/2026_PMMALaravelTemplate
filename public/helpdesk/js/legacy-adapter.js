@@ -84,21 +84,6 @@ if (requesterForm) {
     });
 }
 
-const chartData = document.getElementById('helpdesk-chart-data');
-if (chartData && typeof Chart !== 'undefined') {
-    const data = JSON.parse(chartData.textContent);
-    const colors = ['#17385e', '#367ab2', '#d4a747', '#4e9b96', '#a0b7d1', '#8b71a8'];
-    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
-    new Chart(document.getElementById('category-chart'), {
-        type: 'bar', data: {labels: data.categories, datasets: [{label: 'Tickets', data: data.categoryCounts, backgroundColor: colors, borderRadius: 5}]},
-        options: {responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: {legend: {display: false}}, scales: {x: {beginAtZero: true, ticks: {precision: 0}}, y: {grid: {display: false}, ticks: {callback: function(value) { const text = this.getLabelForValue(value); return text.length > 25 ? text.slice(0, 24) + '…' : text; }}}}},
-    });
-    new Chart(document.getElementById('status-chart'), {
-        type: 'doughnut', data: {labels: data.statuses, datasets: [{data: data.statusCounts, backgroundColor: data.statuses.map(status => ({Pending: '#d4a747', Completed: '#4e9b96', Cancelled: '#a0b7d1'}[status] || '#17385e')), borderWidth: 3}]},
-        options: {responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: {legend: {position: 'bottom'}}},
-    });
-}
-
 if (document.querySelector('[data-queue-refresh]')) {
     const updateQueueClock = () => {
         const time = document.getElementById('queue-time');

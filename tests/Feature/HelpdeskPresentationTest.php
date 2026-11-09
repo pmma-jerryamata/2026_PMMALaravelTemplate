@@ -138,6 +138,50 @@ class HelpdeskPresentationTest extends TestCase
         $this->get('/dashboard/tickets/'.$ticket->id.'/delete')->assertNotFound();
     }
 
+    public function test_analytics_counts_departments_and_filters_graphs_without_changing_the_ticket_list(): void
+    {
+        $old = $this->ticket(); $old->update(['created_at' => '2026-11-01 12:00:00']);
+        $completed = $this->ticket(); $completed->update(['status' => 'Completed', 'technician_id' => 1, 'created_at' => '2026-11-09 23:59:59']);
+        DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
+        DB::table('employees')->insert(['id' => 2, 'name' => 'Student Requester', 'email' => 'student@example.test', 'department_id' => 44]);
+        Support::create(['employee_id' => 2, 'task_id' => 1, 'status' => 'Cancelled', 'ip' => '127.0.0.1', 'created_at' => '2026-11-09 00:00:00']);
+        Support::create(['employee_id' => 999, 'task_id' => 999, 'status' => 'Pending', 'ip' => '127.0.0.1', 'created_at' => '2026-11-09 15:00:00']);
+        $this->actingAs($this->staff());
+        $all = $this->get('/dashboard')->assertOk()->assertSee('department-chart')->viewData('analytics');
+        $this->assertSame(4, $all['total']);
+        $this->assertSame(4, $all['categoryCounts']->sum());
+        $this->assertSame(4, $all['departmentCounts']->sum());
+        $this->assertSame(4, array_sum($all['statusCounts']));
+        $this->assertSame(['ITSU', 'Not specified', 'STUDENTS'], $all['departments']->all());
+        $this->assertSame([2, 1, 1], $all['departmentCounts']->all());
+        $this->assertContains('Unavailable service', $all['categories']->all());
+        $query = http_build_query(['analytics_period' => 'custom', 'analytics_from' => '2026-11-09', 'analytics_to' => '2026-11-09',
+            'analytics_status' => 'Completed', 'analytics_department_id' => 1, 'analytics_task_id' => 1, 'analytics_technician_id' => 1]);
+        $response = $this->get('/dashboard?'.$query)->assertOk();
+        $filtered = $response->viewData('analytics');
+        $this->assertSame(1, $filtered['total']);
+        $this->assertSame(['ITSU'], $filtered['departments']->all());
+        $this->assertSame([0, 1, 0], $filtered['statusCounts']);
+        $this->assertSame(4, $response->viewData('tickets')->total());
+        $this->assertEquals(4, $response->viewData('counts')->sum());
+    }
+
+    public function test_analytics_periods_empty_results_and_filter_validation(): void
+    {
+        $this->travelTo(\Carbon\Carbon::parse('2026-11-09 12:00:00', 'Asia/Manila'));
+        $ticket = $this->ticket(); $ticket->update(['created_at' => '2026-11-03 00:00:00']);
+        $this->actingAs($this->staff());
+        $this->get('/dashboard?analytics_period=7days')->assertOk()->assertViewHas('analytics', fn ($data) => $data['total'] === 1);
+        $this->get('/dashboard?analytics_period=today')->assertOk()->assertSee('No tickets match these graph filters.')
+            ->assertViewHas('analytics', fn ($data) => $data['total'] === 0 && $data['departments']->isEmpty());
+        $this->getJson('/dashboard?analytics_period=invalid')->assertUnprocessable()->assertJsonValidationErrors('analytics_period');
+        $this->getJson('/dashboard?analytics_period=custom')->assertUnprocessable()->assertJsonValidationErrors(['analytics_from', 'analytics_to']);
+        $this->getJson('/dashboard?analytics_period=custom&analytics_from=2026-11-09&analytics_to=2026-11-01')
+            ->assertUnprocessable()->assertJsonValidationErrors('analytics_to');
+        $this->getJson('/dashboard?analytics_department_id=9999')->assertUnprocessable()->assertJsonValidationErrors('analytics_department_id');
+        $this->travelBack();
+    }
+
     public function test_portal_uses_existing_categories_and_omits_unsupported_fields(): void
     {
         $this->get('/')->assertOk()->assertSee('What Do You Need Help With?')->assertSee('Internet/Network Connectivity');
