@@ -5,7 +5,7 @@
     $labels = $language === 'fil' ? [
         'title' => 'Gabay sa Paggamit', 'intro' => 'Mga sunod-sunod na tutorial para sa araw-araw na operasyon ng PMMA Helpdesk.',
         'search' => 'Maghanap sa gabay', 'placeholder' => 'Halimbawa: ticket, findings, report, password',
-        'contents' => 'Mga Paksa', 'count' => 'mga paksa', 'of' => 'sa', 'steps' => 'Mga hakbang',
+        'contents' => 'Mga Paksa', 'count' => 'paksa', 'of' => 'sa', 'steps' => 'Mga hakbang',
         'note' => 'Tandaan', 'open' => 'Buksan ang screen', 'top' => 'Bumalik sa itaas',
         'print' => 'I-print / I-save bilang PDF', 'empty' => 'Walang tumugmang tutorial. Subukan ang ibang salita o burahin ang search text.',
         'start' => 'Araw-araw na proseso', 'ticket' => 'Gumawa ng ticket', 'report' => 'Gumawa ng report',

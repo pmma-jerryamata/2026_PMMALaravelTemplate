@@ -11,7 +11,7 @@
         <title>ITSU - ADMINISTRATOR'S PAGE</title>
         @vite('resources/css/app.css')
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="{{ asset('assets/PMMA.ico') }}" />
+        <link rel="icon" type="image/png" href="{{ asset('helpdesk/images/pmma-logo.png') }}" />
         <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
@@ -26,7 +26,7 @@
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-black">
             <div class="container px-lg-5">
-                <img src="{{ asset('assets/PMMA.gif')}}" class="logo" width="80" height="80">
+                <img src="{{ asset('helpdesk/images/pmma-logo.png')}}" class="logo" width="80" height="80">
                 <a class="navbar-brand" href="{{ route('admin.index') }} ">&nbsp;PMMA-ITSU ADMIN<h6>&nbsp;&nbsp;@auth{{ Auth::user()->email }}@endauth</h6></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">

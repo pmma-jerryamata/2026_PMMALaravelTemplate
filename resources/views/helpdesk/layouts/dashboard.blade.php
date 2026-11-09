@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="@yield('language', 'en')"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#10264b"><meta name="csrf-token" content="{{ csrf_token() }}">
-<title>@yield('title', 'Dashboard') | {{ $systemSettings['app_name'] }}</title><link rel="icon" href="{{ asset('helpdesk/images/pmma-seal.png') }}">
+<title>@yield('title', 'Dashboard') | {{ $systemSettings['app_name'] }}</title><link rel="icon" href="{{ asset('helpdesk/images/pmma-logo.png') }}">
 @foreach(['style', 'accessibility', 'pmma', 'dashboard-theme', 'legacy-adapter'] as $sheet)<link rel="stylesheet" href="{{ asset('helpdesk/css/'.$sheet.'.css') }}?v={{ $designVersion }}">@endforeach
 <link rel="stylesheet" href="{{ asset('helpdesk/icons/bootstrap-icons.css') }}"><script src="{{ asset('helpdesk/vendor/chartjs/chart.umd.min.js') }}" defer></script><script src="{{ asset('helpdesk/js/legacy-adapter.js') }}?v={{ $designVersion }}" defer></script>@stack('page-assets')
 <link rel="stylesheet" href="{{ asset('helpdesk/vendor/datatables/dataTables.min.css') }}">
@@ -12,7 +12,7 @@
 </head><body class="admin-workspace"><div id="staff-app">
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <aside id="staff-sidebar" class="admin-sidebar" aria-label="Staff sidebar">
-<a class="admin-brand" href="{{ route('dashboard') }}"><img src="{{ asset('helpdesk/images/pmma-seal.png') }}" width="48" height="48" alt="PMMA seal"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>STAFF WORKSPACE</small></span></a>
+<a class="admin-brand" href="{{ route('dashboard') }}"><img src="{{ asset('helpdesk/images/pmma-logo.png') }}" width="48" height="48" alt="PMMA seal"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>STAFF WORKSPACE</small></span></a>
 <span class="admin-nav-label">WORKSPACE</span><button type="button" class="admin-menu-close" aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
 <nav id="staff-navigation" aria-label="Staff navigation">
 <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support', 'tech.index') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>

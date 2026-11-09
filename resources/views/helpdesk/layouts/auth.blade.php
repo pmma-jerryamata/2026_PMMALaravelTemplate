@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#10264b">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Staff Login') | {{ $systemSettings['app_name'] }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('helpdesk/images/pmma-seal.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('helpdesk/images/pmma-logo.png') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/icons/bootstrap-icons.css') }}">

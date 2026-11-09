@@ -11,7 +11,7 @@
         <title>ITSU - ADMIN JOB REQUESTS</title>
         @vite('resources/css/app.css')
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="{{ asset('assets/PMMA.ico')}}" />
+        <link rel="icon" type="image/png" href="{{ asset('helpdesk/images/pmma-logo.png')}}" />
         <!-- Bootstrap icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -59,7 +59,7 @@
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-black">
             <div class="container px-lg-5">
-                <a class="navbar-brand" href="{{ route('admin.index') }} "><img src="{{ asset('assets/PMMA.gif')}}" class="logo" width="40" height="40">&nbsp;ITSU - VIEW SUPPORTS</a>
+                <a class="navbar-brand" href="{{ route('admin.index') }} "><img src="{{ asset('helpdesk/images/pmma-logo.png')}}" class="logo" width="40" height="40">&nbsp;ITSU - VIEW SUPPORTS</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

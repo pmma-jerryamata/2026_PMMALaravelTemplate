@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
     <title>Ticket Queue | {{ $systemSettings['app_name'] }}</title>
-    <link rel="icon" href="{{ asset('helpdesk/images/pmma-seal.png') }}">
+    <link rel="icon" href="{{ asset('helpdesk/images/pmma-logo.png') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/css/queue.css') }}?v={{ filemtime(public_path('helpdesk/css/queue.css')) }}">
@@ -15,7 +15,7 @@
     <header class="queue-topbar">
         <div class="queue-header-row">
             <a class="queue-brand" href="{{ route('home') }}">
-                <img src="{{ asset('helpdesk/images/pmma-seal.png') }}" alt="PMMA seal" width="56" height="56">
+                <img src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="PMMA seal" width="56" height="56">
                 <span><strong>{{ $systemSettings['app_name'] }}</strong><small>PMMA SUPPORT OPERATIONS</small></span>
             </a>
             <div class="queue-clock" aria-label="Philippine time"><strong id="queue-time">--:--</strong><small id="queue-date">PHT</small></div>
