@@ -1,0 +1,5 @@
+@extends('layouts.portal')
+@section('title', 'Ticket Submitted')
+@section('content')
+<section class="section bg-alt"><div class="container"><div class="portal-panel receipt-panel text-center"><div class="success-icon"><i class="bi bi-check-circle" aria-hidden="true"></i></div><h1>Your ticket has been submitted.</h1><p>Keep this reference number. Use it to check your ticket status and timeline.</p><div class="ticket-reference">{{ $reference }}</div><button type="button" class="btn btn-secondary ui-action" data-copy="{{ $reference }}" aria-label="Copy Reference" title="Copy Reference"><x-action-icon name="copy" /><span>Copy Reference</span></button><p id="copy-status" role="status" aria-live="polite"></p><p class="text-muted">Your request has been recorded with status: Open.</p><a href="{{ route('track') }}" class="btn btn-primary ui-action" aria-label="Track Your Ticket" title="Track Your Ticket"><x-action-icon name="search" /><span>Track Your Ticket</span></a></div></div></section>
+@endsection

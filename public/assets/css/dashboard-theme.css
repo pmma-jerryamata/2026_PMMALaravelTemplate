@@ -1,0 +1,193 @@
+/* Staff workspace colors derived from the public PMMA blue/navy/orange palette. */
+.admin-menu-toggle { display: none; }
+.admin-workspace .btn.ticket-delete { color: #b42318; border-color: #f0c8c4; background: #fff5f4; }
+.admin-workspace .btn.ticket-delete:hover { color: #912018; background: #fee4e2; border-color: #d97a71; }
+.admin-menu-close, .admin-menu-backdrop { display: none; }
+.admin-workspace {
+    background: #edf3fb;
+}
+.admin-sidebar {
+    background: radial-gradient(ellipse at 0 0, #194b8c 0, transparent 58%), linear-gradient(170deg, #10264b 30%, #061935);
+    border-right: 1px solid #234373;
+}
+.admin-brand {
+    border-bottom: 1px solid #ffffff1a;
+    margin-bottom: 8px;
+}
+.admin-sidebar nav a.selected {
+    background: linear-gradient(90deg, #ff8c122b, #ffffff0a);
+    border-left-color: #ff9c30;
+    box-shadow: inset 0 0 0 1px #ffad4226;
+}
+.admin-sidebar nav a:hover {
+    background: #26569855;
+}
+.admin-topbar {
+    background: linear-gradient(100deg, #fff 45%, #edf4ff 82%, #fff1df);
+    border-top: 3px solid #ff8c12;
+    border-bottom-color: #d5e2f4;
+}
+.admin-content {
+    background: radial-gradient(ellipse at 100% 0, #ffe7c833, transparent 36%), linear-gradient(180deg, #edf3fc, #f5f7fb 580px);
+}
+.admin-content .dashboard-heading {
+    background: radial-gradient(ellipse at 95% 10%, #2a62bb88, transparent 50%), linear-gradient(115deg, #10264b, #07399a);
+    border: 1px solid #153e79;
+    border-left: 4px solid #ff8c12;
+    border-radius: 10px;
+    padding: 21px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 5px 18px #10264b0c;
+}
+.admin-content .dashboard-heading h1 {
+    color: #fff;
+}
+.admin-content .dashboard-heading p {
+    color: #d9e5fa;
+    margin: 0;
+}
+.admin-content .metric-card {
+    position: relative;
+    overflow: hidden;
+    border-color: #cfdef0;
+    box-shadow: 0 3px 12px #10264b07;
+}
+.admin-content .metric-card .metric-symbol {
+    position: absolute;
+    top: 13px;
+    right: 15px;
+    color: #6688b4;
+    opacity: .7;
+    font-size: 20px;
+    line-height: 1;
+}
+.admin-content .metric-card > span:not(.metric-symbol) {
+    display: block;
+    padding-right: 30px;
+}
+.admin-content .metric-card:first-child {
+    background: #15386a;
+    border-color: #163f7e;
+    border-top-color: #ff9b26;
+}
+.admin-content .metric-card:first-child strong,
+.admin-content .metric-card:first-child > span {
+    color: #fff;
+}
+.admin-content .metric-card:first-child small {
+    color: #d4e2f8;
+}
+.admin-content .metric-card:first-child .metric-symbol {
+    color: #ffb65c;
+    opacity: 1;
+}
+.admin-content .metric-card:nth-child(2) {
+    background: #fff4e4;
+    border-color: #f1d4ac;
+}
+.admin-content .metric-card:nth-child(2) strong,
+.admin-content .metric-card:nth-child(2) .metric-symbol {
+    color: #9b4b00;
+}
+.admin-content .metric-card:nth-child(3) {
+    background: #edf3fd;
+    border-color: #c5d9f7;
+}
+.admin-content .metric-card:nth-child(3) strong {
+    color: #0032a0;
+}
+.admin-content .metric-card:nth-child(4) {
+    background: #eff4fa;
+}
+.admin-content .metric-card:nth-child(5) {
+    background: #fff8ef;
+    border-color: #ecdac2;
+}
+.admin-content .metric-card:nth-child(5) .metric-symbol {
+    color: #ac5909;
+}
+.admin-content .portal-panel {
+    border-color: #d4e0ef;
+    box-shadow: 0 3px 16px #10264b05;
+}
+.admin-content .recent-tickets,
+.admin-content .dashboard-tickets {
+    border-top: 3px solid #ff9b26;
+}
+.admin-content .recent-tickets > .section-heading-row,
+.admin-content .dashboard-tickets > .section-heading-row {
+    border-bottom: 1px solid #e4ebf5;
+    padding-bottom: 16px;
+}
+.admin-workspace .dashboard-table thead th {
+    background: #102d58;
+    color: #eef5ff;
+    border-bottom-color: #21497e;
+}
+.admin-workspace .dashboard-table thead th:first-child { border-radius: 6px 0 0 0; }
+.admin-workspace .dashboard-table thead th:last-child { border-radius: 0 6px 0 0; }
+.admin-workspace .dashboard-table tbody tr:nth-child(even) { background: #f3f7fd; }
+.admin-workspace .dashboard-table tbody tr:hover { background: #fff5e7; }
+.admin-workspace .dashboard-table td { border-bottom-color: #dfe8f4; }
+.admin-workspace .dashboard-status { background: #e5edfc; color: #163f85; }
+.admin-workspace .dashboard-status[data-status="Open"] { background: #fff0d9; color: #8a4300; }
+.admin-workspace .dashboard-status[data-status="In Progress"] { background: #dfeaff; color: #0032a0; }
+.admin-workspace .dashboard-status[data-status="Resolved"] { background: #dce9f6; color: #173e65; }
+.admin-workspace .dashboard-status[data-status="Closed"] { background: #e9edf3; color: #4a586e; }
+.admin-workspace .btn-secondary.icon-action { background: #f1f6fe; border-color: #d1def0; color: #244e85; }
+.admin-workspace .btn-secondary.icon-action:hover { background: #ffecd0; border-color: #f0bb75; color: #914500; }
+.admin-content .chart-card { border-top: 3px solid #174b9c; background: linear-gradient(180deg, #f4f8ff, #fff 85px); }
+.admin-content .chart-card:nth-child(2) { border-top-color: #ff9b26; background: linear-gradient(180deg, #fff7ed, #fff 85px); }
+.admin-content .chart-card:nth-child(3) { border-top-color: #284b79; }
+.settings-tabs { background: #e4edf9; border-radius: 9px 9px 0 0; padding: 4px 4px 0; border-color: #c7d8ef; }
+.settings-tabs [role=tab][aria-selected=true] { background: #fff; border-radius: 6px 6px 0 0; }
+.admin-workspace input:focus-visible,
+.admin-workspace select:focus-visible,
+.admin-workspace textarea:focus-visible { outline: 2px solid #3467b0; outline-offset: 2px; }
+@media(max-width:768px) {
+    .admin-content .dashboard-heading { padding: 18px; margin-bottom: 20px; }
+    .admin-sidebar nav a.selected { border-bottom-color: #ff9b26; }
+    .admin-content .metric-card .metric-symbol { right: 12px; font-size: 17px; }
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar { position: fixed; inset: 0 auto 0 0; width: min(290px, calc(100vw - 48px)); height: 100dvh; display: flex; flex-direction: column; align-items: stretch; gap: 16px; padding: 24px 16px; border-right: 1px solid #234373; z-index: 1100; overflow-y: auto; visibility: hidden; transform: translateX(-100%); transition: transform .2s ease, visibility .2s; }
+    .admin-sidebar.is-open { visibility: visible; transform: translateX(0); }
+    .staff-menu-open { overflow: hidden; }
+    .admin-menu-backdrop:not([hidden]) { display: block; position: fixed; inset: 0; z-index: 1090; border: 0; background: #06162fa6; }
+    .admin-menu-close { display: grid; place-items: center; align-self: flex-end; order: -1; width: 44px; height: 44px; border: 1px solid #ffffff40; border-radius: 8px; color: white; background: #ffffff12; cursor: pointer; }
+    .admin-sidebar .admin-brand { min-width: 0; gap: 10px; padding: 0; margin: 0; border: 0; }
+    .admin-brand > span { min-width: 0; }
+    .admin-sidebar .admin-brand strong { font-size: 17px; overflow-wrap: anywhere; }
+    .admin-sidebar .admin-brand small { font-size: 9px; letter-spacing: 1px; }
+    .admin-menu-toggle { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; padding: 8px; border: 1px solid #d5e2f4; border-radius: 8px; background: #edf3fb; color: #10264b; cursor: pointer; }
+    .admin-menu-toggle i { font-size: 21px; }
+    .admin-menu-toggle:focus-visible { outline: 2px solid #ffb65c; outline-offset: 3px; }
+    .admin-sidebar nav { display: flex; flex-direction: column; gap: 6px; overflow: visible; padding: 16px 0 0; border-top: 1px solid #ffffff24; }
+    .admin-sidebar nav a { min-height: 46px; padding: 10px; gap: 8px; white-space: normal; font-size: 12px; line-height: 1.4; border: 0; }
+    .admin-sidebar nav a.selected { box-shadow: inset 3px 0 #ff9b26; }
+    .admin-shell, .admin-content, .dashboard-analytics, .dashboard-tickets { min-width: 0; }
+    .admin-topbar { padding: 12px 16px; gap: 8px; min-height: 70px; }
+    .admin-topbar > div { min-width: 0; }
+    .admin-topbar > .admin-account { margin-left: auto; }
+    .admin-topbar strong { display: block; overflow-wrap: anywhere; }
+    .admin-account { flex-shrink: 0; gap: 6px; }
+    .admin-account .staff-logout { min-height: 44px; padding: 0 10px; }
+    .admin-content { padding: 18px 16px 28px; }
+    .admin-content .dashboard-heading { padding: 16px; }
+    .admin-content .dashboard-heading h1 { font-size: 23px; line-height: 1.3; }
+    .admin-content .dashboard-title { gap: 16px; }
+    .dashboard-title > .btn.ui-action { width: 100%; min-height: 44px; }
+    .dashboard-tickets > .section-heading-row > [data-new-ticket] { width: 100%; min-height: 44px; }
+    .admin-content .dashboard-metrics { gap: 10px; }
+    .admin-content .metric-card { padding: 16px 12px; min-width: 0; }
+    .admin-content .metric-card > span { overflow-wrap: anywhere; }
+    .admin-content .metric-card strong { font-size: 26px; }
+    .analytics-header { flex-direction: column; gap: 12px; }
+    .analytics-periods { flex-wrap: wrap; }
+    .chart-area canvas { max-width: 100%; }
+    .admin-content .chart-card, .admin-content .dashboard-tickets { padding: 16px; }
+    .admin-workspace .dashboard-table-wrap { max-width: 100%; overflow-x: auto; }
+    .admin-workspace .portal-form input:not([type=checkbox]), .admin-workspace .portal-form select, .admin-workspace .portal-form textarea { font-size: 16px; }
+    .admin-workspace .settings-tabs { flex-wrap: wrap; }
+}

@@ -1,0 +1,16 @@
+@extends('layouts.portal')
+@section('title', 'Frequently Asked Questions')
+@section('content')
+@include('portal.partials.heading', ['title' => 'How Can We Help?', 'subtitle' => 'Answers to common questions about campus support and service requests.'])
+<section class="section faq-section"><div class="container"><div class="faq-layout"><div class="faq-list"><div class="faq-list-heading"><span class="portal-eyebrow">HELP CENTER</span><h2>Tickets & Requests</h2><p>Select a question to view the answer.</p></div>
+@foreach([
+'How do I submit a ticket?' => 'Choose a service from the directory or click Submit a Ticket. Fill out your name, email, category, subject, priority, and a detailed description. After submission, save the reference number shown on the confirmation page.',
+'How do I check the status of my ticket?' => 'Open Track Ticket and enter your reference number to see ticket details and the progress timeline.',
+'What details should I include?' => 'Describe the issue, its location, the affected system or equipment, and any troubleshooting you have tried. Do not include passwords or sensitive credentials.',
+'Which service category should I choose?' => 'Select the category closest to your concern. If you are unsure, choose Others and describe the assistance you need.',
+'When will my concern be resolved?' => 'Resolution depends on the type and complexity of the concern. This portal does not guarantee a fixed response time. Check your ticket status for progress.',
+'Will I receive an email confirmation?' => 'The portal currently provides your reference number on screen after submission. Automatic email notifications are not enabled. Save or copy your reference before leaving the page.',
+'Should I submit a second ticket for the same concern?' => 'Check the status of your existing request first. Keeping one ticket per concern helps avoid duplicate requests.',
+] as $question => $answer)<details class="portal-faq"><summary>{{ $question }}<i class="bi bi-plus-lg" aria-hidden="true"></i></summary><p>{{ $answer }}</p></details>@endforeach</div>
+<aside class="portal-cta faq-help"><div class="home-service-icon"><i class="bi bi-headset" aria-hidden="true"></i></div><div><h2>Still Need Assistance?</h2><p>Send us your concern so it can be recorded and tracked.</p></div><a href="{{ route('tickets.create') }}" class="btn btn-primary ui-action" aria-label="Submit a Ticket" title="Submit a Ticket"><x-action-icon name="send" /><span>Submit a Ticket</span></a><a class="faq-track-link" href="{{ route('track') }}">Track an Existing Ticket <i class="bi bi-arrow-right" aria-hidden="true"></i></a></aside></div></div></section>
+@endsection

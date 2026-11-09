@@ -1,0 +1,1 @@
+<section class="portal-page-heading"><div class="container"><nav aria-label="Breadcrumb" class="portal-breadcrumb"><a href="{{ route('home') }}">Home</a><span aria-hidden="true">/</span><span>{{ $title }}</span></nav><h1>{{ $title }}</h1><p>{{ $subtitle }}</p></div></section>

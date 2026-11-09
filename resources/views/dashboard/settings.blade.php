@@ -1,0 +1,21 @@
+@extends('layouts.dashboard')
+@section('title', 'System Settings')
+@section('content')
+<section class="dashboard-heading"><h1>System Settings</h1><p>Manage the offices, people, and services used by your helpdesk.</p></section>
+<div class="settings-tabs" role="tablist" aria-label="System Settings Sections">
+@foreach(['general' => ['gear', 'General'], 'departments' => ['buildings', 'Departments'], 'technicians' => ['people', 'Technicians'], 'services' => ['grid', 'Services'], 'account' => ['person-circle', 'My Account']] as $tab => [$icon, $label])
+<button type="button" role="tab" id="tab-{{ $tab }}" aria-controls="panel-{{ $tab }}" aria-selected="{{ $tab === 'general' ? 'true' : 'false' }}" tabindex="{{ $tab === 'general' ? '0' : '-1' }}" data-settings-tab="{{ $tab }}"><i class="bi bi-{{ $icon }}" aria-hidden="true"></i><span>{{ $label }}</span></button>
+@endforeach
+</div>
+<div class="settings-sections">
+<section class="portal-panel" role="tabpanel" id="panel-general" aria-labelledby="tab-general" data-settings-panel="general"><div class="section-heading-row"><div><h2>General / Branding</h2><p>Customize the system name, subtitle, information bar, and footer credit.</p></div><button type="button" class="btn btn-primary ui-action" data-general-edit aria-label="Edit System Details" title="Edit System Details"><x-action-icon name="gear" /><span>Edit System Details</span></button></div></section>
+@foreach(['departments' => ['Departments / Offices', $departments], 'technicians' => ['Technician Profiles', $technicians], 'services' => ['Service Categories', $services]] as $type => [$title, $records])
+<section class="portal-panel" role="tabpanel" id="panel-{{ $type }}" aria-labelledby="tab-{{ $type }}" data-settings-panel="{{ $type }}" hidden><div class="section-heading-row"><div><h2>{{ $title }}</h2><p>Edit records or mark them inactive to hide them from new requests.</p></div><button type="button" class="btn btn-primary ui-action" data-setting-new="{{ $type }}" aria-label="Add {{ $type === 'services' ? 'Service' : ($type === 'departments' ? 'Department' : 'Technician') }}" title="Add {{ $type === 'services' ? 'Service' : ($type === 'departments' ? 'Department' : 'Technician') }}"><x-action-icon name="plus-lg" /><span>Add {{ $type === 'services' ? 'Service' : ($type === 'departments' ? 'Department' : 'Technician') }}</span></button></div><div class="dashboard-table-wrap"><table class="dashboard-table" data-datatable><thead><tr><th>Name</th><th>{{ $type === 'technicians' ? 'Email / Specialization' : ($type === 'services' ? 'Service Key' : 'Code') }}</th><th>Status</th><th>Actions</th></tr></thead><tbody>@foreach($records as $record)<tr><td>{{ $type === 'services' ? $record->title : $record->name }}</td><td>{{ $type === 'technicians' ? $record->email : ($type === 'services' ? $record->slug : $record->code) }}@if($type === 'technicians')<small>{{ $record->specialization }}</small>@endif</td><td>{{ $record->is_active ? 'Active' : 'Inactive' }}</td><td><button type="button" class="btn btn-secondary btn-sm icon-action" aria-label="Edit Record" title="Edit Record" data-setting-edit="{{ $type }}" data-record-id="{{ $record->id }}"><x-action-icon name="pencil-square" /></button></td></tr>@endforeach</tbody></table></div></section>
+@endforeach
+<section class="portal-panel" role="tabpanel" id="panel-account" aria-labelledby="tab-account" data-settings-panel="account" hidden><div class="section-heading-row"><div><h2>My Staff Account</h2><p>Update your name, login details, or password. Your current password is required.</p></div><button type="button" class="btn btn-primary ui-action" data-profile-edit aria-label="Edit My Account" title="Edit My Account"><x-action-icon name="person-gear" /><span>Edit My Account</span></button></div></section>
+</div>
+@endsection
+@push('dashboard-data')
+@php($settingsOptions = ['users' => $staffUsers, 'general' => $systemSettings, 'generalUrl' => route('dashboard.settings.general'), 'departments' => $departments, 'technicians' => $technicians, 'services' => $services, 'baseUrl' => url('/dashboard/settings'), 'profileUrl' => route('dashboard.settings.profile'), 'profile' => auth()->user()->only(['name', 'email', 'username'])])
+<script id="settings-options" type="application/json">@json($settingsOptions)</script>
+@endpush
