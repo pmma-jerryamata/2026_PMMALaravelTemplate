@@ -18,12 +18,12 @@
 <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support', 'tech.index') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>
 @foreach(['Pending' => 'inbox', 'Completed' => 'check2-circle', 'Cancelled' => 'archive'] as $status => $icon)<a href="{{ route('dashboard', ['status' => $status]) }}" @class(['selected' => request('status') === $status])><i class="bi bi-{{ $icon }}" aria-hidden="true"></i> {{ $status }} Tickets</a>@endforeach
 <a href="{{ route('dashboard.queue') }}" @class(['selected' => request()->routeIs('dashboard.queue')])><i class="bi bi-kanban" aria-hidden="true"></i> Ticket Queue</a>
-<a href="{{ route('tech.index') }}"><i class="bi bi-tools" aria-hidden="true"></i> Technician Dashboard</a>
 <a href="{{ route('report') }}" @class(['selected' => request()->routeIs('report')])><i class="bi bi-bar-chart" aria-hidden="true"></i> Reports</a>
 <a href="{{ route('dashboard.surveys') }}" @class(['selected' => request()->routeIs('dashboard.surveys')])><i class="bi bi-star" aria-hidden="true"></i> Survey Results</a>
 <a href="{{ route('dashboard.settings') }}" @class(['selected' => request()->routeIs('dashboard.settings*')])><i class="bi bi-gear" aria-hidden="true"></i> System Settings</a>
 <a href="{{ route('dashboard.user-guide') }}" @class(['selected' => request()->routeIs('dashboard.user-guide')])><i class="bi bi-book" aria-hidden="true"></i> User Guide</a>
 <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
+<a href="{{ route('tech.index') }}"><i class="bi bi-tools" aria-hidden="true"></i> Technician Dashboard</a>
 </nav><div class="admin-sidebar-bottom"><span>Information Technology Services Unit</span></div></aside>
 <button type="button" class="admin-menu-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
 <div class="admin-shell"><header class="admin-topbar"><button type="button" class="admin-menu-toggle" aria-label="Open navigation" aria-controls="staff-sidebar" aria-expanded="false"><i class="bi bi-list" aria-hidden="true"></i></button><div><span class="admin-topbar-label">PMMA / Support Operations</span><strong>@yield('title', 'Dashboard')</strong></div><div class="admin-account"><span class="admin-avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><a href="{{ route('profile.edit') }}" class="admin-account-name">{{ auth()->user()->name }}<small>Helpdesk Staff</small></a><form method="post" action="{{ route('logout') }}">@csrf<button type="submit" class="staff-logout ui-action" aria-label="Logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></button></form></div></header>
