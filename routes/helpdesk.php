@@ -8,6 +8,7 @@ Route::redirect('/index', '/')->name('index');
 Route::get('/services', [HelpdeskController::class, 'servicesIndex'])->name('services');
 Route::get('/services/{slug}', [HelpdeskController::class, 'service'])->whereNumber('slug')->name('services.show');
 Route::get('/tickets/create', [HelpdeskController::class, 'create'])->name('tickets.create');
+Route::post('/tickets/details', [HelpdeskController::class, 'ticketDetails'])->middleware('throttle:20,1')->name('tickets.details');
 Route::post('/tickets/requester', [HelpdeskController::class, 'requester'])->middleware('throttle:20,1')->name('tickets.requester');
 Route::post('/tickets', [HelpdeskController::class, 'store'])->middleware('throttle:10,1')->name('tickets.store');
 Route::get('/tickets/receipt', [HelpdeskController::class, 'receipt'])->name('tickets.receipt');
@@ -22,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/dashboard/user-guide', 'helpdesk.dashboard.user-guide')->name('dashboard.user-guide');
     Route::get('/dashboard/tables/tickets', [DashboardTableController::class, 'tickets'])->name('dashboard.tables.tickets');
     Route::get('/dashboard/tables/catalog/{type}', [DashboardTableController::class, 'catalog'])
-        ->where('type', 'employees|departments|technicians|services')->name('dashboard.tables.catalog');
+        ->where('type', 'employees|departments|technicians|services|issues')->name('dashboard.tables.catalog');
     Route::get('/dashboard/tables/surveys', [DashboardTableController::class, 'surveys'])->name('dashboard.tables.surveys');
     Route::get('/dashboard', [HelpdeskController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/tickets/create', [HelpdeskController::class, 'create'])->name('dashboard.tickets.create');

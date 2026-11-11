@@ -24,7 +24,8 @@ class Employee extends Model
         'name',
         'email',
         'deleted_at',
-        'updated_at'
+        'updated_at',
+        'activation_pending',
     ];
 
     /*public function department(){

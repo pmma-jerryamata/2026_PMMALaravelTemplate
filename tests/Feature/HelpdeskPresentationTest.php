@@ -76,8 +76,11 @@ class HelpdeskPresentationTest extends TestCase
         });
         Schema::create('password_resets', function (Blueprint $table) { $table->string('email')->index(); $table->string('token'); $table->timestamp('created_at')->nullable(); });
         }
+        if (! Schema::hasColumn('employees', 'activation_pending')) {
+            (require base_path('database/migrations/2026_11_11_000001_add_public_ticket_flow.php'))->up();
+        }
         DB::table('departments')->insert([['id' => 1, 'name' => 'ITSU'], ['id' => 44, 'name' => 'STUDENTS']]);
-        DB::table('employees')->insert(['id' => 1, 'name' => 'Test Requester', 'email' => 'requester@example.test', 'department_id' => 1]);
+        DB::table('employees')->insert(['id' => 1, 'name' => 'Test Requester', 'email' => 'requester@pmma.edu.ph', 'department_id' => 1]);
         DB::table('tasks')->insert(['id' => 1, 'name' => 'Internet/Network Connectivity', 'content' => 'Network assistance', 'icon' => 'bi bi-wifi']);
         DB::table('technicians')->insert(['id' => 1, 'name' => 'Test Technician', 'email' => 'technician@example.test']);
         DB::table('ratings')->insert(['id' => 1, 'name' => 'Very Satisfied']);
@@ -184,8 +187,8 @@ class HelpdeskPresentationTest extends TestCase
 
     public function test_portal_uses_existing_categories_and_omits_unsupported_fields(): void
     {
-        $this->get('/')->assertOk()->assertSee('What Do You Need Help With?')->assertSee('Internet/Network Connectivity');
-        $this->get('/tickets/create?category=1')->assertOk()->assertSee('name="task_id"', false)
+        $this->get('/')->assertOk()->assertSee('What Do You Need Help With?')->assertDontSee('home-service-card')->assertDontSee('Track an Existing Ticket');
+        $this->get('/tickets/create?step=issue&category=1')->assertOk()->assertSee('name="task_id"', false)
             ->assertDontSee('name="priority"', false)->assertDontSee('name="subject"', false)
             ->assertDontSee('Ticket Timeline');
     }
@@ -193,7 +196,7 @@ class HelpdeskPresentationTest extends TestCase
     public function test_submission_maps_to_legacy_columns_and_does_not_create_a_requester(): void
     {
         $this->post('/tickets', [
-            'email' => 'requester@example.test', 'task_id' => 1,
+            'email' => 'requester@pmma.edu.ph', 'task_id' => 1,
             'support_specifics' => 'The office network connection is unavailable.',
             'submission_token' => (string) Str::uuid(), 'employee_id' => 999,
         ])->assertRedirect();
@@ -205,7 +208,7 @@ class HelpdeskPresentationTest extends TestCase
 
     public function test_repeated_submission_token_does_not_duplicate_a_ticket(): void
     {
-        $payload = ['email' => 'requester@example.test', 'task_id' => 1,
+        $payload = ['email' => 'requester@pmma.edu.ph', 'task_id' => 1,
             'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertRedirect();
         $this->post('/tickets', $payload)->assertRedirect();
@@ -218,7 +221,7 @@ class HelpdeskPresentationTest extends TestCase
         $payload = ['email' => 'unknown@example.test', 'task_id' => 1,
             'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasErrors('email');
-        $payload['email'] = 'requester@example.test'; $payload['technician_id'] = 1;
+        $payload['email'] = 'requester@pmma.edu.ph'; $payload['technician_id'] = 1;
         $this->post('/tickets', $payload)->assertSessionHasErrors('technician_id');
         $this->assertDatabaseCount('supports', 0);
     }
@@ -227,7 +230,7 @@ class HelpdeskPresentationTest extends TestCase
     {
         $ticket = $this->ticket();
         $this->get('/track?reference='.$ticket->id)->assertOk()->assertSee('TICKET #'.$ticket->id)
-            ->assertSee('Pending')->assertDontSee('requester@example.test')->assertDontSee('Test Requester')
+            ->assertSee('Pending')->assertDontSee('requester@pmma.edu.ph')->assertDontSee('Test Requester')
             ->assertDontSee('Ticket Timeline')->assertDontSee('Priority');
     }
 
@@ -300,13 +303,94 @@ class HelpdeskPresentationTest extends TestCase
     public function test_staff_creation_associates_existing_employee_and_technician(): void
     {
         $this->actingAs($this->staff())->post('/dashboard/tickets', [
-            'email' => 'requester@example.test', 'task_id' => 1, 'support_specifics' => 'Please reconnect the network.',
+            'department_id' => 1, 'employee_id' => 1, 'task_id' => 1, 'support_specifics' => 'Please reconnect the network.',
             'technician_id' => 1, 'submission_token' => (string) Str::uuid(),
         ])->assertRedirect();
         $ticket = Support::firstOrFail();
         $this->assertSame(1, (int) $ticket->employee_id);
         $this->assertSame(1, (int) $ticket->technician_id);
         $this->get('/dashboard/tickets/'.$ticket->id)->assertOk()->assertSee('Please reconnect the network.');
+    }
+
+    public function test_staff_requester_must_be_active_and_belong_to_the_department(): void
+    {
+        $this->actingAs($this->staff());
+        DB::table('departments')->insert(['id' => 2, 'name' => 'Other Department']);
+        $payload = ['department_id' => 2, 'employee_id' => 1, 'task_id' => 1,
+            'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+        $this->post('/dashboard/tickets', $payload)->assertSessionHasErrors('employee_id');
+        $payload['department_id'] = 1;
+        DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
+        $this->post('/dashboard/tickets', $payload)->assertSessionHasErrors('employee_id');
+        $this->get('/dashboard/tickets/create')->assertOk()->assertDontSee('Test Requester');
+        $this->assertDatabaseCount('supports', 0);
+        Mail::assertNothingSent();
+    }
+
+    public function test_public_wizard_uses_catalog_suggestions_and_keeps_manual_details(): void
+    {
+        DB::table('service_issues')->insert(['name' => 'Cannot connect to Wi-Fi', 'task_id' => 1]);
+        DB::table('service_issues')->insert(['name' => 'Other category issue', 'task_id' => 999]);
+        $this->get('/tickets/create')->assertOk()->assertSee('Internet/Network Connectivity')
+            ->assertDontSee('name="email"', false);
+        $this->get('/tickets/create?step=issue&category=1')->assertOk()
+            ->assertSee('Cannot connect to Wi-Fi')->assertDontSee('Other category issue')
+            ->assertSee('Other / Write my own issue');
+        $this->post('/tickets/details', ['task_id' => 1, 'support_specifics' => 'My manually written issue'])
+            ->assertRedirect(route('tickets.create', ['step' => 'email']));
+        $this->get('/tickets/create?step=email')->assertOk()->assertSee('My manually written issue')->assertSee('PMMA Email Address');
+        $this->post('/tickets/details', ['task_id' => 1, 'support_specifics' => ''])->assertSessionHasErrors('support_specifics');
+    }
+
+    public function test_new_pmma_email_creates_an_inactive_employee_and_submits_ticket(): void
+    {
+        $this->postJson('/tickets/requester', ['email' => ' NEW.USER@PMMA.EDU.PH '])->assertOk()
+            ->assertExactJson(['valid' => true, 'registration_required' => true]);
+        $this->assertDatabaseCount('employees', 1);
+        $payload = ['email' => ' NEW.USER@PMMA.EDU.PH ', 'name' => 'New User', 'registration_department_id' => 1,
+            'task_id' => 1, 'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+        $this->post('/tickets', $payload)->assertSessionHasNoErrors()->assertRedirect();
+        $employee = \App\Models\Employee::withTrashed()->where('email', 'new.user@pmma.edu.ph')->firstOrFail();
+        $this->assertTrue($employee->trashed());
+        $this->assertEquals(1, $employee->activation_pending);
+        $this->assertDatabaseHas('supports', ['employee_id' => $employee->id, 'support_specifics' => 'Network unavailable.']);
+        $this->get('/tickets/receipt?ticket='.Support::firstOrFail()->id)->assertOk()->assertSee('awaiting administrator activation');
+        $this->post('/tickets', $payload)->assertRedirect();
+        $this->assertDatabaseCount('employees', 2);
+        $this->assertDatabaseCount('supports', 1);
+        $this->actingAs($this->staff())->get('/dashboard/settings?tab=employees&status=activation')->assertOk()
+            ->assertSee('New User')->assertDontSee('Test Requester');
+        $this->getJson('/dashboard/tables/catalog/employees?status=activation')->assertOk()
+            ->assertJsonPath('recordsTotal', 1);
+        $this->post('/dashboard/settings/employees/'.$employee->id, [
+            'name' => 'New User', 'email' => $employee->email, 'department_id' => 1, 'active' => 1,
+        ])->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertFalse($employee->fresh()->trashed());
+        $this->assertEquals(0, $employee->fresh()->activation_pending);
+    }
+
+    public function test_public_email_domain_registration_details_and_inactive_accounts_are_validated(): void
+    {
+        $this->postJson('/tickets/requester', ['email' => 'person@pmma.edu.ph.evil.test'])->assertUnprocessable();
+        $payload = ['email' => 'new@pmma.edu.ph', 'task_id' => 1,
+            'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+        $this->post('/tickets', $payload)->assertSessionHasErrors(['name', 'registration_department_id']);
+        $payload['email'] = 'requester@pmma.edu.ph';
+        DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
+        $this->post('/tickets', $payload)->assertSessionHasErrors('email');
+        $this->assertDatabaseCount('supports', 0);
+        $this->assertDatabaseCount('employees', 1);
+    }
+
+    public function test_admin_can_register_suggested_issues_per_service(): void
+    {
+        $this->get('/dashboard/settings/issues/create')->assertRedirect('/login');
+        $this->actingAs($this->staff())->get('/dashboard/settings/issues/create')->assertOk()->assertSee('Service Category');
+        $this->post('/dashboard/settings/issues', ['name' => 'No network connection', 'task_id' => 1])
+            ->assertSessionHasNoErrors()->assertRedirect();
+        $this->get('/dashboard/settings?tab=issues')->assertOk()->assertSee('No network connection');
+        $this->getJson('/dashboard/tables/catalog/issues')->assertOk()->assertJsonPath('recordsTotal', 1);
+        $this->get('/tickets/create?step=issue&category=1')->assertOk()->assertSee('No network connection');
     }
 
     public function test_receipt_requires_own_session_and_tracking_handles_missing_ticket(): void
@@ -320,23 +404,24 @@ class HelpdeskPresentationTest extends TestCase
 
     public function test_requester_lookup_uses_active_directory_records(): void
     {
-        $this->postJson('/tickets/requester', ['email' => 'requester@example.test'])->assertOk()
+        $this->postJson('/tickets/requester', ['email' => 'requester@pmma.edu.ph'])->assertOk()
             ->assertExactJson(['valid' => true]);
         DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
-        $this->postJson('/tickets/requester', ['email' => 'requester@example.test'])->assertUnprocessable();
+        $this->postJson('/tickets/requester', ['email' => 'requester@pmma.edu.ph'])->assertUnprocessable();
     }
 
     public function test_request_forms_validate_email_without_exposing_directory_details(): void
     {
         DB::table('departments')->where('id', 1)->update(['name' => 'Private Directory Department']);
-        $this->get('/tickets/create?email=requester@example.test')->assertOk()
-            ->assertSee('is-verified')->assertSee('requester-check')
+        $this->get('/tickets/create')->assertOk()
+            ->assertSee('What do you need help with?')
             ->assertDontSee('Test Requester')->assertDontSee('Private Directory Department')
             ->assertDontSee('requester-name')->assertDontSee('requester-department');
-        $this->actingAs($this->staff())->get('/dashboard/tickets/create?email=requester@example.test')->assertOk()
-            ->assertDontSee('Test Requester')->assertDontSee('Private Directory Department')
-            ->assertDontSee('requester-name')->assertDontSee('requester-department');
-        $this->postJson('/tickets/requester', ['email' => 'requester@example.test'])->assertOk()->assertExactJson(['valid' => true]);
+        $this->actingAs($this->staff())->get('/dashboard/tickets/create?email=requester@pmma.edu.ph')->assertOk()
+            ->assertSee('Test Requester')->assertSee('Private Directory Department')
+            ->assertSeeInOrder(['Department</label>', 'Employee Name</label>', 'Service Category</label>'], false)
+            ->assertDontSee('name="email"', false)->assertDontSee('data-requester-url', false);
+        $this->postJson('/tickets/requester', ['email' => 'requester@pmma.edu.ph'])->assertOk()->assertExactJson(['valid' => true]);
     }
 
     public function test_employee_create_update_deactivation_and_restoration(): void
@@ -554,7 +639,7 @@ class HelpdeskPresentationTest extends TestCase
             $ids[] = $ticket->id;
         }
         $response = $this->get('/')->assertOk()->assertSee('The 10 most recently submitted support requests.')
-            ->assertDontSee('requester@example.test')->assertDontSee('Test Requester');
+            ->assertDontSee('requester@pmma.edu.ph')->assertDontSee('Test Requester');
         $document = new \DOMDocument();
         @$document->loadHTML($response->getContent());
         $xpath = new \DOMXPath($document);

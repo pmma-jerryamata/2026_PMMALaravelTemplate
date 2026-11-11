@@ -6,6 +6,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\RatingResult;
 use App\Models\Support;
+use App\Models\ServiceIssue;
 use App\Models\Task;
 use App\Models\Technician;
 use Illuminate\Http\Request;
@@ -82,7 +83,7 @@ class DashboardTableController extends Controller
     public function catalog(Request $request, string $type)
     {
         $models = ['employees' => Employee::class, 'departments' => Department::class,
-            'technicians' => Technician::class, 'services' => Task::class];
+            'technicians' => Technician::class, 'services' => Task::class, 'issues' => ServiceIssue::class];
         abort_unless(isset($models[$type]), 404);
         $parameters = $this->parameters($request);
         $model = $models[$type];
@@ -92,6 +93,9 @@ class DashboardTableController extends Controller
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->select('employees.*');
             $columns = ['employees.name', 'employees.email', 'departments.name', 'employees.deleted_at', null];
             $searchColumns = ['employees.name', 'employees.email', 'departments.name'];
+            if ($request->query('status') === 'activation') {
+                $query->where('employees.activation_pending', true)->whereNotNull('employees.deleted_at');
+            }
         } else {
             $query = $model::query();
             $columns = [$table.'.name'];
@@ -99,6 +103,10 @@ class DashboardTableController extends Controller
             if ($type === 'technicians') { $columns[] = 'technicians.email'; $searchColumns[] = 'technicians.email'; }
             if ($type === 'services') { $columns[] = 'tasks.content'; $searchColumns[] = 'tasks.content'; }
             $columns[] = null;
+            if ($type === 'issues') {
+                $query->with('task');
+                $columns = ['service_issues.name', null, null];
+            }
         }
         $total = (clone $query)->count();
         if ($parameters['search'] !== '') {

@@ -9,7 +9,7 @@
 <div class="container telephone-directory-shortcut"><a href="#telephone-directory"><i class="bi bi-telephone" aria-hidden="true"></i> Looking for an office number? View the Telephone Directory <i class="bi bi-arrow-down" aria-hidden="true"></i></a></div>
 <section class="section faq-section"><div class="container"><div class="faq-layout"><div class="faq-list"><div class="faq-list-heading"><span class="portal-eyebrow">HELP CENTER</span><h2>Tickets & Requests</h2><p>Select a question to view the answer.</p></div>
 @foreach([
-'How do I submit a ticket?' => 'Choose a service from the directory or click Submit a Ticket. Enter your registered PMMA email, choose a service, and describe your concern. After submission, save the ticket number shown on the confirmation page.',
+'How do I submit a ticket?' => 'Click Submit a Ticket, choose a service, select a suggested issue or write your own, then enter your PMMA email. If your email is new to the directory, provide your name and department for administrator activation. Your ticket is recorded immediately. After submission, save the ticket number shown on the confirmation page.',
 'How do I check the status of my ticket?' => 'Open Track Ticket and enter your ticket number to see ticket details and the latest findings.',
 'What details should I include?' => 'Describe the issue, its location, the affected system or equipment, and any troubleshooting you have tried. Do not include passwords or sensitive credentials.',
 'Which service category should I choose?' => 'Select the category closest to your concern. If you are unsure, choose Others and describe the assistance you need.',

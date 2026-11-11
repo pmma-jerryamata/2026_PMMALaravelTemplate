@@ -8,6 +8,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\RatingResult;
 use App\Models\Support;
+use App\Models\ServiceIssue;
 use App\Models\Task;
 use App\Models\Technician;
 use Illuminate\Http\Request;
@@ -80,6 +81,24 @@ class HelpdeskController extends Controller
     public function create(Request $request)
     {
         $staff = $request->routeIs('dashboard.tickets.create', 'add');
+        if (! $staff) {
+            $step = $request->query('step', 'services');
+            abort_unless(in_array($step, ['services', 'issue', 'email'], true), 404);
+            $draft = $request->session()->get('helpdesk.draft', []);
+            $serviceId = $step === 'email' ? ($draft['task_id'] ?? '') : $request->query('category', $draft['task_id'] ?? '');
+            $service = $this->services()->get($serviceId);
+            if ($step !== 'services' && ! $service) { return redirect()->route('tickets.create'); }
+            if ($step === 'email' && empty($draft['support_specifics'])) {
+                return redirect()->route('tickets.create', ['step' => 'issue', 'category' => $serviceId]);
+            }
+            return $this->page('portal.wizard', [
+                'step' => $step, 'services' => $this->services(), 'service' => $service,
+                'serviceId' => $serviceId, 'draft' => $draft,
+                'issues' => $step === 'issue' ? ServiceIssue::where('task_id', $serviceId)->orderBy('name')->get() : collect(),
+                'departments' => Department::orderBy('name')->get(['id', 'name']),
+                'submissionToken' => $draft['submission_token'] ?? (string) Str::uuid(),
+            ]);
+        }
         $email = $request->old('email', $request->query('email', $request->query('emailProxy', '')));
         $email = is_string($email) ? $email : '';
         $emailValid = $email !== '' && Employee::where('email', $email)->exists();
@@ -88,24 +107,48 @@ class HelpdeskController extends Controller
             'email' => $email, 'selected' => (string) $request->query('category', $request->query('tasks1', '')),
             'submissionToken' => (string) Str::uuid(),
             'technicians' => $staff ? Technician::orderBy('name')->get() : collect(),
+            'departments' => $staff ? Department::orderBy('name')->get(['id', 'name']) : collect(),
+            'employees' => $staff ? Employee::orderBy('name')->get(['id', 'name', 'department_id']) : collect(),
         ]);
     }
 
     public function requester(Request $request)
     {
-        $data = $request->validate(['email' => 'required|email|max:255']);
-        if (! Employee::where('email', $data['email'])->exists()) {
-            return response()->json(['valid' => false, 'message' => 'This email is not registered. Please contact ITSU.'], 422)
+        $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
+        $data = $request->validate(['email' => ['required', 'email', 'max:255', 'regex:/^[^@]+@pmma\.edu\.ph$/i']]);
+        $employee = Employee::withTrashed()->where('email', $data['email'])->first();
+        if ($employee && $employee->trashed() && ! $employee->activation_pending) {
+            return response()->json(['valid' => false, 'message' => 'This directory account is inactive. Please contact ITSU.'], 422)
+                ->header('Cache-Control', 'private, no-store');
+        }
+        if (! $employee) {
+            return response()->json(['valid' => true, 'registration_required' => true])
                 ->header('Cache-Control', 'private, no-store');
         }
         return response()->json(['valid' => true])->header('Cache-Control', 'private, no-store');
     }
 
+    public function ticketDetails(Request $request)
+    {
+        $data = $request->validate(['task_id' => 'required|integer|exists:tasks,id',
+            'support_specifics' => 'required|string|max:10000']);
+        $data['submission_token'] = (string) Str::uuid();
+        $request->session()->put('helpdesk.draft', $data);
+        return redirect()->route('tickets.create', ['step' => 'email']);
+    }
+
     public function store(Request $request)
     {
+        $registration = [];
         $staff = $request->routeIs('dashboard.tickets.store');
+        if (! $staff) {
+            $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
+        }
         $data = $request->validate([
-            'email' => ['required', 'email', Rule::exists('employees', 'email')->whereNull('deleted_at')],
+            'email' => $staff ? 'exclude' : ['required', 'email', 'max:255', 'regex:/^[^@]+@pmma\.edu\.ph$/i'],
+            'department_id' => $staff ? 'required|integer|exists:departments,id' : 'exclude',
+            'employee_id' => $staff ? ['required', 'integer', Rule::exists('employees', 'id')
+                ->whereNull('deleted_at')->where('department_id', $request->input('department_id'))] : 'exclude',
             'task_id' => 'required|integer|exists:tasks,id',
             'support_specifics' => 'required|string|max:10000',
             'submission_token' => 'required|uuid',
@@ -115,14 +158,35 @@ class HelpdeskController extends Controller
         if ($request->session()->has($token)) {
             return redirect()->route('tickets.receipt', ['ticket' => $request->session()->get($token)]);
         }
-        $employee = Employee::where('email', $data['email'])->firstOrFail();
-        $support = Support::create([
-            'employee_id' => $employee->id, 'task_id' => $data['task_id'],
-            'status' => 'Pending', 'support_specifics' => $data['support_specifics'],
-            'technician_id' => $staff ? ($data['technician_id'] ?? null) : null, 'ip' => $request->ip(),
-        ]);
+        if (! $staff) {
+            $employee = Employee::withTrashed()->where('email', $data['email'])->first();
+            if ($employee && $employee->trashed() && ! $employee->activation_pending) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'This directory account is inactive. Please contact ITSU.']);
+            }
+            if (! $employee) {
+                $registration = $request->validate(['name' => 'required|string|max:255',
+                    'registration_department_id' => 'required|integer|exists:departments,id']);
+            }
+        }
+        $support = DB::transaction(function () use ($staff, $data, $request, $registration) {
+            $employee = $staff
+                ? Employee::where('department_id', $data['department_id'])->findOrFail($data['employee_id'])
+                : Employee::withTrashed()->where('email', $data['email'])->first();
+            if (! $employee) {
+                $employee = Employee::create(['email' => $data['email'], 'name' => $registration['name'],
+                    'department_id' => $registration['registration_department_id'],
+                    'deleted_at' => now(), 'activation_pending' => true, 'updated_at' => now()]);
+            }
+            return Support::create([
+                'employee_id' => $employee->id, 'task_id' => $data['task_id'],
+                'status' => 'Pending', 'support_specifics' => $data['support_specifics'],
+                'technician_id' => $staff ? ($data['technician_id'] ?? null) : null, 'ip' => $request->ip(),
+            ]);
+        });
+        $employee = Employee::withTrashed()->findOrFail($support->employee_id);
         $request->session()->put($token, $support->id);
         $request->session()->put('helpdesk.receipts.'.$support->id, true);
+        if (! $staff) { $request->session()->forget('helpdesk.draft'); }
         // Keep the existing confirmation mail; transport failures must not create duplicate tickets.
         try {
             Mail::to($employee->email)->send(new Mailer($support->id));
@@ -139,7 +203,8 @@ class HelpdeskController extends Controller
         $id = $request->integer('ticket');
         abort_unless($request->session()->get('helpdesk.receipts.'.$id), 404);
         $ticket = Support::findOrFail($id);
-        return $this->page('portal.receipt', compact('ticket'));
+        $activationPending = Employee::withTrashed()->whereKey($ticket->employee_id)->value('activation_pending');
+        return $this->page('portal.receipt', compact('ticket', 'activationPending'));
     }
 
     public function track(Request $request)
@@ -267,9 +332,9 @@ class HelpdeskController extends Controller
 
     private function catalogModel($type)
     {
-        abort_unless(in_array($type, ['employees', 'departments', 'technicians', 'services'], true), 404);
+        abort_unless(in_array($type, ['employees', 'departments', 'technicians', 'services', 'issues'], true), 404);
         return ['employees' => Employee::class, 'departments' => Department::class,
-            'technicians' => Technician::class, 'services' => Task::class][$type];
+            'technicians' => Technician::class, 'services' => Task::class, 'issues' => ServiceIssue::class][$type];
     }
 
     public function settings(Request $request)
@@ -277,10 +342,13 @@ class HelpdeskController extends Controller
         $type = $request->query('tab', 'employees');
         $model = $this->catalogModel($type);
         $query = $type === 'employees' ? Employee::withTrashed()->with('department') : $model::query();
+        $activation = $type === 'employees' && $request->query('status') === 'activation';
+        if ($activation) { $query->where('activation_pending', true)->whereNotNull('deleted_at'); }
         $search = mb_substr(trim((string) $request->query('q', '')), 0, 150);
         if ($search !== '') { $query->where('name', 'like', '%'.$search.'%'); }
         return $this->page('dashboard.settings', [
-            'type' => $type, 'search' => $search, 'records' => $query->orderBy('name')->paginate(20)->withQueryString(),
+            'type' => $type, 'search' => $search, 'activation' => $activation,
+            'records' => $query->orderBy('name')->paginate(20)->withQueryString(),
         ]);
     }
 
@@ -290,6 +358,7 @@ class HelpdeskController extends Controller
         $record = $id ? ($type === 'employees' ? Employee::withTrashed()->findOrFail($id) : $model::findOrFail($id)) : new $model;
         return $this->page('dashboard.record', [
             'type' => $type, 'record' => $record, 'departments' => Department::orderBy('name')->get(),
+            'services' => $this->services(),
         ]);
     }
 
@@ -306,9 +375,11 @@ class HelpdeskController extends Controller
             $rules['active'] = 'required|boolean';
         }
         if ($type === 'services') { $rules['content'] = 'required|string|max:255'; $rules['icon'] = 'required|string|max:255'; }
+        if ($type === 'issues') { $rules['task_id'] = 'required|integer|exists:tasks,id'; }
         $data = $request->validate($rules);
         if ($type === 'employees') {
             $record->deleted_at = $data['active'] ? null : ($record->deleted_at ?? now());
+            if ($data['active']) { $record->activation_pending = false; }
             $record->updated_at = now();
             unset($data['active']);
         }

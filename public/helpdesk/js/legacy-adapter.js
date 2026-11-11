@@ -43,6 +43,26 @@ document.addEventListener('keydown', event => {
 });
 setStaffMenu(false);
 
+const staffRequesterForm = document.querySelector('[data-staff-requester]');
+if (staffRequesterForm) {
+    const department = staffRequesterForm.elements.department_id;
+    const employee = staffRequesterForm.elements.employee_id;
+    const employees = [...employee.options].slice(1);
+    const notice = document.getElementById('employee-status');
+    function filterEmployees() {
+        const selected = employee.value;
+        const matching = employees.filter(option => option.dataset.departmentId === department.value);
+        employee.replaceChildren(new Option('Choose an employee', ''), ...matching);
+        employee.value = matching.some(option => option.value === selected) ? selected : '';
+        employee.disabled = !department.value || matching.length === 0;
+        notice.textContent = !department.value ? 'Choose a department first.'
+            : matching.length ? 'Choose an employee from the selected department.'
+            : 'No active employees in this department. Please contact ITSU.';
+    }
+    department.addEventListener('change', filterEmployees);
+    filterEmployees();
+}
+
 const requesterForm = document.querySelector('[data-requester-url]');
 if (requesterForm) {
     const email = requesterForm.elements.email;
