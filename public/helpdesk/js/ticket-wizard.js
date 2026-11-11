@@ -28,9 +28,23 @@ if (emailForm) {
         fullName.setSelectionRange(start, end);
     });
     let controller, timer, verified = '';
-    function registration(required) {
+    function registration(required, type = 'employee') {
+        const cadet = type === 'cadet';
         fields.hidden = !required;
-        fields.querySelectorAll('input, select').forEach(field => { field.required = required; field.disabled = !required; });
+        fullName.required = required;
+        fullName.disabled = !required;
+        const department = emailForm.elements.registration_department_id;
+        department.required = required && !cadet;
+        department.disabled = !required || cadet;
+        const departmentSection = fields.querySelector('[data-employee-department]');
+        if (departmentSection) departmentSection.hidden = cadet;
+        const title = fields.querySelector('[data-registration-title]');
+        const description = fields.querySelector('[data-registration-description]');
+        if (title) title.textContent = cadet ? 'Cadet registration' : 'Employee registration';
+        if (description) description.textContent = (cadet
+            ? 'Enter your full name in ALL CAPS. You will be registered under STUDENTS automatically.'
+            : 'Enter your full name in ALL CAPS and select your department / office.')
+            + ' Your record will stay inactive until administrator activation. Your ticket will still be submitted.';
     }
     registration(false);
     async function verify() {
@@ -46,8 +60,11 @@ if (emailForm) {
             if (email.value.trim().toLowerCase() !== value) return false;
             if (!response.ok || !data.valid) throw new Error(data.errors?.email?.[0] || data.message || 'Unable to validate email.');
             verified = value;
-            registration(data.registration_required === true);
-            notice.textContent = data.registration_required ? 'PMMA email accepted. Enter your full name in ALL CAPS and select your department. Cadets / students: choose STUDENTS.' : 'PMMA email accepted. You can submit your ticket.';
+            const type = data.registration_type || (value.endsWith('@cdt.pmma.edu.ph') ? 'cadet' : 'employee');
+            registration(data.registration_required === true, type);
+            notice.textContent = data.registration_required
+                ? (type === 'cadet' ? 'Cadet email accepted. Enter your full name in ALL CAPS.' : 'Employee email accepted. Enter your full name in ALL CAPS and select your department.')
+                : 'PMMA email accepted. You can submit your ticket.';
             email.removeAttribute('aria-invalid');
             return true;
         } catch (error) {
@@ -59,7 +76,7 @@ if (emailForm) {
     }
     email.addEventListener('input', () => {
         controller?.abort(); clearTimeout(timer); verified = ''; registration(false);
-        email.removeAttribute('aria-invalid'); notice.textContent = 'Use your @pmma.edu.ph email.';
+        email.removeAttribute('aria-invalid'); notice.textContent = 'Employees: @pmma.edu.ph · Cadets: @cdt.pmma.edu.ph.';
         timer = setTimeout(verify, 500);
     });
     emailForm.addEventListener('submit', async event => {

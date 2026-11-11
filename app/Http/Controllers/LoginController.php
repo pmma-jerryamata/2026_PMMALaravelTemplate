@@ -60,7 +60,7 @@ class LoginController extends Controller
         $studentDepartment = Department::whereRaw('UPPER(name) = ?', ['STUDENTS'])->value('id');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:employees,email',
+            'email' => ['required', 'email', 'max:255', 'unique:employees,email', 'regex:/^[^@]+@cdt\.pmma\.edu\.ph$/i'],
             'department_id' => ['required', 'integer', 'exists:departments,id', \Illuminate\Validation\Rule::in([$studentDepartment])],
         ]);
         $validated['name'] = strtoupper($validated['name']);

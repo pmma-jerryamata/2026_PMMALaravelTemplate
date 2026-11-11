@@ -120,14 +120,15 @@ class HelpdeskController extends Controller
     public function requester(Request $request)
     {
         $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
-        $data = $request->validate(['email' => ['required', 'email', 'max:255', 'regex:/^[^@]+@pmma\.edu\.ph$/i']]);
+        $data = $request->validate(['email' => ['required', 'email', 'max:255', 'regex:/^[^@]+@(?:cdt\.)?pmma\.edu\.ph$/i']]);
         $employee = Employee::withTrashed()->where('email', $data['email'])->first();
         if ($employee && $employee->trashed() && ! $employee->activation_pending) {
             return response()->json(['valid' => false, 'message' => 'This directory account is inactive. Please contact ITSU.'], 422)
                 ->header('Cache-Control', 'private, no-store');
         }
         if (! $employee) {
-            return response()->json(['valid' => true, 'registration_required' => true])
+            return response()->json(['valid' => true, 'registration_required' => true,
+                'registration_type' => Str::endsWith($data['email'], '@cdt.pmma.edu.ph') ? 'cadet' : 'employee'])
                 ->header('Cache-Control', 'private, no-store');
         }
         return response()->json(['valid' => true])->header('Cache-Control', 'private, no-store');
@@ -150,7 +151,7 @@ class HelpdeskController extends Controller
             $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
         }
         $data = $request->validate([
-            'email' => $staff ? 'exclude' : ['required', 'email', 'max:255', 'regex:/^[^@]+@pmma\.edu\.ph$/i'],
+            'email' => $staff ? 'exclude' : ['required', 'email', 'max:255', 'regex:/^[^@]+@(?:cdt\.)?pmma\.edu\.ph$/i'],
             'department_id' => $staff ? 'required|integer|exists:departments,id' : 'exclude',
             'employee_id' => $staff ? ['required', 'integer', Rule::exists('employees', 'id')
                 ->whereNull('deleted_at')->where('department_id', $request->input('department_id'))] : 'exclude',
@@ -169,8 +170,17 @@ class HelpdeskController extends Controller
                 throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'This directory account is inactive. Please contact ITSU.']);
             }
             if (! $employee) {
+                $cadet = Str::endsWith($data['email'], '@cdt.pmma.edu.ph');
                 $registration = $request->validate(['name' => 'required|string|max:255',
-                    'registration_department_id' => 'required|integer|exists:departments,id']);
+                    'registration_department_id' => $cadet ? 'exclude' : ['required', 'integer',
+                        Rule::exists('departments', 'id')->where(fn ($query) => $query->whereRaw('UPPER(name) <> ?', ['STUDENTS']))]]);
+                if ($cadet) {
+                    $studentDepartment = Department::whereRaw('UPPER(name) = ?', ['STUDENTS'])->value('id');
+                    if (! $studentDepartment) {
+                        throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'Cadet registration is currently unavailable. Please contact ITSU.']);
+                    }
+                    $registration['registration_department_id'] = $studentDepartment;
+                }
             }
         }
         $support = DB::transaction(function () use ($staff, $data, $request, $registration) {

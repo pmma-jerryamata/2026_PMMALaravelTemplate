@@ -11,10 +11,10 @@ async function run() {
         <button data-issue="Cannot connect" aria-pressed="false"></button><button data-manual-issue aria-pressed="false"></button>
         <form data-public-email-form data-lookup-url="/tickets/requester"><input name="_token" value="token">
         <input name="email" type="email" required><p id="email-status"></p>
-        <fieldset data-registration-fields><input name="name"><select name="registration_department_id"><option value="1">ITSU</option></select></fieldset>
+        <fieldset data-registration-fields><legend data-registration-title></legend><p data-registration-description></p><input name="name"><div data-employee-department><select name="registration_department_id"><option value="1">ITSU</option></select></div></fieldset>
         <button type="submit">Submit</button></form>`, {runScripts: 'outside-only', url: 'https://support.example.test'});
     const {window} = dom;
-    let response = {valid: true, registration_required: true};
+    let response = {valid: true, registration_required: true, registration_type: 'employee'};
     window.fetch = async () => ({ok: true, json: async () => response});
     window.eval(source);
     const document = window.document;
@@ -41,7 +41,19 @@ async function run() {
     form.elements.name.dispatchEvent(new window.Event('input'));
     assert.equal(form.elements.name.value, 'JUAN DELA CRUZ');
     assert.equal(form.elements.registration_department_id.required, true);
+    assert.equal(document.querySelector('[data-registration-title]').textContent, 'Employee registration');
     assert.equal(resubmitted, 1);
+    response = {valid: true, registration_required: true, registration_type: 'cadet'};
+    form.elements.email.value = 'cadet@cdt.pmma.edu.ph';
+    form.elements.email.dispatchEvent(new window.Event('input'));
+    form.dispatchEvent(new window.Event('submit', {cancelable: true}));
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.equal(document.querySelector('[data-registration-title]').textContent, 'Cadet registration');
+    assert.equal(document.querySelector('[data-employee-department]').hidden, true);
+    assert.equal(form.elements.registration_department_id.required, false);
+    assert.equal(form.elements.registration_department_id.disabled, true);
+    assert.equal(form.elements.name.required, true);
+    assert.equal(resubmitted, 2);
     response = {valid: true};
     form.elements.email.value = 'existing@pmma.edu.ph';
     form.elements.email.dispatchEvent(new window.Event('input'));
@@ -50,7 +62,7 @@ async function run() {
     assert.equal(fields.hidden, true);
     assert.equal(form.elements.name.disabled, true);
     assert.equal(form.elements.name.required, false);
-    assert.equal(resubmitted, 2);
+    assert.equal(resubmitted, 3);
     window.close();
     console.log('Ticket wizard interactions passed.');
 }

@@ -406,7 +406,7 @@ class HelpdeskPresentationTest extends TestCase
     public function test_new_pmma_email_creates_an_inactive_employee_and_submits_ticket(): void
     {
         $this->postJson('/tickets/requester', ['email' => ' NEW.USER@PMMA.EDU.PH '])->assertOk()
-            ->assertExactJson(['valid' => true, 'registration_required' => true]);
+            ->assertExactJson(['valid' => true, 'registration_required' => true, 'registration_type' => 'employee']);
         $this->assertDatabaseCount('employees', 1);
         $payload = ['email' => ' NEW.USER@PMMA.EDU.PH ', 'name' => 'New User', 'registration_department_id' => 1,
             'task_id' => 1, 'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
@@ -449,16 +449,30 @@ class HelpdeskPresentationTest extends TestCase
         }
         $otherService = $this->ticket(); $otherService->update(['task_id' => 999, 'support_specifics' => 'RESET PASSWORD']);
         $groups = app(\App\Services\EncounteredIssues::class)->forService(1);
-        $this->assertSame('Password reset / account access', $groups[0]->name);
+        $this->assertSame('Need to reset my password', $groups[0]->name);
         $this->assertSame(3, $groups[0]->reports);
-        $this->assertSame('Wi-Fi connection', $groups[1]->name);
+        $this->assertSame('Cannot connect to Wi-Fi', $groups[1]->name);
         $this->assertSame(2, $groups[1]->reports);
         $this->assertCount(9, $groups);
         $this->get('/tickets/create?step=issue&category=1')->assertOk()
-            ->assertSeeInOrder(['Password reset / account access', 'Wi-Fi connection', 'Other / Write my own issue', 'Your concern'])
+            ->assertSeeInOrder(['Need to reset my password', 'Cannot connect to Wi-Fi', 'Other / Write my own issue', 'Your concern'])
             ->assertSee('3 previous tickets')->assertSee('data-issue-editor', false)
             ->assertDontSee('private.person@pmma.edu.ph')->assertDontSee('Private Person')->assertDontSee('private room 123');
         $this->assertCount(2, app(\App\Services\EncounteredIssues::class)->forService(1, 2));
+    }
+
+    public function test_common_issue_phrases_distinguish_connection_printing_and_scanning_concerns(): void
+    {
+        foreach (['No internet connection', 'Slow internet connection', 'Internet connection keeps disconnecting',
+            'Cannot print a document', 'Cannot scan a document'] as $description) {
+            $ticket = $this->ticket(); $ticket->update(['support_specifics' => $description]);
+        }
+        $issues = app(\App\Services\EncounteredIssues::class)->forService(1)->keyBy('name');
+        foreach (['No internet connection', 'Slow internet connection', 'Internet connection keeps disconnecting',
+            'Cannot print a document', 'Cannot scan a document'] as $phrase) {
+            $this->assertTrue($issues->has($phrase), $phrase);
+            $this->assertSame(1, $issues[$phrase]->reports);
+        }
     }
 
     public function test_public_email_domain_registration_details_and_inactive_accounts_are_validated(): void
@@ -476,13 +490,13 @@ class HelpdeskPresentationTest extends TestCase
 
     public function test_unregistered_cadet_can_register_with_uppercase_full_name_while_submitting_ticket(): void
     {
-        $this->postJson('/tickets/requester', ['email' => 'cadet@pmma.edu.ph'])->assertOk()
-            ->assertExactJson(['valid' => true, 'registration_required' => true]);
-        $payload = ['email' => 'cadet@pmma.edu.ph', 'name' => '  Juan Dela Cruz  ',
-            'registration_department_id' => 44, 'task_id' => 1,
+        $this->postJson('/tickets/requester', ['email' => 'cadet@cdt.pmma.edu.ph'])->assertOk()
+            ->assertExactJson(['valid' => true, 'registration_required' => true, 'registration_type' => 'cadet']);
+        $payload = ['email' => 'cadet@cdt.pmma.edu.ph', 'name' => '  Juan Dela Cruz  ',
+            'task_id' => 1,
             'support_specifics' => 'Cannot connect in the dormitory.', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasNoErrors()->assertRedirect();
-        $cadet = \App\Models\Employee::withTrashed()->where('email', 'cadet@pmma.edu.ph')->firstOrFail();
+        $cadet = \App\Models\Employee::withTrashed()->where('email', 'cadet@cdt.pmma.edu.ph')->firstOrFail();
         $this->assertSame('JUAN DELA CRUZ', $cadet->name);
         $this->assertEquals(44, $cadet->department_id);
         $this->assertTrue($cadet->trashed());
@@ -491,6 +505,40 @@ class HelpdeskPresentationTest extends TestCase
         $this->post('/tickets', $payload)->assertRedirect();
         $this->assertDatabaseCount('employees', 2);
         $this->assertDatabaseCount('supports', 1);
+    }
+
+    public function test_email_domains_keep_cadet_and_employee_registration_separate(): void
+    {
+        foreach (['cadet@fake.cdt.pmma.edu.ph', 'cadet@cdt.pmma.edu.ph.evil.test', 'person@other.pmma.edu.ph'] as $email) {
+            $this->postJson('/tickets/requester', ['email' => $email])->assertUnprocessable();
+        }
+        $payload = ['email' => 'employee@pmma.edu.ph', 'name' => 'Employee Name', 'registration_department_id' => 44,
+            'task_id' => 1, 'support_specifics' => 'Network issue', 'submission_token' => (string) Str::uuid()];
+        $this->post('/tickets', $payload)->assertSessionHasErrors('registration_department_id');
+        $this->assertDatabaseCount('employees', 1);
+        $payload['email'] = ' CADET@CDT.PMMA.EDU.PH ';
+        $payload['registration_department_id'] = 1;
+        $this->post('/tickets', $payload)->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertDatabaseHas('employees', ['email' => 'cadet@cdt.pmma.edu.ph', 'department_id' => 44]);
+        $this->post('/student/store', ['name' => 'Employee', 'email' => 'employee@pmma.edu.ph', 'department_id' => 44])
+            ->assertSessionHasErrors('email');
+    }
+
+    public function test_registration_migration_repairs_missing_activation_column_without_changing_existing_records(): void
+    {
+        Schema::table('employees', fn (Blueprint $table) => $table->dropIndex(['activation_pending']));
+        Schema::table('employees', fn (Blueprint $table) => $table->dropColumn('activation_pending'));
+        $migration = require base_path('database/migrations/2026_11_11_000001_add_public_ticket_flow.php');
+        $migration->up(); // service_issues already exists: partial setup must still be repairable.
+        $migration->up(); // Re-running must not fail or alter existing records.
+        $this->assertDatabaseHas('employees', ['id' => 1, 'email' => 'requester@pmma.edu.ph',
+            'deleted_at' => null, 'activation_pending' => 0]);
+        $this->post('/tickets', ['email' => 'new.employee@pmma.edu.ph', 'name' => 'New Employee',
+            'registration_department_id' => 1, 'task_id' => 1, 'support_specifics' => 'Network unavailable.',
+            'submission_token' => (string) Str::uuid()])->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertDatabaseHas('employees', ['email' => 'new.employee@pmma.edu.ph', 'activation_pending' => 1]);
+        $this->assertDatabaseCount('supports', 1);
+        $this->get('/tickets/receipt?ticket='.Support::firstOrFail()->id)->assertOk()->assertSee('awaiting administrator activation');
     }
 
     public function test_admin_can_register_suggested_issues_per_service(): void
@@ -579,8 +627,8 @@ class HelpdeskPresentationTest extends TestCase
 
     public function test_cadet_registration_normalizes_input_and_rejects_nonstudent_department(): void
     {
-        $this->post('/student/store', ['name' => ' Cadet Name ', 'email' => 'CADET@EXAMPLE.TEST', 'department_id' => 44])->assertRedirect('/student');
-        $this->assertDatabaseHas('employees', ['name' => 'CADET NAME', 'email' => 'cadet@example.test', 'department_id' => 44]);
+        $this->post('/student/store', ['name' => ' Cadet Name ', 'email' => 'CADET@CDT.PMMA.EDU.PH', 'department_id' => 44])->assertRedirect('/student');
+        $this->assertDatabaseHas('employees', ['name' => 'CADET NAME', 'email' => 'cadet@cdt.pmma.edu.ph', 'department_id' => 44]);
         $this->post('/student/store', ['name' => 'Other', 'email' => 'other@example.test', 'department_id' => 1])->assertSessionHasErrors('department_id');
     }
 
