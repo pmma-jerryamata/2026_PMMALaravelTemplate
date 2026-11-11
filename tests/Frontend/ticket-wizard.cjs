@@ -7,7 +7,7 @@ catch { ({JSDOM} = require(path.join(process.env.LOCALAPPDATA, 'PMMA-Support-Loc
 const source = fs.readFileSync(path.join(__dirname, '../../public/helpdesk/js/ticket-wizard.js'), 'utf8');
 
 async function run() {
-    const dom = new JSDOM(`<textarea id="support_specifics"></textarea>
+    const dom = new JSDOM(`<div data-issue-editor><textarea id="support_specifics"></textarea></div><button data-issue-next>Next</button>
         <button data-issue="Cannot connect" aria-pressed="false"></button><button data-manual-issue aria-pressed="false"></button>
         <form data-public-email-form data-lookup-url="/tickets/requester"><input name="_token" value="token">
         <input name="email" type="email" required><p id="email-status"></p>
@@ -18,7 +18,11 @@ async function run() {
     window.fetch = async () => ({ok: true, json: async () => response});
     window.eval(source);
     const document = window.document;
+    assert.equal(document.querySelector('[data-issue-editor]').hidden, true);
+    assert.equal(document.querySelector('[data-issue-next]').disabled, true);
     document.querySelector('[data-issue]').click();
+    assert.equal(document.querySelector('[data-issue-editor]').hidden, false);
+    assert.equal(document.querySelector('[data-issue-next]').disabled, false);
     assert.equal(document.getElementById('support_specifics').value, 'Cannot connect');
     document.getElementById('support_specifics').value += ' in my office';
     document.querySelector('[data-manual-issue]').click();

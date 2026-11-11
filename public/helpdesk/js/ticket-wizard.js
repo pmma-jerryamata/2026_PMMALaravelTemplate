@@ -1,9 +1,18 @@
 'use strict';
 const issueCards = document.querySelectorAll('[data-issue], [data-manual-issue]');
+const issueEditor = document.querySelector('[data-issue-editor]');
+const issueNext = document.querySelector('[data-issue-next]');
+if (issueEditor) {
+    const hasDescription = Boolean(document.getElementById('support_specifics').value.trim());
+    issueEditor.hidden = !hasDescription;
+    if (issueNext) issueNext.disabled = !hasDescription;
+}
 issueCards.forEach(card => card.addEventListener('click', () => {
     issueCards.forEach(other => other.setAttribute('aria-pressed', String(other === card)));
     const description = document.getElementById('support_specifics');
     if (card.dataset.issue) description.value = card.dataset.issue;
+    if (issueEditor) issueEditor.hidden = false;
+    if (issueNext) issueNext.disabled = false;
     description.focus();
 }));
 const emailForm = document.querySelector('[data-public-email-form]');

@@ -18,6 +18,7 @@
 <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support', 'tech.index') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>
 @foreach(['Pending' => 'inbox', 'Completed' => 'check2-circle', 'Cancelled' => 'archive'] as $status => $icon)<a href="{{ route('dashboard', ['status' => $status]) }}" @class(['selected' => request('status') === $status])><i class="bi bi-{{ $icon }}" aria-hidden="true"></i> {{ $status }} Tickets</a>@endforeach
 <a href="{{ route('dashboard.queue') }}" @class(['selected' => request()->routeIs('dashboard.queue')])><i class="bi bi-kanban" aria-hidden="true"></i> Ticket Queue</a>
+<a href="{{ route('tech.index') }}"><i class="bi bi-tools" aria-hidden="true"></i> Technician Dashboard</a>
 <a href="{{ route('report') }}" @class(['selected' => request()->routeIs('report')])><i class="bi bi-bar-chart" aria-hidden="true"></i> Reports</a>
 <a href="{{ route('dashboard.surveys') }}" @class(['selected' => request()->routeIs('dashboard.surveys')])><i class="bi bi-star" aria-hidden="true"></i> Survey Results</a>
 <a href="{{ route('dashboard.settings') }}" @class(['selected' => request()->routeIs('dashboard.settings*')])><i class="bi bi-gear" aria-hidden="true"></i> System Settings</a>

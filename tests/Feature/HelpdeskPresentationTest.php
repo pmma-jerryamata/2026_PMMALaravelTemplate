@@ -312,6 +312,52 @@ class HelpdeskPresentationTest extends TestCase
         $this->get('/dashboard/tickets/'.$ticket->id)->assertOk()->assertSee('Please reconnect the network.');
     }
 
+    public function test_technician_dashboard_requires_login_and_supports_existing_schema(): void
+    {
+        $ticket = $this->ticket();
+        $this->get('/tech')->assertRedirect('/login');
+        $this->post('/tech/tickets/'.$ticket->id, ['status' => 'Completed'])->assertRedirect('/login');
+        $this->actingAs($this->staff())->get('/tech')->assertOk()->assertSee('Tickets to work on')
+            ->assertSee('Diagnosis &amp; update', false)->assertSee('name="findings"', false)
+            ->assertDontSee('name="priority"', false)->assertDontSee('dashboard-table');
+        $this->post('/tech/tickets/'.$ticket->id, ['status' => 'Pending', 'findings' => 'Checking the network.', 'technician_id' => 1])
+            ->assertSessionHasNoErrors()->assertRedirect(route('tech.index'));
+        $this->assertDatabaseHas('supports', ['id' => $ticket->id, 'findings' => 'Checking the network.', 'technician_id' => 1]);
+    }
+
+    public function test_technician_dashboard_sorts_by_priority_and_filters_tickets(): void
+    {
+        (require base_path('database/migrations/2026_11_11_000002_add_ticket_priority.php'))->up();
+        $low = $this->ticket(); $low->update(['priority' => 'Low', 'support_specifics' => 'Low priority concern']);
+        $high = $this->ticket(); $high->update(['priority' => 'High', 'support_specifics' => 'High priority concern', 'technician_id' => 1]);
+        $urgent = $this->ticket(); $urgent->update(['priority' => 'Urgent', 'support_specifics' => 'Urgent priority concern']);
+        $done = $this->ticket(); $done->update(['status' => 'Completed', 'support_specifics' => 'Finished concern']);
+        $this->actingAs($this->staff())->get('/tech')->assertOk()
+            ->assertSeeInOrder(['Urgent priority concern', 'High priority concern', 'Low priority concern'])->assertDontSee('Finished concern');
+        $this->get('/tech?priority=High&technician=1')->assertOk()->assertSee('High priority concern')->assertDontSee('Urgent priority concern');
+        $this->get('/tech?technician=unassigned')->assertOk()->assertSee('Urgent priority concern')->assertDontSee('High priority concern');
+        $this->get('/tech?status=Completed')->assertOk()->assertSee('Finished concern')->assertDontSee('Urgent priority concern');
+        $this->get('/tech?q=Urgent')->assertOk()->assertSee('Urgent priority concern')->assertDontSee('High priority concern');
+        $this->getJson('/tech?priority=Invalid')->assertUnprocessable();
+        $this->getJson('/tech?technician=999999')->assertUnprocessable();
+    }
+
+    public function test_technician_can_save_diagnosis_status_assignment_and_priority(): void
+    {
+        (require base_path('database/migrations/2026_11_11_000002_add_ticket_priority.php'))->up();
+        $ticket = $this->ticket();
+        $this->actingAs($this->staff())->post('/tech/tickets/'.$ticket->id, [
+            'status' => 'Completed', 'priority' => 'High', 'technician_id' => 1,
+            'findings' => 'Faulty cable replaced. Connectivity restored.', 'view_status' => 'all',
+        ])->assertSessionHasNoErrors()->assertRedirect(route('tech.index', ['status' => 'all']));
+        $this->assertDatabaseHas('supports', ['id' => $ticket->id, 'priority' => 'High',
+            'status' => 'Completed', 'technician_id' => 1, 'findings' => 'Faulty cable replaced. Connectivity restored.']);
+        Mail::assertSent(\App\Mail\MailerStatus::class, 1);
+        $this->post('/tech/tickets/'.$ticket->id, ['status' => 'In Progress', 'priority' => 'Invalid'])
+            ->assertSessionHasErrors(['status', 'priority']);
+        $this->assertDatabaseHas('supports', ['id' => $ticket->id, 'status' => 'Completed', 'priority' => 'High']);
+    }
+
     public function test_staff_requester_must_be_active_and_belong_to_the_department(): void
     {
         $this->actingAs($this->staff());
@@ -349,7 +395,7 @@ class HelpdeskPresentationTest extends TestCase
             ->assertSee('aria-labelledby="service-title-1"', false)
             ->assertSee(route('tickets.create', ['step' => 'issue', 'category' => 1]));
         $this->get('/tickets/create?step=issue&category=1')->assertOk()
-            ->assertSee('Describe your issue')->assertSee('No suggested issues for this service yet.')
+            ->assertSee('Describe your issue')->assertSee('No common issues recorded for this service yet.')
             ->assertSee('name="support_specifics"', false);
         $this->post('/tickets/details', ['task_id' => 1, 'support_specifics' => 'My manual issue'])
             ->assertRedirect(route('tickets.create', ['step' => 'email']));
@@ -382,6 +428,37 @@ class HelpdeskPresentationTest extends TestCase
         ])->assertSessionHasNoErrors()->assertRedirect();
         $this->assertFalse($employee->fresh()->trashed());
         $this->assertEquals(0, $employee->fresh()->activation_pending);
+    }
+
+    public function test_common_issues_group_historical_concerns_by_frequency_without_exposing_ticket_text(): void
+    {
+        $descriptions = [
+            'RESET OUTLOOK PASSWORD for private.person@pmma.edu.ph',
+            'Please reset my password, requester Private Person',
+            'Account password reset requested',
+            'Wi-Fi cannot connect in private room 123',
+            'Wireless connection unavailable',
+            "Doesn't have valid IP configuration.",
+            'Creation of Email Account',
+            'Set-up of projector and projector screen at the hall',
+            'blue screen', 'Phone cannot connect.', 'Assist in Cable Management', 'Replace printer toner', 'Install software',
+            null, '', 'NULL', 'test',
+        ];
+        foreach ($descriptions as $description) {
+            $ticket = $this->ticket(); $ticket->update(['support_specifics' => $description]);
+        }
+        $otherService = $this->ticket(); $otherService->update(['task_id' => 999, 'support_specifics' => 'RESET PASSWORD']);
+        $groups = app(\App\Services\EncounteredIssues::class)->forService(1);
+        $this->assertSame('Password reset / account access', $groups[0]->name);
+        $this->assertSame(3, $groups[0]->reports);
+        $this->assertSame('Wi-Fi connection', $groups[1]->name);
+        $this->assertSame(2, $groups[1]->reports);
+        $this->assertCount(9, $groups);
+        $this->get('/tickets/create?step=issue&category=1')->assertOk()
+            ->assertSeeInOrder(['Password reset / account access', 'Wi-Fi connection', 'Other / Write my own issue', 'Your concern'])
+            ->assertSee('3 previous tickets')->assertSee('data-issue-editor', false)
+            ->assertDontSee('private.person@pmma.edu.ph')->assertDontSee('Private Person')->assertDontSee('private room 123');
+        $this->assertCount(2, app(\App\Services\EncounteredIssues::class)->forService(1, 2));
     }
 
     public function test_public_email_domain_registration_details_and_inactive_accounts_are_validated(): void

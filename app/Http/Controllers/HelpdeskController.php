@@ -92,11 +92,14 @@ class HelpdeskController extends Controller
             if ($step === 'email' && empty($draft['support_specifics'])) {
                 return redirect()->route('tickets.create', ['step' => 'issue', 'category' => $serviceId]);
             }
+            $issues = $step === 'issue' ? app(\App\Services\EncounteredIssues::class)->forService($serviceId) : collect();
+            if ($step === 'issue' && $issues->isEmpty() && Schema::hasTable('service_issues')) {
+                $issues = ServiceIssue::where('task_id', $serviceId)->orderBy('name')->get();
+            }
             return $this->page('portal.wizard', [
                 'step' => $step, 'services' => $this->services(), 'service' => $service,
                 'serviceId' => $serviceId, 'draft' => $draft,
-                'issues' => $step === 'issue' && Schema::hasTable('service_issues')
-                    ? ServiceIssue::where('task_id', $serviceId)->orderBy('name')->get() : collect(),
+                'issues' => $issues,
                 'departments' => Department::orderBy('name')->get(['id', 'name']),
                 'submissionToken' => $draft['submission_token'] ?? (string) Str::uuid(),
             ]);
