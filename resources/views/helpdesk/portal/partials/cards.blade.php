@@ -1,3 +1,12 @@
 @foreach($services as $slug => $service)
-<a href="{{ ($directRequest ?? false) ? route('tickets.create', ['category' => $slug]) : route('services.show', $slug) }}" class="home-service-card"><div class="home-service-icon"><i class="bi bi-{{ $service['icon'] }}" aria-hidden="true"></i></div><div class="home-service-content"><h3>{{ $service['title'] }}</h3><p>{{ $service['description'] }}</p></div>@if($directRequest ?? false)<span class="support-card-action" title="Request Support">Request Support <i class="bi bi-arrow-right" aria-hidden="true"></i></span>@else<i class="bi bi-arrow-right home-service-arrow" aria-hidden="true"></i>@endif</a>
+<li class="service-choice-item">
+    <a href="{{ route('tickets.create', ['step' => 'issue', 'category' => $slug]) }}" class="service-choice-card" aria-labelledby="service-title-{{ $slug }}" @if($service['description'] !== '') aria-describedby="service-description-{{ $slug }}" @endif>
+        <span class="service-choice-icon"><i class="bi bi-{{ $service['icon'] }}" aria-hidden="true"></i></span>
+        <div class="service-choice-content">
+            <h3 id="service-title-{{ $slug }}">{{ $service['title'] }}</h3>
+            @if($service['description'] !== '')<p id="service-description-{{ $slug }}">{{ $service['description'] }}</p>@endif
+            <span class="service-choice-action" aria-hidden="true">Select service <i class="bi bi-arrow-right"></i></span>
+        </div>
+    </a>
+</li>
 @endforeach

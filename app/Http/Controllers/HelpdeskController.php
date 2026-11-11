@@ -14,6 +14,7 @@ use App\Models\Technician;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -94,7 +95,8 @@ class HelpdeskController extends Controller
             return $this->page('portal.wizard', [
                 'step' => $step, 'services' => $this->services(), 'service' => $service,
                 'serviceId' => $serviceId, 'draft' => $draft,
-                'issues' => $step === 'issue' ? ServiceIssue::where('task_id', $serviceId)->orderBy('name')->get() : collect(),
+                'issues' => $step === 'issue' && Schema::hasTable('service_issues')
+                    ? ServiceIssue::where('task_id', $serviceId)->orderBy('name')->get() : collect(),
                 'departments' => Department::orderBy('name')->get(['id', 'name']),
                 'submissionToken' => $draft['submission_token'] ?? (string) Str::uuid(),
             ]);

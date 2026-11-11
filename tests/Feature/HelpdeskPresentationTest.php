@@ -342,6 +342,21 @@ class HelpdeskPresentationTest extends TestCase
         $this->post('/tickets/details', ['task_id' => 1, 'support_specifics' => ''])->assertSessionHasErrors('support_specifics');
     }
 
+    public function test_service_selection_allows_manual_details_before_issue_catalog_migration(): void
+    {
+        Schema::drop('service_issues');
+        $this->get('/tickets/create')->assertOk()->assertSee('service-choice-grid')
+            ->assertSee('aria-labelledby="service-title-1"', false)
+            ->assertSee(route('tickets.create', ['step' => 'issue', 'category' => 1]));
+        $this->get('/tickets/create?step=issue&category=1')->assertOk()
+            ->assertSee('Describe your issue')->assertSee('No suggested issues for this service yet.')
+            ->assertSee('name="support_specifics"', false);
+        $this->post('/tickets/details', ['task_id' => 1, 'support_specifics' => 'My manual issue'])
+            ->assertRedirect(route('tickets.create', ['step' => 'email']));
+        $this->get('/tickets/create?step=email')->assertOk()->assertSee('My manual issue');
+        $this->get('/services')->assertOk()->assertSee('service-choice-grid');
+    }
+
     public function test_new_pmma_email_creates_an_inactive_employee_and_submits_ticket(): void
     {
         $this->postJson('/tickets/requester', ['email' => ' NEW.USER@PMMA.EDU.PH '])->assertOk()

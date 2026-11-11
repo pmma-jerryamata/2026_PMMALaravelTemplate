@@ -3,6 +3,7 @@
 @push('page-assets')
 <link rel="stylesheet" href="{{ asset('helpdesk/css/ticket-wizard.css') }}?v={{ filemtime(public_path('helpdesk/css/ticket-wizard.css')) }}">
 <script src="{{ asset('helpdesk/js/ticket-wizard.js') }}?v={{ filemtime(public_path('helpdesk/js/ticket-wizard.js')) }}" defer></script>
+<link rel="stylesheet" href="{{ asset('helpdesk/css/service-choices.css') }}?v={{ filemtime(public_path('helpdesk/css/service-choices.css')) }}">
 @endpush
 @section('content')
 @include('helpdesk.portal.partials.heading', ['title' => 'Submit a Ticket', 'subtitle' => 'A few simple steps to request assistance.'])
@@ -13,12 +14,12 @@
 @endforeach
 </ol>
 @if($step === 'services')
-<h2>What do you need help with?</h2><p>Choose the service closest to your concern.</p>
-<div class="home-services-grid">
-@forelse($services as $id => $item)
-<a class="home-service-card" href="{{ route('tickets.create', ['step' => 'issue', 'category' => $id]) }}"><div class="home-service-icon"><i class="bi bi-{{ $item['icon'] }}" aria-hidden="true"></i></div><div><h3>{{ $item['title'] }}</h3><p>{{ $item['description'] }}</p></div><i class="bi bi-arrow-right" aria-hidden="true"></i></a>
-@empty<p>No services are available yet. Please contact ITSU.</p>@endforelse
-</div>
+<div class="service-choice-heading"><span class="portal-eyebrow">STEP 1 OF 3</span><h2 id="service-choice-heading">What do you need help with?</h2><p>Choose one service to continue. You can describe your issue on the next page.</p></div>
+<ul class="service-choice-grid" aria-labelledby="service-choice-heading">
+@include('helpdesk.portal.partials.cards')
+</ul>
+@if($services->isEmpty())<p>No services are available yet. <a href="{{ route('contact') }}">Contact ITSU for assistance.</a></p>@endif
+<p class="service-choice-help"><i class="bi bi-info-circle" aria-hidden="true"></i>Choose the closest match. You can write your own concern even if no suggested issue matches.</p>
 @elseif($step === 'issue')
 <form method="post" action="{{ route('tickets.details') }}" class="portal-panel portal-form">@csrf
 <input type="hidden" name="task_id" value="{{ $serviceId }}">
