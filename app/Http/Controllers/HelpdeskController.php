@@ -173,7 +173,7 @@ class HelpdeskController extends Controller
                 ? Employee::where('department_id', $data['department_id'])->findOrFail($data['employee_id'])
                 : Employee::withTrashed()->where('email', $data['email'])->first();
             if (! $employee) {
-                $employee = Employee::create(['email' => $data['email'], 'name' => $registration['name'],
+                $employee = Employee::create(['email' => $data['email'], 'name' => mb_strtoupper(trim($registration['name'])),
                     'department_id' => $registration['registration_department_id'],
                     'deleted_at' => now(), 'activation_pending' => true, 'updated_at' => now()]);
             }

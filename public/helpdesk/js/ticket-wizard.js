@@ -12,6 +12,12 @@ if (emailForm) {
     const fields = emailForm.querySelector('[data-registration-fields]');
     const notice = document.getElementById('email-status');
     const button = emailForm.querySelector('[type=submit]');
+    const fullName = emailForm.elements.name;
+    fullName.addEventListener('input', () => {
+        const start = fullName.selectionStart, end = fullName.selectionEnd;
+        fullName.value = fullName.value.toUpperCase();
+        fullName.setSelectionRange(start, end);
+    });
     let controller, timer, verified = '';
     function registration(required) {
         fields.hidden = !required;
@@ -32,7 +38,7 @@ if (emailForm) {
             if (!response.ok || !data.valid) throw new Error(data.errors?.email?.[0] || data.message || 'Unable to validate email.');
             verified = value;
             registration(data.registration_required === true);
-            notice.textContent = data.registration_required ? 'PMMA email accepted. Complete your name and department for admin activation.' : 'PMMA email accepted. You can submit your ticket.';
+            notice.textContent = data.registration_required ? 'PMMA email accepted. Enter your full name in ALL CAPS and select your department. Cadets / students: choose STUDENTS.' : 'PMMA email accepted. You can submit your ticket.';
             email.removeAttribute('aria-invalid');
             return true;
         } catch (error) {

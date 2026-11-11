@@ -359,7 +359,7 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertDatabaseCount('employees', 2);
         $this->assertDatabaseCount('supports', 1);
         $this->actingAs($this->staff())->get('/dashboard/settings?tab=employees&status=activation')->assertOk()
-            ->assertSee('New User')->assertDontSee('Test Requester');
+            ->assertSee('NEW USER')->assertDontSee('Test Requester');
         $this->getJson('/dashboard/tables/catalog/employees?status=activation')->assertOk()
             ->assertJsonPath('recordsTotal', 1);
         $this->post('/dashboard/settings/employees/'.$employee->id, [
@@ -380,6 +380,25 @@ class HelpdeskPresentationTest extends TestCase
         $this->post('/tickets', $payload)->assertSessionHasErrors('email');
         $this->assertDatabaseCount('supports', 0);
         $this->assertDatabaseCount('employees', 1);
+    }
+
+    public function test_unregistered_cadet_can_register_with_uppercase_full_name_while_submitting_ticket(): void
+    {
+        $this->postJson('/tickets/requester', ['email' => 'cadet@pmma.edu.ph'])->assertOk()
+            ->assertExactJson(['valid' => true, 'registration_required' => true]);
+        $payload = ['email' => 'cadet@pmma.edu.ph', 'name' => '  Juan Dela Cruz  ',
+            'registration_department_id' => 44, 'task_id' => 1,
+            'support_specifics' => 'Cannot connect in the dormitory.', 'submission_token' => (string) Str::uuid()];
+        $this->post('/tickets', $payload)->assertSessionHasNoErrors()->assertRedirect();
+        $cadet = \App\Models\Employee::withTrashed()->where('email', 'cadet@pmma.edu.ph')->firstOrFail();
+        $this->assertSame('JUAN DELA CRUZ', $cadet->name);
+        $this->assertEquals(44, $cadet->department_id);
+        $this->assertTrue($cadet->trashed());
+        $this->assertEquals(1, $cadet->activation_pending);
+        $this->assertDatabaseHas('supports', ['employee_id' => $cadet->id]);
+        $this->post('/tickets', $payload)->assertRedirect();
+        $this->assertDatabaseCount('employees', 2);
+        $this->assertDatabaseCount('supports', 1);
     }
 
     public function test_admin_can_register_suggested_issues_per_service(): void

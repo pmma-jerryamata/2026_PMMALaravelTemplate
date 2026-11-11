@@ -33,6 +33,9 @@ async function run() {
     await new Promise(resolve => setTimeout(resolve, 0));
     assert.equal(fields.hidden, false);
     assert.equal(form.elements.name.required, true);
+    form.elements.name.value = 'Juan Dela Cruz';
+    form.elements.name.dispatchEvent(new window.Event('input'));
+    assert.equal(form.elements.name.value, 'JUAN DELA CRUZ');
     assert.equal(form.elements.registration_department_id.required, true);
     assert.equal(resubmitted, 1);
     response = {valid: true};
