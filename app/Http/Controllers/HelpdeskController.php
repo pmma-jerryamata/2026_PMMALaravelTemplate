@@ -283,11 +283,14 @@ class HelpdeskController extends Controller
             'status' => ['required', Rule::in(self::STATUSES)],
             'technician_id' => 'nullable|integer|exists:technicians,id', 'findings' => 'nullable|string|max:1023',
             'accomplished_at' => 'nullable|date',
+            'priority' => Schema::hasColumn('supports', 'priority')
+                ? ['sometimes', 'required', Rule::in(Support::PRIORITIES)] : 'prohibited',
         ]);
         $support = $this->tickets()->findOrFail($ticket);
         $support->status = $data['status'];
         $support->technician_id = $data['technician_id'] ?? null;
         $support->findings = $data['findings'] ?? null;
+        if (isset($data['priority'])) { $support->priority = $data['priority']; }
         $support->updated_at = $data['accomplished_at'] ?? now();
         $support->save();
         if ($support->status !== 'Pending' && $support->employee) {
@@ -300,6 +303,14 @@ class HelpdeskController extends Controller
                     $support->updated_at
                 ));
             } catch (\Throwable $exception) { report($exception); }
+        }
+        if ($request->routeIs('tech.tickets.update')) {
+            return redirect()->route('tech.index', $request->only(['view_status', 'view_technician', 'view_priority', 'view_q'])
+                ? array_filter([
+                    'status' => $request->input('view_status'), 'technician' => $request->input('view_technician'),
+                    'priority' => $request->input('view_priority'), 'q' => $request->input('view_q'),
+                ], fn ($value) => is_string($value) && $value !== '') : [])
+                ->with('success', 'Ticket #'.$support->id.' updated successfully.');
         }
         return redirect()->route('dashboard.tickets.show', $support->id)->with('success', 'Ticket updated successfully.');
     }

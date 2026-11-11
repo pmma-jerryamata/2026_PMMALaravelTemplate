@@ -115,7 +115,8 @@ Route::middleware('auth')->group(function () {
 
     ////////////////TECHNICIAN MOBILE - CONTROLLER////////////////////////////////////////
     //Route::view('tech/index', 'tech.index')->name('tech.index');
-    Route::get('/tech', [HelpdeskController::class, 'dashboard'])->name('tech.index');
+    Route::get('/tech', [\App\Http\Controllers\TechnicianDashboardController::class, 'index'])->name('tech.index');
+    Route::post('/tech/tickets/{ticket}', [HelpdeskController::class, 'update'])->whereNumber('ticket')->name('tech.tickets.update');
 
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////

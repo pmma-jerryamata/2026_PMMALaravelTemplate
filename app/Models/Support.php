@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Support extends Model
 {
+    public const PRIORITIES = ['Urgent', 'High', 'Normal', 'Low'];
     use HasFactory;
 
     protected $table = 'supports';
@@ -20,6 +21,7 @@ class Support extends Model
         'technician_id',
         'task_id',
         'status',
+        'priority',
         'support_specifics',
         'findings',
         'ip',
