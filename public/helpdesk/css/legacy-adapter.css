@@ -169,3 +169,5 @@ body { margin: 0; }
 .admin-sidebar .admin-tech-shortcut strong { display: block; font-size: 12px; font-weight: 650; color: #fff; }
 .admin-sidebar .admin-tech-shortcut small { display: block; margin-top: 4px; color: #a9bedb; font-size: 11px; font-weight: 400; }
 @media(max-width:768px) { .admin-sidebar #staff-navigation > a, .admin-sidebar .admin-nav-group > summary { min-height: 48px; } }
+
+.service-reorder-actions{display:inline-flex;gap:6px;margin-left:6px;vertical-align:middle}.service-reorder-actions form{display:inline-flex;margin:0}.service-reorder-actions button{min-width:44px;min-height:44px}

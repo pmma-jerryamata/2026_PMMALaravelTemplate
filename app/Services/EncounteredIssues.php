@@ -37,6 +37,35 @@ class EncounteredIssues
         'Computer needs repair or maintenance' => '/repair|troubleshoot|maintenance|cleaning/iu',
     ];
 
+    public function options($taskId, string $service): Collection
+    {
+        $catalog = json_decode(file_get_contents(resource_path('data/issue-options.json')), true, 512, JSON_THROW_ON_ERROR);
+        $service = mb_strtolower($service);
+        $group = preg_match('/microsoft|account|email|outlook/', $service) ? 'microsoft'
+            : (preg_match('/internet|network|wi-fi/', $service) ? 'network'
+            : (preg_match('/print|peripheral|scan/', $service) ? 'printer'
+            : (preg_match('/software|application/', $service) ? 'software'
+            : (preg_match('/computer|laptop|hardware|pc\//', $service) ? 'computer' : 'general'))));
+        $descriptions = [];
+        foreach ($catalog as $items) {
+            foreach ($items as [$name, $description]) { $descriptions[$name] = $description; }
+        }
+        $issues = $this->forService($taskId)->keyBy('name');
+        foreach ($catalog[$group] as [$name, $description]) {
+            if ($issues->count() >= 9) break;
+            if (! $issues->has($name)) $issues->put($name, (object) ['name' => $name]);
+        }
+        if (\Illuminate\Support\Facades\Schema::hasTable('service_issues')) {
+            foreach (\App\Models\ServiceIssue::where('task_id', $taskId)->orderBy('name')->get() as $custom) {
+                if (! $issues->has($custom->name)) $issues->put($custom->name, (object) ['name' => $custom->name]);
+            }
+        }
+        return $issues->values()->map(function ($issue) use ($descriptions) {
+            $issue->description = $descriptions[$issue->name] ?? 'I need technical assistance with this concern: '.$issue->name.'. Please help me check and resolve the problem.';
+            return $issue;
+        });
+    }
+
     public function forService($taskId, int $limit = 9): Collection
     {
         $counts = [];

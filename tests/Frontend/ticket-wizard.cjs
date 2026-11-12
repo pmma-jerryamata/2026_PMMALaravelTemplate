@@ -7,27 +7,30 @@ catch { ({JSDOM} = require(path.join(process.env.LOCALAPPDATA, 'PMMA-Support-Loc
 const source = fs.readFileSync(path.join(__dirname, '../../public/helpdesk/js/ticket-wizard.js'), 'utf8');
 
 async function run() {
-    const dom = new JSDOM(`<div data-issue-editor><textarea id="support_specifics"></textarea></div><button data-issue-next>Next</button>
-        <button data-issue="Cannot connect" aria-pressed="false"></button><button data-manual-issue aria-pressed="false"></button>
+    const dom = new JSDOM(`<form data-issue-form><input name="issue_name"><div data-issue-editor><textarea id="support_specifics"></textarea></div><button data-issue-next>Next</button>
+        <button data-issue="Cannot connect" aria-pressed="false"></button><button type="button" data-manual-issue aria-pressed="false"></button></form>
         <form data-public-email-form data-lookup-url="/tickets/requester"><input name="_token" value="token">
         <input name="email" type="email" required><p id="email-status"></p>
-        <fieldset data-registration-fields><legend data-registration-title></legend><p data-registration-description></p><input name="name"><div data-employee-department><select name="registration_department_id"><option value="1">ITSU</option></select></div></fieldset>
+        <fieldset data-registration-fields><legend data-registration-title></legend><p data-registration-description></p><input name="first_name"><input name="last_name"><div data-employee-department><select name="registration_department_id"><option value="1">ITSU</option></select></div></fieldset>
         <button type="submit">Submit</button></form>`, {runScripts: 'outside-only', url: 'https://support.example.test'});
     const {window} = dom;
     let response = {valid: true, registration_required: true, registration_type: 'employee'};
     window.fetch = async () => ({ok: true, json: async () => response});
+    let issueContinued = 0;
+    window.document.querySelector('[data-issue-form]').requestSubmit = () => { issueContinued++; };
     window.eval(source);
     const document = window.document;
     assert.equal(document.querySelector('[data-issue-editor]').hidden, true);
     assert.equal(document.querySelector('[data-issue-next]').disabled, true);
     document.querySelector('[data-issue]').click();
-    assert.equal(document.querySelector('[data-issue-editor]').hidden, false);
+    assert.equal(document.querySelector('[data-issue-editor]').hidden, true);
+    assert.equal(issueContinued, 1);
     assert.equal(document.querySelector('[data-issue-next]').disabled, false);
     assert.equal(document.getElementById('support_specifics').value, 'Cannot connect');
     document.getElementById('support_specifics').value += ' in my office';
     document.querySelector('[data-manual-issue]').click();
     assert.equal(document.getElementById('support_specifics').value, 'Cannot connect in my office');
-    const form = document.querySelector('form');
+    const form = document.querySelector('[data-public-email-form]');
     const fields = document.querySelector('fieldset');
     assert.equal(fields.hidden, true);
     let resubmitted = 0;
@@ -36,10 +39,10 @@ async function run() {
     form.dispatchEvent(new window.Event('submit', {cancelable: true}));
     await new Promise(resolve => setTimeout(resolve, 0));
     assert.equal(fields.hidden, false);
-    assert.equal(form.elements.name.required, true);
-    form.elements.name.value = 'Juan Dela Cruz';
-    form.elements.name.dispatchEvent(new window.Event('input'));
-    assert.equal(form.elements.name.value, 'JUAN DELA CRUZ');
+    assert.equal(form.elements.first_name.required, true);
+    form.elements.first_name.value = 'Juan Dela Cruz';
+    form.elements.first_name.dispatchEvent(new window.Event('input'));
+    assert.equal(form.elements.first_name.value, 'JUAN DELA CRUZ');
     assert.equal(form.elements.registration_department_id.required, true);
     assert.equal(document.querySelector('[data-registration-title]').textContent, 'Employee registration');
     assert.equal(resubmitted, 1);
@@ -52,7 +55,7 @@ async function run() {
     assert.equal(document.querySelector('[data-employee-department]').hidden, true);
     assert.equal(form.elements.registration_department_id.required, false);
     assert.equal(form.elements.registration_department_id.disabled, true);
-    assert.equal(form.elements.name.required, true);
+    assert.equal(form.elements.first_name.required, true);
     assert.equal(resubmitted, 2);
     response = {valid: true};
     form.elements.email.value = 'existing@pmma.edu.ph';
@@ -60,8 +63,8 @@ async function run() {
     form.dispatchEvent(new window.Event('submit', {cancelable: true}));
     await new Promise(resolve => setTimeout(resolve, 0));
     assert.equal(fields.hidden, true);
-    assert.equal(form.elements.name.disabled, true);
-    assert.equal(form.elements.name.required, false);
+    assert.equal(form.elements.first_name.disabled, true);
+    assert.equal(form.elements.first_name.required, false);
     assert.equal(resubmitted, 3);
     window.close();
     console.log('Ticket wizard interactions passed.');

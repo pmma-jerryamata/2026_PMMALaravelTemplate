@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="{{ asset('helpdesk/css/technician.css') }}?v={{ filemtime(public_path('helpdesk/css/technician.css')) }}">
 </head><body>
 <a class="tech-skip" href="#main-content">Skip to tickets</a>
-<header class="tech-header"><a class="tech-brand" href="{{ route('tech.index') }}"><img src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="" width="40" height="40"><span>PMMA Helpdesk<small>TECHNICIAN WORKSPACE</small></span></a><nav aria-label="Workspace"><a href="{{ route('dashboard') }}">Admin panel</a><form method="post" action="{{ route('logout') }}">@csrf<button type="submit">Log out</button></form></nav></header>
+<header class="tech-header"><a class="tech-brand" href="{{ route('tech.index') }}"><img src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="" width="40" height="40"><span>PMMA Helpdesk<small>TECHNICIAN WORKSPACE</small></span></a><nav aria-label="Workspace"><a href="{{ route('dashboard') }}">Admin panel</a><form method="post" action="{{ route('logout') }}">@csrf<input type="hidden" name="_return_to" value="{{ \App\Support\DashboardReturn::url('') }}"><button type="submit">Log out</button></form></nav></header>
 <main id="main-content" class="tech-main">
-<section class="tech-heading"><div><p class="tech-eyebrow">{{ auth()->user()->name }}</p><h1>Job Request</h1><p>Review the concern, record your diagnosis, and update the ticket.</p></div><div class="tech-heading-actions"><a class="tech-button tech-create" href="{{ route('dashboard.tickets.create') }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create Ticket</a><a class="tech-button tech-secondary" href="{{ route('tech.index', request()->query()) }}"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh</a></div></section>
+<section class="tech-heading"><div><p class="tech-eyebrow">{{ auth()->user()->name }}</p><h1>Job Request</h1><p>Review the concern, record your diagnosis, and update the ticket.</p></div><div class="tech-heading-actions"><a class="tech-button tech-create" data-open-create-ticket href="{{ route('dashboard.tickets.create') }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create Ticket</a><a class="tech-button tech-secondary" href="{{ route('tech.index', request()->query()) }}"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh</a></div></section>
 @if(session('success'))<div class="tech-alert" role="status">{{ session('success') }}</div>@endif
 @if($errors->any())<div class="tech-alert tech-error" role="alert"><strong>Changes were not saved.</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 <div class="tech-counts"><a href="{{ route('tech.index') }}"><strong>{{ $pendingCount }}</strong><span>Pending tickets</span></a><a href="{{ route('tech.index', ['technician' => 'unassigned']) }}"><strong>{{ $unassignedCount }}</strong><span>Unassigned</span></a></div>
@@ -34,7 +34,7 @@
 <dl class="tech-meta"><div><dt>Requester / Office</dt><dd>{{ optional($ticket->employee)->name ?? 'Unavailable requester' }}<span>{{ optional(optional($ticket->employee)->department)->name ?? 'Not specified' }}</span></dd></div><div><dt>Assigned to</dt><dd>{{ optional($ticket->technician)->name ?? 'Unassigned' }}</dd></div><div><dt>Submitted</dt><dd><time datetime="{{ optional($ticket->created_at)->toIso8601String() }}">{{ optional($ticket->created_at)->format('M d, Y · h:i A') }}</time></dd></div></dl>
 @if($ticket->findings)<div class="tech-findings"><strong>Latest diagnosis / action</strong><p>{{ $ticket->findings }}</p></div>@endif
 <details class="tech-editor" @if($editing) open @endif><summary><span><i class="bi bi-pencil-square" aria-hidden="true"></i> Diagnosis &amp; update</span><i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
-<form method="post" action="{{ route('tech.tickets.update', $ticket->id) }}">@csrf
+<form method="post" action="{{ route('tech.tickets.update', $ticket->id) }}">@csrf<input type="hidden" name="_return_to" value="{{ \App\Support\DashboardReturn::url('') }}">
 <input type="hidden" name="editing_ticket" value="{{ $ticket->id }}">
 @foreach(['status' => $activeStatus, 'technician' => request('technician'), 'priority' => request('priority'), 'q' => request('q')] as $name => $value)<input type="hidden" name="view_{{ $name }}" value="{{ $value }}">@endforeach
 <label for="findings-{{ $ticket->id }}">Diagnosis / Findings / Action Taken</label><textarea id="findings-{{ $ticket->id }}" name="findings" maxlength="1023" rows="5" placeholder="Record what you found and what you did.">{{ $editing ? old('findings') : $ticket->findings }}</textarea>
@@ -51,5 +51,7 @@
 @empty<div class="tech-empty"><i class="bi bi-check2-circle" aria-hidden="true"></i><h3>No tickets in this view</h3><p>Try another status or reset your filters.</p><a class="tech-button tech-secondary" href="{{ route('tech.index') }}">View pending tickets</a></div>@endforelse
 </div>
 @if($tickets->hasPages())<nav class="tech-pagination" aria-label="Ticket pages">@if($tickets->onFirstPage())<span>Previous</span>@else<a class="tech-button tech-secondary" href="{{ $tickets->previousPageUrl() }}">Previous</a>@endif<span>Page {{ $tickets->currentPage() }} of {{ $tickets->lastPage() }}</span>@if($tickets->hasMorePages())<a class="tech-button tech-secondary" href="{{ $tickets->nextPageUrl() }}">Next</a>@else<span>Next</span>@endif</nav>@endif
-</main>@include('helpdesk.partials.back-to-top')
+</main>@include('helpdesk.technician.create-modal')
+<script src="{{ asset('helpdesk/js/tech-create-ticket.js') }}?v={{ filemtime(public_path('helpdesk/js/tech-create-ticket.js')) }}" defer></script>
+@include('helpdesk.partials.back-to-top')
 </body></html>

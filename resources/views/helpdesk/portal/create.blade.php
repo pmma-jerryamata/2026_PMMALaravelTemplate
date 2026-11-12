@@ -2,7 +2,7 @@
 @section('title', 'Submit a Ticket')
 @section('content')
 @include('helpdesk.portal.partials.heading', ['title' => 'Submit a Ticket', 'subtitle' => 'Tell us what you need. We will keep your request in one place.'])
-<section class="section"><div class="container portal-two-column"><form action="{{ $staff ? route('dashboard.tickets.store') : route('tickets.store') }}" method="post" class="portal-panel portal-form request-form" @if($staff) data-staff-requester @else data-requester-url="{{ route('tickets.requester') }}" @endif>@csrf
+<section class="section"><div class="container portal-two-column"><form action="{{ $staff ? route('dashboard.tickets.store') : route('tickets.store') }}" method="post" class="portal-panel portal-form request-form" @if($staff) data-staff-requester @else data-requester-url="{{ route('tickets.requester') }}" @endif>@csrf<input type="hidden" name="_return_to" value="{{ \App\Support\DashboardReturn::url('') }}">
 <input type="hidden" name="submission_token" value="{{ old('submission_token', $submissionToken) }}"><h2>Request Details</h2><p class="text-muted">{{ $staff ? 'Choose the department and employee requesting assistance.' : 'Use an email registered in the PMMA directory.' }}</p><div class="form-grid">
 @if($staff)
 <div><label for="department_id">Department</label><select id="department_id" name="department_id" required><option value="">Choose a department</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected((string) old('department_id') === (string) $department->id)>{{ $department->name }}</option>@endforeach</select></div>

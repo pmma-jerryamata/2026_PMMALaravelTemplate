@@ -25,7 +25,7 @@ class HelpdeskController extends Controller
 
     private function services()
     {
-        return Task::orderBy('id')->get()->mapWithKeys(function ($task) {
+        return Task::displayOrder()->get()->mapWithKeys(function ($task) {
             $name = strtolower($task->name);
             $icon = Str::contains($name, ['internet', 'network']) ? 'wifi'
                 : (Str::contains($name, ['pc/', 'laptop']) ? 'laptop'
@@ -92,10 +92,7 @@ class HelpdeskController extends Controller
             if ($step === 'email' && empty($draft['support_specifics'])) {
                 return redirect()->route('tickets.create', ['step' => 'issue', 'category' => $serviceId]);
             }
-            $issues = $step === 'issue' ? app(\App\Services\EncounteredIssues::class)->forService($serviceId) : collect();
-            if ($step === 'issue' && $issues->isEmpty() && Schema::hasTable('service_issues')) {
-                $issues = ServiceIssue::where('task_id', $serviceId)->orderBy('name')->get();
-            }
+            $issues = $step === 'issue' ? app(\App\Services\EncounteredIssues::class)->options($serviceId, $service['title']) : collect();
             return $this->page('portal.wizard', [
                 'step' => $step, 'services' => $this->services(), 'service' => $service,
                 'serviceId' => $serviceId, 'draft' => $draft,
@@ -138,6 +135,14 @@ class HelpdeskController extends Controller
     {
         $data = $request->validate(['task_id' => 'required|integer|exists:tasks,id',
             'support_specifics' => 'required|string|max:10000']);
+        if ($request->filled('issue_name')) {
+            $request->validate(['issue_name' => 'required|string|max:255']);
+            $service = $this->services()->get($data['task_id']);
+            $issue = app(\App\Services\EncounteredIssues::class)->options($data['task_id'], $service['title'])->firstWhere('name', $request->input('issue_name'));
+            if (! $issue) throw \Illuminate\Validation\ValidationException::withMessages(['issue_name' => 'Please select an issue again.']);
+            $data['support_specifics'] = $issue->description;
+            $data['issue_name'] = $issue->name;
+        }
         $data['submission_token'] = (string) Str::uuid();
         $request->session()->put('helpdesk.draft', $data);
         return redirect()->route('tickets.create', ['step' => 'email']);
@@ -171,7 +176,7 @@ class HelpdeskController extends Controller
             }
             if (! $employee) {
                 $cadet = Str::endsWith($data['email'], '@cdt.pmma.edu.ph');
-                $registration = $request->validate(['name' => 'required|string|max:255',
+                $registration = $request->validate(\App\Support\RegistrationName::rules() + [
                     'registration_department_id' => $cadet ? 'exclude' : ['required', 'integer',
                         Rule::exists('departments', 'id')->where(fn ($query) => $query->whereRaw('UPPER(name) <> ?', ['STUDENTS']))]]);
                 if ($cadet) {
@@ -188,7 +193,7 @@ class HelpdeskController extends Controller
                 ? Employee::where('department_id', $data['department_id'])->findOrFail($data['employee_id'])
                 : Employee::withTrashed()->where('email', $data['email'])->first();
             if (! $employee) {
-                $employee = Employee::create(['email' => $data['email'], 'name' => mb_strtoupper(trim($registration['name'])),
+                $employee = Employee::create(['email' => $data['email'], 'name' => \App\Support\RegistrationName::fullName($registration),
                     'department_id' => $registration['registration_department_id'],
                     'deleted_at' => now(), 'activation_pending' => true, 'updated_at' => now()]);
             }
@@ -209,7 +214,7 @@ class HelpdeskController extends Controller
             report($exception);
         }
         return $staff
-            ? redirect()->route('dashboard.tickets.show', $support->id)->with('success', 'Ticket created successfully.')
+            ? redirect(\App\Support\DashboardReturn::url(route('dashboard.tickets.show', $support->id)))->with('success', 'Ticket created successfully.')
             : redirect()->route('tickets.receipt', ['ticket' => $support->id]);
     }
 
@@ -243,6 +248,7 @@ class HelpdeskController extends Controller
 
     public function dashboard(Request $request)
     {
+        \App\Support\DashboardReturn::remember($request);
         $query = $this->tickets();
         $filters = $request->validate([
             'status' => ['nullable', Rule::in(self::STATUSES)], 'q' => 'nullable|string|max:150',
@@ -318,14 +324,13 @@ class HelpdeskController extends Controller
             } catch (\Throwable $exception) { report($exception); }
         }
         if ($request->routeIs('tech.tickets.update')) {
-            return redirect()->route('tech.index', $request->only(['view_status', 'view_technician', 'view_priority', 'view_q'])
-                ? array_filter([
-                    'status' => $request->input('view_status'), 'technician' => $request->input('view_technician'),
-                    'priority' => $request->input('view_priority'), 'q' => $request->input('view_q'),
-                ], fn ($value) => is_string($value) && $value !== '') : [])
+            return redirect(\App\Support\DashboardReturn::url(route('tech.index', array_filter([
+                'status' => $request->input('view_status'), 'technician' => $request->input('view_technician'),
+                'priority' => $request->input('view_priority'), 'q' => $request->input('view_q'),
+            ], fn ($value) => is_string($value) && $value !== ''))))
                 ->with('success', 'Ticket #'.$support->id.' updated successfully.');
         }
-        return redirect()->route('dashboard.tickets.show', $support->id)->with('success', 'Ticket updated successfully.');
+        return redirect(\App\Support\DashboardReturn::url(route('dashboard.tickets.show', $support->id)))->with('success', 'Ticket updated successfully.');
     }
 
     public function confirmDelete($ticket)
@@ -353,7 +358,29 @@ class HelpdeskController extends Controller
             $locked->delete();
         });
 
-        return redirect()->route('dashboard')->with('success', 'Ticket #'.$support->id.' and its feedback were permanently deleted.');
+        return redirect(\App\Support\DashboardReturn::url(route('dashboard')))->with('success', 'Ticket #'.$support->id.' and its feedback were permanently deleted.');
+    }
+
+    public function moveService(Request $request, $service)
+    {
+        $data = $request->validate(['direction' => ['required', Rule::in(['up', 'down'])]]);
+        if (! Schema::hasColumn('tasks', 'sort_order')) {
+            return back()->withErrors(['direction' => 'Service ordering is not available yet. Please apply the service ordering migration.']);
+        }
+        DB::transaction(function () use ($service, $data) {
+            $records = Task::displayOrder()->lockForUpdate()->get();
+            $index = $records->search(fn ($record) => (string) $record->id === (string) $service);
+            abort_if($index === false, 404);
+            $other = $index + ($data['direction'] === 'up' ? -1 : 1);
+            if ($other < 0 || $other >= $records->count()) return;
+            $ids = $records->pluck('id')->all();
+            [$ids[$index], $ids[$other]] = [$ids[$other], $ids[$index]];
+            foreach ($ids as $position => $id) {
+                DB::table('tasks')->where('id', $id)->update(['sort_order' => $position + 1]);
+            }
+        });
+        return redirect(\App\Support\DashboardReturn::url(route('dashboard.settings', ['tab' => 'services'])))
+            ->with('success', 'Service order updated.');
     }
 
     private function catalogModel($type)
@@ -365,6 +392,7 @@ class HelpdeskController extends Controller
 
     public function settings(Request $request)
     {
+        \App\Support\DashboardReturn::remember($request);
         $type = $request->query('tab', 'employees');
         $model = $this->catalogModel($type);
         $query = $type === 'employees' ? Employee::withTrashed()->with('department') : $model::query();
@@ -374,7 +402,8 @@ class HelpdeskController extends Controller
         if ($search !== '') { $query->where('name', 'like', '%'.$search.'%'); }
         return $this->page('dashboard.settings', [
             'type' => $type, 'search' => $search, 'activation' => $activation,
-            'records' => $query->orderBy('name')->paginate(20)->withQueryString(),
+            'records' => ($type === 'services' ? $query->displayOrder() : $query->orderBy('name'))->paginate(20)->withQueryString(),
+            'serviceOrderEnabled' => $type === 'services' && Schema::hasColumn('tasks', 'sort_order'),
         ]);
     }
 
@@ -411,8 +440,11 @@ class HelpdeskController extends Controller
         }
         $record->timestamps = false;
         $record->fill($data);
+        if ($type === 'services' && ! $record->exists && Schema::hasColumn('tasks', 'sort_order')) {
+            $record->sort_order = ((int) Task::max('sort_order')) + 1;
+        }
         $record->save();
-        return redirect()->route('dashboard.settings', ['tab' => $type])->with('success', 'Record saved successfully.');
+        return redirect(\App\Support\DashboardReturn::url(route('dashboard.settings', ['tab' => $type])))->with('success', 'Record saved successfully.');
     }
 
     public function report(Request $request)

@@ -14,7 +14,7 @@
     <h2>Concern details</h2>
     <p class="ticket-description">{{ $ticket->support_specifics ?: 'No details provided.' }}</p>
     <form method="post" action="{{ route('dashboard.tickets.destroy', $ticket->id) }}" class="portal-form" data-ticket-delete-confirmation data-confirmation="DELETE #{{ $ticket->id }}">
-        @csrf
+        @csrf<input type="hidden" name="_return_to" value="{{ \App\Support\DashboardReturn::url('') }}">
         @method('DELETE')
         <label for="delete-confirmation">Type <strong>DELETE #{{ $ticket->id }}</strong> to confirm</label>
         <input id="delete-confirmation" name="confirmation" value="{{ old('confirmation') }}" required autocomplete="off" spellcheck="false" aria-describedby="delete-confirmation-hint">

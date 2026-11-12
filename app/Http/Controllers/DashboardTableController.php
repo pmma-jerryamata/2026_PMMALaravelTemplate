@@ -108,6 +108,8 @@ class DashboardTableController extends Controller
                 $columns = ['service_issues.name', null, null];
             }
         }
+        $serviceOrderEnabled = $type === 'services' && \Illuminate\Support\Facades\Schema::hasColumn('tasks', 'sort_order');
+        if ($type === 'services') { $query->displayOrder(); }
         $total = (clone $query)->count();
         if ($parameters['search'] !== '') {
             $term = '%'.$parameters['search'].'%';
@@ -118,7 +120,7 @@ class DashboardTableController extends Controller
                 }
             });
         }
-        return $this->response($query, $parameters, $total, $columns, $table.'.name', 'asc', 'catalog', compact('type'));
+        return $this->response($query, $parameters, $total, $columns, $table.'.name', 'asc', 'catalog', compact('type', 'serviceOrderEnabled'));
     }
 
     public function surveys(Request $request)

@@ -12,6 +12,7 @@ class TechnicianDashboardController extends Controller
 {
     public function index(Request $request)
     {
+        \App\Support\DashboardReturn::remember($request);
         $filters = $request->validate([
             'status' => ['nullable', Rule::in(array_merge(['all'], HelpdeskController::STATUSES))],
             'technician' => ['nullable', 'string', 'max:30'],
@@ -46,6 +47,10 @@ class TechnicianDashboardController extends Controller
         return view('helpdesk.technician.index', [
             'tickets' => $query->orderBy('created_at')->orderBy('id')->paginate(12)->withQueryString(),
             'technicians' => Technician::orderBy('name')->get(),
+            'departments' => \App\Models\Department::orderBy('name')->get(['id', 'name']),
+            'employees' => \App\Models\Employee::orderBy('name')->get(['id', 'name', 'department_id']),
+            'services' => \App\Models\Task::displayOrder()->get(['id', 'name']),
+            'submissionToken' => (string) \Illuminate\Support\Str::uuid(),
             'statuses' => HelpdeskController::STATUSES, 'priorities' => Support::PRIORITIES,
             'priorityEnabled' => $priorityEnabled, 'activeStatus' => $status,
             'pendingCount' => Support::where('status', 'Pending')->count(),

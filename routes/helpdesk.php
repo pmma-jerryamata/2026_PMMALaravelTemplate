@@ -20,6 +20,7 @@ Route::view('/privacy', 'helpdesk.portal.privacy')->name('privacy');
 Route::get('/time', fn () => response()->json(['timestamp' => (int) round(microtime(true) * 1000), 'synced' => false])->header('Cache-Control', 'no-store'))->name('time');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/dashboard/services/{service}/move', [HelpdeskController::class, 'moveService'])->whereNumber('service')->name('dashboard.services.move');
     Route::view('/dashboard/user-guide', 'helpdesk.dashboard.user-guide')->name('dashboard.user-guide');
     Route::get('/dashboard/tables/tickets', [DashboardTableController::class, 'tickets'])->name('dashboard.tables.tickets');
     Route::get('/dashboard/tables/catalog/{type}', [DashboardTableController::class, 'catalog'])

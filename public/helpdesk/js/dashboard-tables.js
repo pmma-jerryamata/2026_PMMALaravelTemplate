@@ -46,6 +46,14 @@ document.querySelectorAll('[data-dashboard-table]').forEach(table => {
 
     const options = {
         autoWidth: false, orderMulti: false, scrollX: false,
+        ordering: table.dataset.tableOrdering !== 'false',
+        stateSave: true,
+        stateSaveCallback: (_settings, data) => {
+            try { sessionStorage.setItem('helpdesk.table.' + table.id + location.pathname + location.search, JSON.stringify(data)); } catch (_) { /* Storage may be disabled. */ }
+        },
+        stateLoadCallback: () => {
+            try { return JSON.parse(sessionStorage.getItem('helpdesk.table.' + table.id + location.pathname + location.search)) || null; } catch (_) { return null; }
+        },
         pageLength: 15, lengthMenu: [10, 15, 25, 50, 100],
         order: [[Number(defaultColumn), defaultDirection]],
         layout: {topStart: 'pageLength', topEnd: 'search', bottomStart: 'info', bottomEnd: {paging: {buttons: 3}}},

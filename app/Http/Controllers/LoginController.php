@@ -54,16 +54,15 @@ class LoginController extends Controller
     public function studentStore(Request $request)
     {
         $request->merge([
-            'name' => mb_strtoupper(trim((string) $request->input('name'))),
             'email' => mb_strtolower(trim((string) $request->input('email'))),
         ]);
         $studentDepartment = Department::whereRaw('UPPER(name) = ?', ['STUDENTS'])->value('id');
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate(\App\Support\RegistrationName::rules() + [
             'email' => ['required', 'email', 'max:255', 'unique:employees,email', 'regex:/^[^@]+@cdt\.pmma\.edu\.ph$/i'],
             'department_id' => ['required', 'integer', 'exists:departments,id', \Illuminate\Validation\Rule::in([$studentDepartment])],
         ]);
-        $validated['name'] = strtoupper($validated['name']);
+        $validated['name'] = \App\Support\RegistrationName::fullName($validated);
+        unset($validated['first_name'], $validated['last_name']);
         $validated['email'] = strtolower($validated['email']);
         Employee::create($validated);
 
