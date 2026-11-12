@@ -90,7 +90,7 @@ class CapacityTest extends TestCase
     {
         \App\Models\TicketUpdate::creating(function () { throw new \RuntimeException('Simulated history failure'); });
         try {
-            $this->post('/tickets', ['name' => 'Test Requester', 'email' => 'test@example.com', 'department_id' => \App\Models\Department::first()->id,
+            $this->post('/tickets', ['submission_token' => (string) \Illuminate\Support\Str::uuid(), 'name' => 'Test Requester', 'email' => 'test@example.com', 'department_id' => \App\Models\Department::first()->id,
                 'category' => 'internet-network', 'subject' => 'Connectivity issue', 'description' => 'The office network is unavailable.', 'priority' => 'normal', 'consent' => '1'])->assertStatus(500);
             $this->assertDatabaseCount('tickets', 0);
         } finally { \App\Models\TicketUpdate::flushEventListeners(); }

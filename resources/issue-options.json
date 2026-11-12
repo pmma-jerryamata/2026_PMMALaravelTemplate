@@ -1,0 +1,230 @@
+{
+  "network": [
+    [
+      "Cannot connect to Wi-Fi",
+      "I have a problem with Wi-Fi connectivity. My device cannot connect to the Wi-Fi access point."
+    ],
+    [
+      "No internet connection",
+      "My device has no internet connection. I need assistance restoring network access."
+    ],
+    [
+      "Slow internet connection",
+      "My internet connection is slow, making it difficult to browse websites and use online services."
+    ],
+    [
+      "Internet connection keeps disconnecting",
+      "My internet connection keeps disconnecting. I need help checking and stabilizing the connection."
+    ],
+    [
+      "Computer has an invalid IP configuration",
+      "My computer reports an invalid IP configuration and cannot access the network."
+    ],
+    [
+      "Cannot access a website",
+      "I cannot access a website using the campus network. I need help checking the connection and access settings."
+    ],
+    [
+      "Cannot connect using a LAN cable",
+      "My device cannot connect to the network using a LAN cable. I need assistance checking the wired connection."
+    ],
+    [
+      "Wi-Fi network is not showing",
+      "The campus Wi-Fi network does not appear in the available networks on my device."
+    ],
+    [
+      "Need help installing or organizing cables",
+      "I need assistance installing or organizing network cables for a reliable connection."
+    ]
+  ],
+  "microsoft": [
+    [
+      "Need to create an email account",
+      "I need assistance creating a PMMA Microsoft email account so I can access campus online services."
+    ],
+    [
+      "Need to reset my password",
+      "I cannot access my account with my current password and need assistance resetting it."
+    ],
+    [
+      "Cannot send or receive emails",
+      "I have a problem with Outlook email. I cannot send or receive messages."
+    ],
+    [
+      "Cannot sign in to Microsoft 365",
+      "I cannot sign in to Microsoft 365 with my PMMA account and need help restoring access."
+    ],
+    [
+      "Cannot complete MFA verification",
+      "I cannot complete multi-factor authentication for my Microsoft account and need assistance with verification."
+    ],
+    [
+      "Microsoft account is locked",
+      "My Microsoft account is locked and I need assistance restoring access."
+    ],
+    [
+      "Need to recover my Microsoft account",
+      "I need help recovering access to my PMMA Microsoft account."
+    ],
+    [
+      "Cannot access OneDrive files",
+      "I cannot access my OneDrive files with my PMMA account and need help checking access."
+    ],
+    [
+      "Microsoft license is not activated",
+      "My Microsoft application reports that its license is not activated. I need assistance checking my account access."
+    ]
+  ],
+  "printer": [
+    [
+      "Cannot print a document",
+      "I have a problem printing documents. My document does not print when I send it to the printer."
+    ],
+    [
+      "Paper is jammed in the printer",
+      "Paper is jammed in the printer and printing cannot continue. I need assistance clearing the jam."
+    ],
+    [
+      "Printer needs ink or toner",
+      "The printer needs ink or toner. I need assistance checking and replacing the consumable."
+    ],
+    [
+      "Cannot scan a document",
+      "I cannot scan a document using the scanner. I need assistance checking the device and scanning settings."
+    ],
+    [
+      "Printer is offline",
+      "The printer appears offline and cannot receive print jobs from my device."
+    ],
+    [
+      "Print quality is poor",
+      "Printed documents have poor quality, such as faded text, lines, or missing content."
+    ],
+    [
+      "Need to set up a printer",
+      "I need assistance connecting and setting up a printer on my device."
+    ],
+    [
+      "Printer is not turning on",
+      "The printer does not turn on and I need assistance checking its power and connections."
+    ],
+    [
+      "Print jobs are stuck in the queue",
+      "My documents remain in the print queue and do not print. I need help clearing the queue and restoring printing."
+    ]
+  ],
+  "computer": [
+    [
+      "Computer will not turn on",
+      "My computer will not turn on. I need assistance checking its power supply and connections."
+    ],
+    [
+      "Computer shows a blue screen",
+      "My computer displays a blue screen and cannot operate normally. I need help diagnosing the problem."
+    ],
+    [
+      "Computer is slow or keeps freezing",
+      "My computer is slow or keeps freezing during use. I need assistance diagnosing and resolving the issue."
+    ],
+    [
+      "Monitor is not displaying properly",
+      "My monitor is not displaying correctly. I need assistance checking the screen and connections."
+    ],
+    [
+      "Keyboard or mouse is not working",
+      "My keyboard or mouse is not responding properly. I need assistance checking the device."
+    ],
+    [
+      "Computer keeps restarting",
+      "My computer keeps restarting unexpectedly and I need assistance diagnosing the cause."
+    ],
+    [
+      "Computer is overheating",
+      "My computer gets unusually hot during use. I need assistance checking cooling and ventilation."
+    ],
+    [
+      "Need to recover or back up files",
+      "I need assistance recovering files or creating a backup of my data."
+    ],
+    [
+      "Computer needs repair or maintenance",
+      "My computer needs inspection, repair, or preventive maintenance. I need technical assistance."
+    ]
+  ],
+  "software": [
+    [
+      "Need to install or update software",
+      "I need assistance installing or updating software on my device."
+    ],
+    [
+      "Application is not working properly",
+      "An application on my device is not working properly. I need help checking and resolving the problem."
+    ],
+    [
+      "Application will not open",
+      "An application will not open on my device and I need assistance troubleshooting it."
+    ],
+    [
+      "Software update cannot finish",
+      "A software update cannot complete successfully. I need assistance checking the update."
+    ],
+    [
+      "Computer may have a virus",
+      "My computer may have a virus or malware. I need assistance checking and securing the device."
+    ],
+    [
+      "Audio or video is not working in a meeting",
+      "Audio or video is not working during my online meeting. I need help checking the camera, microphone, or speakers."
+    ],
+    [
+      "Software license is not activated",
+      "My application reports an activation or licensing problem and I need assistance."
+    ],
+    [
+      "Application keeps crashing",
+      "An application keeps closing or crashing during use. I need assistance diagnosing the problem."
+    ],
+    [
+      "Need help configuring an application",
+      "I need assistance configuring an application so I can use it for my work."
+    ]
+  ],
+  "general": [
+    [
+      "Need help setting up equipment",
+      "I need technical assistance setting up equipment for campus use."
+    ],
+    [
+      "Equipment is not turning on",
+      "The equipment will not turn on. I need assistance checking its power and connections."
+    ],
+    [
+      "Device is not connecting",
+      "My device is not connecting to the required equipment or service. I need technical assistance."
+    ],
+    [
+      "Equipment is not working properly",
+      "The equipment is not operating normally. I need assistance inspecting and troubleshooting it."
+    ],
+    [
+      "Need help setting up a projector",
+      "I need assistance setting up a projector and connecting it to a device for a presentation."
+    ],
+    [
+      "No sound from the equipment",
+      "There is no sound from the equipment. I need assistance checking the audio connections and settings."
+    ],
+    [
+      "Image is not displaying properly",
+      "The image is not displaying properly. I need assistance checking the display and connections."
+    ],
+    [
+      "Telephone is not connecting",
+      "My telephone cannot connect or make calls. I need assistance checking the line and device."
+    ],
+    [
+      "Need equipment inspection or maintenance",
+      "I need assistance inspecting or maintaining equipment to restore reliable operation."
+    ]
+  ]
+}

@@ -67,7 +67,7 @@ if (auditTable) {
 }
 document.querySelectorAll('[data-datatable]').forEach(table => new DataTable(table, {
     pageLength: 10, lengthMenu: [10, 25, 50, 100], order: [],
-    columnDefs: [{targets: -1, orderable: false}],
+    columnDefs: [{targets: -1, orderable: false}, ...(table.querySelector('th')?.textContent === 'Reorder' ? [{targets: 0, orderable: false}] : [])],
     language: {emptyTable: 'No records available', search: 'Search:', lengthMenu: 'Show _MENU_ entries', paginate: {
         first: '<i class="bi bi-chevron-double-left" aria-hidden="true"></i>', previous: '<i class="bi bi-chevron-left" aria-hidden="true"></i>',
         next: '<i class="bi bi-chevron-right" aria-hidden="true"></i>', last: '<i class="bi bi-chevron-double-right" aria-hidden="true"></i>',
@@ -149,6 +149,9 @@ function openEditor(title, url, schema, record = {}, method = 'POST') {
         if (spec.type === 'file' && record.photo_path) {
             const img = document.createElement('img'); img.src = '/dashboard/technicians/' + record.id + '/photo'; img.alt = 'Current technician photo'; img.width = 64; img.height = 64; img.className = 'technician-photo'; group.append(img);
         }
+    }
+    if (saveUrl === tickets.storeUrl) {
+        const token = document.createElement('input'); token.type = 'hidden'; token.name = 'submission_token'; token.value = crypto.randomUUID(); fields.append(token);
     }
     updateActionRequirement(form);
     dialog.showModal();

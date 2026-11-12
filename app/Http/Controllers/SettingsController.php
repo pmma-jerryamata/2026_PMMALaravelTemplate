@@ -14,7 +14,7 @@ class SettingsController extends Controller
 
     public function index()
     {
-        return view('dashboard.settings', ['departments' => Department::directoryOrder()->get(), 'technicians' => Technician::with(['department', 'user:id,name,email,username,is_staff'])->get(), 'services' => ServiceCategory::all(), 'staffUsers' => \App\Models\User::where('is_staff', true)->get(['id', 'name'])]);
+        return view('dashboard.settings', ['departments' => Department::directoryOrder()->get(), 'technicians' => Technician::with(['department', 'user:id,name,email,username,is_staff'])->get(), 'services' => ServiceCategory::orderBy('display_order')->orderBy('id')->get(), 'staffUsers' => \App\Models\User::where('is_staff', true)->get(['id', 'name'])]);
     }
 
     public function save(Request $request, string $type, ?int $id = null)
@@ -32,6 +32,7 @@ class SettingsController extends Controller
             return $this->saveTechnician($request, $record, $data);
         }
         if ($type === 'services') {
+            if (! $record->exists) $record->display_order = ((int) ServiceCategory::max('display_order')) + 1;
             if ($record->exists && $data['slug'] !== $record->slug && \App\Models\Ticket::where('category', $record->slug)->exists()) {
                 return response()->json(['message' => 'The service key cannot change while tickets reference it.'], 422);
             }

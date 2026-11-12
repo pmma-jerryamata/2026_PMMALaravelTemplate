@@ -20,6 +20,9 @@ document.querySelectorAll('[data-server-tickets]').forEach(table => {
     const error = document.createElement('p'); error.setAttribute('role', 'alert'); table.parentElement.before(error);
     const api = new DataTable(table, {
         autoWidth: false,
+        stateSave: staff, stateDuration: -1,
+        stateSaveCallback: (settings, data) => { try { sessionStorage.setItem('ticket-table:'+location.pathname+location.search, JSON.stringify(data)); } catch {} },
+        stateLoadCallback: () => { try { const data = JSON.parse(sessionStorage.getItem('ticket-table:'+location.pathname+location.search)); if(data?.columns) data.columns.forEach(column => delete column.visible); return data; } catch { return null; } },
         columns: headings.map((heading, index) => ({visible: !mobile.matches || visibleColumns.includes(index)})),
         drawCallback: function () { addExpandButtons(this.api()); },
         serverSide:true, processing:true, pageLength:10, lengthMenu:[10,25,50,100], searchDelay:500,

@@ -13,7 +13,7 @@ class ServiceCategory extends Model
     }
     private static function allServices(): array
     {
-        return \Illuminate\Support\Facades\Cache::remember('helpdesk.services', 60, fn () => static::orderBy('id')->get()->keyBy('slug')->toArray());
+        return \Illuminate\Support\Facades\Cache::remember('helpdesk.services', 60, fn () => static::orderBy('display_order')->orderBy('id')->get()->keyBy('slug')->toArray());
     }
     protected $fillable = ['slug', 'title', 'icon', 'description', 'items', 'is_active'];
     protected function casts(): array { return ['items' => 'array', 'is_active' => 'boolean']; }

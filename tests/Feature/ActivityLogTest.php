@@ -24,7 +24,7 @@ class ActivityLogTest extends TestCase
 
     public function test_public_ticket_submission_is_logged_without_request_body_or_secrets(): void
     {
-        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.5'])->post('/tickets', [
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.5'])->post('/tickets', ['submission_token' => (string) \Illuminate\Support\Str::uuid(),
             'name' => 'Test Requester', 'email' => 'requester@example.com', 'department_id' => Department::first()->id,
             'category' => 'software', 'subject' => 'Private subject', 'description' => 'Sensitive description should never appear in audit details.',
             'priority' => 'normal', 'consent' => 1, 'password' => 'never-log-this', '_token' => 'private-token',

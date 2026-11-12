@@ -104,8 +104,8 @@ class DashboardController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate($this->ticketRules(true));
-        $ticket = \Illuminate\Support\Facades\DB::transaction(fn () => Ticket::create($data + ['reference' => \App\Support\TicketReference::next((int) $data['department_id'])]));
+        [$ticket, $created] = app(\App\Support\SubmissionGuard::class)->run($request, 'staff-tickets', Ticket::class, fn () => Ticket::create($data + ['reference' => \App\Support\TicketReference::next((int) $data['department_id'])]));
         $request->attributes->set('audit_reference', $ticket->reference);
-        return response()->json(['message' => 'Ticket created successfully.']);
+        return response()->json(['message' => $created ? 'Ticket created successfully.' : 'Ticket already submitted.', 'reference' => $ticket->reference]);
     }
 }

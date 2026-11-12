@@ -55,7 +55,7 @@ class SettingsTest extends TestCase
     {
         $this->actingAs($this->staff())->postJson('/dashboard/settings/technicians', ['name' => 'Test Tech', 'email' => 'tech@example.com', 'specialization' => 'Networking', 'is_active' => 1])->assertOk();
         $technician = Technician::where('email', 'tech@example.com')->firstOrFail();
-        $this->postJson('/dashboard/tickets', ['name' => 'Requester', 'email' => 'requester@example.com', 'department_id' => Department::first()->id, 'category' => 'internet-network', 'subject' => 'Network issue', 'description' => 'Internet connection is unavailable in the office.', 'priority' => 'high'])->assertOk();
+        $this->postJson('/dashboard/tickets', ['submission_token' => (string) \Illuminate\Support\Str::uuid(), 'name' => 'Requester', 'email' => 'requester@example.com', 'department_id' => Department::first()->id, 'category' => 'internet-network', 'subject' => 'Network issue', 'description' => 'Internet connection is unavailable in the office.', 'priority' => 'high'])->assertOk();
         $ticket = Ticket::sole();
         $this->getJson('/dashboard/tickets/'.$ticket->id)->assertOk()->assertJsonPath('subject', 'Network issue');
         $this->postJson('/dashboard/tickets/'.$ticket->id.'/action', ['action_taken' => 'Troubleshooting the reported issue.', 'status' => 'In Progress', 'technician_id' => $technician->id])->assertOk();

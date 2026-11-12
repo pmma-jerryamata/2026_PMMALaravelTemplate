@@ -19,23 +19,33 @@
     <script src="{{ asset('assets/js/analytics.js') }}" defer></script>
     <script src="{{ asset('assets/js/ticket-tables.js') }}?v={{ filemtime(public_path('assets/js/ticket-tables.js')) }}" defer></script>
     <script src="{{ asset('assets/js/dashboard.js') }}?v={{ filemtime(public_path('assets/js/dashboard.js')) }}" defer></script>
+<link rel="stylesheet" href="{{ asset('assets/css/shared-components.css') }}?v={{ filemtime(public_path('assets/css/shared-components.css')) }}">
 </head>
 <body class="admin-workspace">
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <aside id="staff-sidebar" class="admin-sidebar" aria-label="Staff sidebar">
     <a class="admin-brand" href="{{ route('dashboard') }}"><img src="{{ asset('assets/images/app-logo.svg') }}" width="48" height="48" alt="APP seal"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>STAFF WORKSPACE</small></span></a>
-    <span class="admin-nav-label">WORKSPACE</span>
     <button type="button" class="admin-menu-close" aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
     <nav id="staff-navigation" aria-label="Staff navigation">
+        <span class="admin-nav-label">WORKSPACE</span>
         <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>
+        <details class="admin-nav-group" @if(request('status') || request()->routeIs('dashboard.tickets.*')) open @endif><summary><i class="bi bi-inbox" aria-hidden="true"></i><span>Tickets</span><i class="bi bi-chevron-down nav-group-arrow" aria-hidden="true"></i></summary><div class="admin-nav-children">
         <a href="{{ route('dashboard', ['status' => 'Open']) }}" @class(['selected' => request('status') === 'Open'])><i class="bi bi-inbox" aria-hidden="true"></i> Open Tickets</a>
         <a href="{{ route('dashboard', ['status' => 'In Progress']) }}" @class(['selected' => request('status') === 'In Progress'])><i class="bi bi-arrow-repeat" aria-hidden="true"></i> In Progress</a>
         <a href="{{ route('dashboard', ['status' => 'Resolved']) }}" @class(['selected' => request('status') === 'Resolved'])><i class="bi bi-check2-circle" aria-hidden="true"></i> Resolved Tickets</a>
         <a href="{{ route('dashboard', ['status' => 'Closed']) }}" @class(['selected' => request('status') === 'Closed'])><i class="bi bi-archive" aria-hidden="true"></i> Closed Tickets</a>
-        <a href="{{ route('dashboard.settings') }}" @class(['selected' => request()->routeIs('dashboard.settings')])><i class="bi bi-gear" aria-hidden="true"></i> System Settings</a>
+        </div></details>
+        <details class="admin-nav-group" @if(request()->routeIs('dashboard.settings')) open @endif><summary><i class="bi bi-gear" aria-hidden="true"></i><span>System Settings</span><i class="bi bi-chevron-down nav-group-arrow" aria-hidden="true"></i></summary><div class="admin-nav-children">
+        @foreach(['general' => 'General / Branding', 'departments' => 'Departments', 'technicians' => 'Technicians', 'services' => 'Services', 'account' => 'My Account'] as $tab => $label)
+        <a href="{{ route('dashboard.settings') }}#{{ $tab }}">{{ $label }}</a>
+        @endforeach
+        </div></details>
         @can('view-activity-logs')
         <a href="{{ route('dashboard.activity-logs') }}" @class(['selected' => request()->routeIs('dashboard.activity-logs*')])><i class="bi bi-journal-text" aria-hidden="true"></i> Activity Logs</a>
         @endcan
+        <hr class="admin-nav-divider"><span class="admin-nav-label">RESOURCES</span>
+        <a href="{{ route('faq') }}"><i class="bi bi-book" aria-hidden="true"></i> Help &amp; Guide</a>
+        <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
     </nav>
     <div class="admin-sidebar-bottom"><span>Information Technology Services Unit</span></div>
 </aside>
@@ -51,5 +61,6 @@
 <dialog id="editor-dialog" class="admin-dialog" aria-labelledby="editor-title"><div class="dialog-heading"><h2 id="editor-title">Edit Record</h2><button type="button" data-close-dialog aria-label="Close Dialog" title="Close Dialog"><x-action-icon name="x-lg" /></button></div><form id="editor-form" class="portal-form"><div id="editor-errors" role="alert"></div><div id="editor-fields" class="form-grid"></div><div class="dialog-actions"><button type="button" class="btn btn-secondary ui-action" data-close-dialog aria-label="Cancel" title="Cancel"><x-action-icon name="x-lg" /><span>Cancel</span></button><button type="submit" class="btn btn-primary ui-action" aria-label="Save Changes" title="Save Changes"><x-action-icon name="floppy" /><span>Save Changes</span></button></div></form></dialog>
 @stack('dashboard-data')
 <dialog id="timeline-dialog" class="admin-dialog" aria-labelledby="timeline-title"><div class="dialog-heading"><h2 id="timeline-title">Ticket Timeline</h2><button type="button" data-close-timeline aria-label="Close Timeline" title="Close Timeline"><x-action-icon name="x-lg" /></button></div><div id="timeline-content" aria-live="polite"></div><div class="dialog-actions"><button type="button" class="btn btn-secondary ui-action" data-close-timeline>Close</button></div></dialog>
+@include('partials.back-to-top')
 </body>
 </html>

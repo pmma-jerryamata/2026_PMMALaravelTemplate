@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pmma.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/shared-components.css') }}?v={{ filemtime(public_path('assets/css/shared-components.css')) }}">
 </head>
 <body class="auth-page">
     <main class="auth-main" id="main-content">
@@ -25,5 +26,6 @@ document.querySelector('.password-toggle')?.addEventListener('click', function (
     this.querySelector('i').className = visible ? 'bi bi-eye-slash' : 'bi bi-eye';
 });
 </script>
+@include('partials.back-to-top')
 </body>
 </html>

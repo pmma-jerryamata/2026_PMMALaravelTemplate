@@ -34,6 +34,10 @@ The current layouts load ready-to-use assets from `public/assets`; Node/Vite is 
 
 After changing `.env` or config on a cached installation, run `php artisan optimize:clear`.
 
+## Latest reusable components
+
+The starter now includes grouped navigation, stable sidebar sizing, collapsible filters, fullscreen request creation with issue choices, public request totals, service reordering, back-to-top, persistent table position, and server-side rate limiting with durable duplicate-submit protection. See [REUSE_GUIDE.md](REUSE_GUIDE.md) for the component map, migration requirements and patterns for other modules.
+
 ## Replace business functions
 
 See [CUSTOMIZATION.md](CUSTOMIZATION.md) for the layout/component map and module replacement checklist. Fresh migrations include sample office/service catalogs from the original campus workflow. They are sample configuration, not live database exports. Replace these before the first migration for another organization, or manage them in System Settings. Historical migration filenames are intentionally retained.

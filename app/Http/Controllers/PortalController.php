@@ -10,9 +10,9 @@ use Illuminate\Validation\Rule;
 
 class PortalController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
-        return view('portal.home', ['services' => \App\Models\ServiceCategory::catalog(), 'recentTickets' => Ticket::with(['department', 'latestAction', 'latestUpdate'])->select(['id', 'reference', 'subject', 'department_id', 'status', 'created_at'])->latest()->orderByDesc('id')->limit(10)->get()]);
+        return view('portal.home', ['summary' => app(\App\Services\PublicRequestSummary::class)->data($request), 'services' => \App\Models\ServiceCategory::catalog(), 'recentTickets' => Ticket::with(['department', 'latestAction', 'latestUpdate'])->select(['id', 'reference', 'subject', 'department_id', 'status', 'created_at'])->latest()->orderByDesc('id')->limit(10)->get()]);
     }
 
     public function timeline(string $reference)
@@ -36,11 +36,17 @@ class PortalController extends Controller
 
     public function create(Request $request)
     {
-        return view('portal.create', ['services' => \App\Models\ServiceCategory::catalog(), 'selected' => $request->query('category'), 'departments' => Department::where('is_active', true)->directoryOrder()->get()]);
+        return view('portal.create', ['submissionToken' => (string) Str::uuid(), 'services' => \App\Models\ServiceCategory::catalog(), 'selected' => $request->query('category'), 'departments' => Department::where('is_active', true)->directoryOrder()->get()]);
     }
 
     public function store(Request $request)
     {
+        if ($request->filled('issue_name')) {
+            $request->validate(['issue_name' => ['required', 'string', 'max:255'], 'category' => ['required', 'string', Rule::in(array_keys(\App\Models\ServiceCategory::catalog()))]]);
+            $choice = collect(app(\App\Services\RequestIssues::class)->options((string) $request->input('category')))->first(fn ($issue) => $issue[0] === $request->input('issue_name'));
+            if (! $choice) throw \Illuminate\Validation\ValidationException::withMessages(['issue_name' => 'Please select an issue again.']);
+            $request->merge(['description' => $choice[1]]);
+        }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:254'],
@@ -52,7 +58,8 @@ class PortalController extends Controller
         ]);
         unset($data['consent']);
         $data['subject'] = Str::limit(Str::squish($data['description']), 197);
-        $ticket = \Illuminate\Support\Facades\DB::transaction(fn () => Ticket::create($data + ['reference' => \App\Support\TicketReference::next((int) $data['department_id'])]));
+        $request->validate(['submission_token' => ['required', 'uuid']]);
+        [$ticket, $created] = app(\App\Support\SubmissionGuard::class)->run($request, 'portal-tickets', Ticket::class, fn () => Ticket::create($data + ['reference' => \App\Support\TicketReference::next((int) $data['department_id'])]));
         $request->attributes->set('audit_success', true);
         $request->attributes->set('audit_reference', $ticket->reference);
         if (!$request->user()) $request->attributes->set('audit_actor', ['id' => null, 'name' => $ticket->name.' (Requestee)', 'login' => $ticket->email]);

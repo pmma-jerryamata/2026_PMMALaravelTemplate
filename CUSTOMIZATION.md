@@ -50,3 +50,6 @@ These features illustrate the layout in a working application. Adapt the logic a
 Included: current source files (including local edits), Composer lockfile, sample config/migrations, tests, static assets and third-party notices.
 
 Excluded: .git, .env, production backups, database rows/dumps, staff accounts, passwords, uploaded photos, storage runtime data, compiled views/config, vendor, node_modules, and machine-specific VS Code settings.
+## November 2026 extraction
+
+See [REUSE_GUIDE.md](REUSE_GUIDE.md) for the latest shared UI components, scripts, service ordering, rate-limit configuration and reusable SubmissionGuard. Keep the existing branding/authorization boundaries when adapting these to a new application.

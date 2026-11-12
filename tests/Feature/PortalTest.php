@@ -61,14 +61,14 @@ class PortalTest extends TestCase
     public function test_ticket_numbers_increment_per_office_and_year(): void
     {
         $data = $this->validTicket();
-        $this->post('/tickets', $data)->assertRedirect(route('tickets.receipt'));
-        $this->post('/tickets', $data)->assertRedirect(route('tickets.receipt'));
+        $this->post('/tickets', array_replace($data, ['submission_token' => (string) \Illuminate\Support\Str::uuid()]))->assertRedirect(route('tickets.receipt'));
+        $this->post('/tickets', array_replace($data, ['submission_token' => (string) \Illuminate\Support\Str::uuid()]))->assertRedirect(route('tickets.receipt'));
         $students = \App\Models\Department::where('name', 'Students')->value('id');
-        $this->post('/tickets', array_replace($data, ['department_id' => $students]))->assertRedirect(route('tickets.receipt'));
+        $this->post('/tickets', array_replace($data, ['department_id' => $students, 'submission_token' => (string) \Illuminate\Support\Str::uuid()]))->assertRedirect(route('tickets.receipt'));
         $year = now()->format('Y');
         $this->assertSame(["APP-$year-ITS-000001", "APP-$year-ITS-000002", "APP-$year-STU-000001"], Ticket::orderBy('id')->pluck('reference')->all());
         $this->travel(1)->years();
-        $this->post('/tickets', $data)->assertRedirect(route('tickets.receipt'));
+        $this->post('/tickets', array_replace($data, ['submission_token' => (string) \Illuminate\Support\Str::uuid()]))->assertRedirect(route('tickets.receipt'));
         $this->assertSame('APP-'.now()->format('Y').'-ITS-000001', Ticket::latest('id')->first()->reference);
     }
 
@@ -121,6 +121,6 @@ class PortalTest extends TestCase
 
     private function validTicket(): array
     {
-        return ['department_id' => \App\Models\Department::where('code', 'ITSU')->value('id'), 'name' => 'Test Cadet', 'email' => 'cadet@example.com', 'category' => 'internet-network', 'description' => 'The WiFi connection in the library has been unavailable since this morning.', 'priority' => 'normal', 'consent' => '1'];
+        return ['submission_token' => (string) \Illuminate\Support\Str::uuid(), 'department_id' => \App\Models\Department::where('code', 'ITSU')->value('id'), 'name' => 'Test Cadet', 'email' => 'cadet@example.com', 'category' => 'internet-network', 'description' => 'The WiFi connection in the library has been unavailable since this morning.', 'priority' => 'normal', 'consent' => '1'];
     }
 }
