@@ -13,10 +13,9 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <aside id="staff-sidebar" class="admin-sidebar" aria-label="Staff sidebar">
 <a class="admin-brand" href="{{ route('dashboard') }}"><img src="{{ asset('helpdesk/images/pmma-logo.png') }}" width="48" height="48" alt="PMMA seal"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>STAFF WORKSPACE</small></span></a>
-<span class="admin-nav-label">WORKSPACE</span><button type="button" class="admin-menu-close" aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+<button type="button" class="admin-menu-close" aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
 <nav id="staff-navigation" aria-label="Staff navigation">
 @if(\App\Models\Technician::whereRaw('LOWER(email) = ?', [mb_strtolower(trim(auth()->user()->email))])->exists())
-<span class="admin-nav-label">TECH STAFF</span>
 <a href="{{ route('tech.index') }}" @class(['selected' => request()->routeIs('tech.*')])><i class="bi bi-tools" aria-hidden="true"></i> Technician Dashboard</a>
 <hr class="admin-nav-divider">
 @endif
