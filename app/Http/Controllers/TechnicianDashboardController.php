@@ -38,14 +38,8 @@ class TechnicianDashboardController extends Controller
                 ->orWhereHas('employee', fn ($employee) => $employee->withTrashed()
                     ->where('name', 'like', $term)->orWhereHas('department', fn ($department) => $department->where('name', 'like', $term))));
         }
-        if ($status === 'all') {
-            $query->orderByRaw("CASE WHEN status = 'Pending' THEN 0 ELSE 1 END");
-        }
-        if ($priorityEnabled) {
-            $query->orderByRaw("CASE priority WHEN 'Urgent' THEN 0 WHEN 'High' THEN 1 WHEN 'Normal' THEN 2 ELSE 3 END");
-        }
         return view('helpdesk.technician.index', [
-            'tickets' => $query->orderBy('created_at')->orderBy('id')->paginate(12)->withQueryString(),
+            'tickets' => $query->orderByDesc('created_at')->orderByDesc('id')->paginate(12)->withQueryString(),
             'technicians' => Technician::orderBy('name')->get(),
             'departments' => \App\Models\Department::orderBy('name')->get(['id', 'name']),
             'employees' => \App\Models\Employee::orderBy('name')->get(['id', 'name', 'department_id']),

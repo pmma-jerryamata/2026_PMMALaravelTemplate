@@ -370,15 +370,15 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertDatabaseHas('supports', ['id' => $ticket->id, 'findings' => 'Checking the network.', 'technician_id' => 1]);
     }
 
-    public function test_technician_dashboard_sorts_by_priority_and_filters_tickets(): void
+    public function test_technician_dashboard_shows_recent_tickets_first_and_filters_tickets(): void
     {
         (require base_path('database/migrations/2026_11_11_000002_add_ticket_priority.php'))->up();
         $low = $this->ticket(); $low->update(['priority' => 'Low', 'support_specifics' => 'Low priority concern']);
         $high = $this->ticket(); $high->update(['priority' => 'High', 'support_specifics' => 'High priority concern', 'technician_id' => 1]);
-        $urgent = $this->ticket(); $urgent->update(['priority' => 'Urgent', 'support_specifics' => 'Urgent priority concern']);
+        $urgent = $this->ticket(); $urgent->update(['priority' => 'Urgent', 'support_specifics' => 'Urgent priority concern', 'created_at' => now()->subDays(2)]);
         $done = $this->ticket(); $done->update(['status' => 'Completed', 'support_specifics' => 'Finished concern']);
         $this->actingAs($this->staff())->get('/tech')->assertOk()
-            ->assertSeeInOrder(['Urgent priority concern', 'High priority concern', 'Low priority concern'])->assertDontSee('Finished concern');
+            ->assertSeeInOrder(['High priority concern', 'Low priority concern', 'Urgent priority concern'])->assertDontSee('Finished concern');
         $this->get('/tech?priority=High&technician=1')->assertOk()->assertSee('High priority concern')->assertDontSee('Urgent priority concern');
         $this->get('/tech?technician=unassigned')->assertOk()->assertSee('Urgent priority concern')->assertDontSee('High priority concern');
         $this->get('/tech?status=Completed')->assertOk()->assertSee('Finished concern')->assertDontSee('Urgent priority concern');
