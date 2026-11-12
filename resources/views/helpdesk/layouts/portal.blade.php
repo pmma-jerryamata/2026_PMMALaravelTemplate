@@ -44,4 +44,5 @@
     <div class="footer-column"><h4>Help & Resources</h4><ul class="footer-links-new"><li><a href="{{ route('faq') }}">Frequently Asked Questions</a></li><li><a href="{{ route('contact') }}">Contact & Support</a></li><li><a href="{{ route('privacy') }}">Privacy Notice</a></li></ul></div>
     <div class="footer-column"><h4>PMMA Service Portal</h4><p>For cadets, faculty, and staff.<br>Submit. Track. Stay informed.</p><a href="{{ route('tickets.create') }}" class="footer-contribute">How Can We Help? <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div>
 </div><div class="footer-bottom-new"><div class="footer-copyright"><span>&copy; {{ date('Y') }} {{ $systemSettings['app_name'] }}.</span><span>{{ $systemSettings['footer_credit'] }}</span></div></div></div></footer>
+@include('helpdesk.partials.back-to-top')
 </body></html>

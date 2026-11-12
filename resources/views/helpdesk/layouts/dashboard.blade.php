@@ -28,4 +28,5 @@
 <button type="button" class="admin-menu-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
 <div class="admin-shell"><header class="admin-topbar"><button type="button" class="admin-menu-toggle" aria-label="Open navigation" aria-controls="staff-sidebar" aria-expanded="false"><i class="bi bi-list" aria-hidden="true"></i></button><div><span class="admin-topbar-label">PMMA / Support Operations</span><strong>@yield('title', 'Dashboard')</strong></div><div class="admin-account"><span class="admin-avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><a href="{{ route('profile.edit') }}" class="admin-account-name">{{ auth()->user()->name }}<small>Helpdesk Staff</small></a><form method="post" action="{{ route('logout') }}">@csrf<button type="submit" class="staff-logout ui-action" aria-label="Logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></button></form></div></header>
 <main id="main-content" class="admin-content">@if(session('success'))<div class="portal-alert dashboard-success" role="status">{{ session('success') }}</div>@endif @if($errors->any())<div class="portal-alert error" role="alert"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif @yield('content')</main>
-</div></div></body></html>
+</div></div>@include('helpdesk.partials.back-to-top')
+</body></html>

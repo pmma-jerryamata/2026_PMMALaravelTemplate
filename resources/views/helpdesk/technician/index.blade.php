@@ -48,4 +48,5 @@
 @empty<div class="tech-empty"><i class="bi bi-check2-circle" aria-hidden="true"></i><h3>No tickets in this view</h3><p>Try another status or reset your filters.</p><a class="tech-button tech-secondary" href="{{ route('tech.index') }}">View pending tickets</a></div>@endforelse
 </div>
 @if($tickets->hasPages())<nav class="tech-pagination" aria-label="Ticket pages">@if($tickets->onFirstPage())<span>Previous</span>@else<a class="tech-button tech-secondary" href="{{ $tickets->previousPageUrl() }}">Previous</a>@endif<span>Page {{ $tickets->currentPage() }} of {{ $tickets->lastPage() }}</span>@if($tickets->hasMorePages())<a class="tech-button tech-secondary" href="{{ $tickets->nextPageUrl() }}">Next</a>@else<span>Next</span>@endif</nav>@endif
-</main></body></html>
+</main>@include('helpdesk.partials.back-to-top')
+</body></html>
