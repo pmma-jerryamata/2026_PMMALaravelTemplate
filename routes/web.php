@@ -104,6 +104,8 @@ Route::middleware('auth')->group(function () {
     ////////////////SUPPORT MAIN PAGE/////////////////////////////////////////////////////
     Route::post('/support-admin', [SupportController::class, 'saveSupportAdmin'])->name('support-admin');
     Route::get('/support', [HelpdeskController::class, 'dashboard'])->name('support');
+    Route::get('/report/jobs', [ReportController::class, 'jobs'])->name('report.jobs');
+    Route::get('/report/jobs/pdf', [ReportController::class, 'jobsPdf'])->name('report.jobs.pdf');
     Route::match(['get', 'post'], '/report', [ReportController::class, 'index'])->name('report');
     Route::match(['get', 'post'], '/report/pdf', [ReportController::class, 'pdf'])->name('report.pdf');
     Route::get('/add', [HelpdeskController::class, 'create'])->name('add');

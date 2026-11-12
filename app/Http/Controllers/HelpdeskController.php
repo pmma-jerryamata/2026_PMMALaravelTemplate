@@ -164,6 +164,7 @@ class HelpdeskController extends Controller
             'support_specifics' => 'required|string|max:10000',
             'submission_token' => 'required|uuid',
             'technician_id' => $staff ? 'nullable|integer|exists:technicians,id' : 'prohibited',
+            'privacy_consent' => $staff ? 'exclude' : 'accepted',
         ], ['email.exists' => 'Your email is not in the active PMMA directory. Please contact ITSU.']);
         $token = 'helpdesk.submitted.'.$data['submission_token'];
         if ($request->session()->has($token)) {

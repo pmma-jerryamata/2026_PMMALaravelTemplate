@@ -57,8 +57,8 @@ if (emailForm) {
         const description = fields.querySelector('[data-registration-description]');
         if (title) title.textContent = cadet ? 'Cadet registration' : 'Employee registration';
         if (description) description.textContent = (cadet
-            ? 'Enter your first and last names in ALL CAPS. You will be registered under STUDENTS automatically.'
-            : 'Enter your first and last names in ALL CAPS and select your department / office.')
+            ? 'Enter your first and last names. You will be registered under STUDENTS automatically.'
+            : 'Enter your first and last names and select your department / office.')
             + ' Your record will stay inactive until administrator activation. Your ticket will still be submitted.';
     }
     registration(false);
@@ -78,7 +78,7 @@ if (emailForm) {
             const type = data.registration_type || (value.endsWith('@cdt.pmma.edu.ph') ? 'cadet' : 'employee');
             registration(data.registration_required === true, type);
             notice.textContent = data.registration_required
-                ? (type === 'cadet' ? 'Cadet email accepted. Enter your first and last names in ALL CAPS.' : 'Employee email accepted. Enter your first and last names in ALL CAPS and select your department.')
+                ? (type === 'cadet' ? 'Cadet email accepted. Enter your first and last names.' : 'Employee email accepted. Enter your first and last names and select your department.')
                 : 'PMMA email accepted. You can submit your ticket.';
             email.removeAttribute('aria-invalid');
             return true;

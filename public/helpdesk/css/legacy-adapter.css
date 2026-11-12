@@ -170,4 +170,6 @@ body { margin: 0; }
 .admin-sidebar .admin-tech-shortcut small { display: block; margin-top: 4px; color: #a9bedb; font-size: 11px; font-weight: 400; }
 @media(max-width:768px) { .admin-sidebar #staff-navigation > a, .admin-sidebar .admin-nav-group > summary { min-height: 48px; } }
 
-.service-reorder-actions{display:inline-flex;gap:6px;margin-left:6px;vertical-align:middle}.service-reorder-actions form{display:inline-flex;margin:0}.service-reorder-actions button{min-width:44px;min-height:44px}
+.service-reorder-actions{display:inline-flex;gap:4px;margin:0;flex-shrink:0;vertical-align:middle}.service-reorder-actions form{display:inline-flex;margin:0}.service-reorder-actions button{min-width:44px;min-height:44px}
+
+.service-name-cell{display:flex;align-items:center;gap:14px;min-width:0}.service-name-label{min-width:0;overflow-wrap:anywhere;line-height:1.6}.service-name-cell .service-reorder-actions{flex-direction:column}.service-name-cell .service-reorder-actions button{margin:0;padding:8px;min-width:44px;min-height:44px}@media(max-width:640px){.service-name-cell{gap:10px}}

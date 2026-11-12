@@ -198,7 +198,7 @@ class HelpdeskPresentationTest extends TestCase
         $this->post('/tickets', [
             'email' => 'requester@pmma.edu.ph', 'task_id' => 1,
             'support_specifics' => 'The office network connection is unavailable.',
-            'submission_token' => (string) Str::uuid(), 'employee_id' => 999,
+            'privacy_consent' => '1', 'submission_token' => (string) Str::uuid(), 'employee_id' => 999,
         ])->assertRedirect();
         $this->assertDatabaseCount('employees', 1);
         $this->assertDatabaseHas('supports', ['employee_id' => 1, 'task_id' => 1, 'status' => 'Pending',
@@ -209,7 +209,7 @@ class HelpdeskPresentationTest extends TestCase
     public function test_repeated_submission_token_does_not_duplicate_a_ticket(): void
     {
         $payload = ['email' => 'requester@pmma.edu.ph', 'task_id' => 1,
-            'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+            'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertRedirect();
         $this->post('/tickets', $payload)->assertRedirect();
         $this->assertDatabaseCount('supports', 1);
@@ -219,7 +219,7 @@ class HelpdeskPresentationTest extends TestCase
     public function test_unknown_email_and_public_technician_assignment_are_rejected(): void
     {
         $payload = ['email' => 'unknown@example.test', 'task_id' => 1,
-            'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+            'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasErrors('email');
         $payload['email'] = 'requester@pmma.edu.ph'; $payload['technician_id'] = 1;
         $this->post('/tickets', $payload)->assertSessionHasErrors('technician_id');
@@ -304,12 +304,23 @@ class HelpdeskPresentationTest extends TestCase
     {
         $this->actingAs($this->staff())->post('/dashboard/tickets', [
             'department_id' => 1, 'employee_id' => 1, 'task_id' => 1, 'support_specifics' => 'Please reconnect the network.',
-            'technician_id' => 1, 'submission_token' => (string) Str::uuid(),
+            'technician_id' => 1, 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid(),
         ])->assertRedirect();
         $ticket = Support::firstOrFail();
         $this->assertSame(1, (int) $ticket->employee_id);
         $this->assertSame(1, (int) $ticket->technician_id);
         $this->get('/dashboard/tickets/'.$ticket->id)->assertOk()->assertSee('Please reconnect the network.');
+    }
+
+    public function test_public_ticket_requires_privacy_agreement(): void
+    {
+        $payload = ['email' => 'requester@pmma.edu.ph', 'task_id' => 1,
+            'support_specifics' => 'No internet connection.', 'submission_token' => (string) Str::uuid()];
+        $this->post('/tickets', $payload)->assertSessionHasErrors('privacy_consent');
+        $this->post('/tickets', $payload + ['privacy_consent' => '0'])->assertSessionHasErrors('privacy_consent');
+        $this->assertDatabaseCount('supports', 0);
+        $this->post('/tickets', $payload + ['privacy_consent' => '1'])->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertDatabaseCount('supports', 1);
     }
 
     public function test_service_reordering_updates_public_and_admin_order(): void
@@ -397,7 +408,7 @@ class HelpdeskPresentationTest extends TestCase
         $this->actingAs($this->staff());
         DB::table('departments')->insert(['id' => 2, 'name' => 'Other Department']);
         $payload = ['department_id' => 2, 'employee_id' => 1, 'task_id' => 1,
-            'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+            'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/dashboard/tickets', $payload)->assertSessionHasErrors('employee_id');
         $payload['department_id'] = 1;
         DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
@@ -443,7 +454,7 @@ class HelpdeskPresentationTest extends TestCase
             ->assertExactJson(['valid' => true, 'registration_required' => true, 'registration_type' => 'employee']);
         $this->assertDatabaseCount('employees', 1);
         $payload = ['email' => ' NEW.USER@PMMA.EDU.PH ', 'first_name' => 'New', 'last_name' => 'User', 'registration_department_id' => 1,
-            'task_id' => 1, 'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+            'task_id' => 1, 'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasNoErrors()->assertRedirect();
         $employee = \App\Models\Employee::withTrashed()->where('email', 'new.user@pmma.edu.ph')->firstOrFail();
         $this->assertTrue($employee->trashed());
@@ -527,7 +538,7 @@ class HelpdeskPresentationTest extends TestCase
     {
         $this->postJson('/tickets/requester', ['email' => 'person@pmma.edu.ph.evil.test'])->assertUnprocessable();
         $payload = ['email' => 'new@pmma.edu.ph', 'task_id' => 1,
-            'support_specifics' => 'Network unavailable.', 'submission_token' => (string) Str::uuid()];
+            'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasErrors(['first_name', 'last_name', 'registration_department_id']);
         $payload['email'] = 'requester@pmma.edu.ph';
         DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
@@ -542,7 +553,7 @@ class HelpdeskPresentationTest extends TestCase
             ->assertExactJson(['valid' => true, 'registration_required' => true, 'registration_type' => 'cadet']);
         $payload = ['email' => 'cadet@cdt.pmma.edu.ph', 'first_name' => '  Juan ', 'last_name' => ' Dela Cruz  ',
             'task_id' => 1,
-            'support_specifics' => 'Cannot connect in the dormitory.', 'submission_token' => (string) Str::uuid()];
+            'support_specifics' => 'Cannot connect in the dormitory.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasNoErrors()->assertRedirect();
         $cadet = \App\Models\Employee::withTrashed()->where('email', 'cadet@cdt.pmma.edu.ph')->firstOrFail();
         $this->assertSame('JUAN DELA CRUZ', $cadet->name);
@@ -561,7 +572,7 @@ class HelpdeskPresentationTest extends TestCase
             $this->postJson('/tickets/requester', ['email' => $email])->assertUnprocessable();
         }
         $payload = ['email' => 'employee@pmma.edu.ph', 'first_name' => 'Employee', 'last_name' => 'Name', 'registration_department_id' => 44,
-            'task_id' => 1, 'support_specifics' => 'Network issue', 'submission_token' => (string) Str::uuid()];
+            'task_id' => 1, 'support_specifics' => 'Network issue', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasErrors('registration_department_id');
         $this->assertDatabaseCount('employees', 1);
         $payload['email'] = ' CADET@CDT.PMMA.EDU.PH ';
@@ -575,7 +586,7 @@ class HelpdeskPresentationTest extends TestCase
     public function test_registration_requires_valid_first_and_last_names_before_creating_records(): void
     {
         $payload = ['email' => 'new@cdt.pmma.edu.ph', 'task_id' => 1,
-            'support_specifics' => 'No internet connection', 'submission_token' => (string) Str::uuid()];
+            'support_specifics' => 'No internet connection', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
         $this->post('/tickets', $payload)->assertSessionHasErrors(['first_name', 'last_name']);
         $this->post('/tickets', $payload + ['first_name' => '123', 'last_name' => '<script>test</script>'])
             ->assertSessionHasErrors(['first_name', 'last_name']);
@@ -599,7 +610,7 @@ class HelpdeskPresentationTest extends TestCase
             'deleted_at' => null, 'activation_pending' => 0]);
         $this->post('/tickets', ['email' => 'new.employee@pmma.edu.ph', 'first_name' => 'New', 'last_name' => 'Employee',
             'registration_department_id' => 1, 'task_id' => 1, 'support_specifics' => 'Network unavailable.',
-            'submission_token' => (string) Str::uuid()])->assertSessionHasNoErrors()->assertRedirect();
+            'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()])->assertSessionHasNoErrors()->assertRedirect();
         $this->assertDatabaseHas('employees', ['email' => 'new.employee@pmma.edu.ph', 'activation_pending' => 1]);
         $this->assertDatabaseCount('supports', 1);
         $this->get('/tickets/receipt?ticket='.Support::firstOrFail()->id)->assertOk()->assertSee('awaiting administrator activation');
@@ -813,6 +824,41 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertEqualsWithDelta(595.44, $size['width'] * 72 / 25.4, 0.001);
         $this->assertEqualsWithDelta(841.68, $size['height'] * 72 / 25.4, 0.001);
         $this->assertSame($before, Support::find($ticket->id)->toArray());
+        $this->assertDatabaseCount('supports', 1);
+    }
+
+    public function test_job_requests_report_counts_and_filters_offices_services_and_statuses(): void
+    {
+        DB::table('tasks')->insert(['id' => 2, 'name' => 'Microsoft Account Concerns', 'content' => 'Account help', 'icon' => 'bi bi-person-lock']);
+        $one = $this->ticket(); $one->update(['status' => 'Completed', 'technician_id' => 1, 'created_at' => '2026-11-02 10:00:00']);
+        $two = $this->ticket(); $two->update(['task_id' => 2, 'technician_id' => 1, 'created_at' => '2026-11-03 10:00:00']);
+        $old = $this->ticket(); $old->update(['status' => 'Cancelled', 'created_at' => '2026-10-02 10:00:00']);
+        $this->get('/report/jobs')->assertRedirect('/login');
+        $this->get('/report/jobs/pdf')->assertRedirect('/login');
+        $this->actingAs($this->staff());
+        $this->get('/report/jobs?from=2026-11-01&to=2026-11-30')->assertOk()
+            ->assertViewHas('total', 2)->assertSee('Job Requests Report')->assertSee('STUDENTS')->assertSee('report-pdf-viewer');
+        $this->get('/report/jobs?all_dates=1')->assertOk()->assertViewHas('total', 3);
+        $this->get('/report/jobs?from=2026-11-01&to=2026-11-30&department_id=1&task_id=2&technician_id=1')
+            ->assertOk()->assertViewHas('total', 1);
+        $this->get('/report/jobs?all_dates=1&status=Completed')->assertOk()->assertViewHas('total', 1);
+        DB::table('employees')->where('id', 1)->update(['deleted_at' => now()]);
+        $this->get('/report/jobs?all_dates=1&department_id=1')->assertOk()->assertViewHas('total', 3);
+        $this->getJson('/report/jobs?department_id=999999')->assertUnprocessable();
+        $this->getJson('/report/jobs?from=2026-11-30&to=2026-11-01')->assertUnprocessable();
+    }
+
+    public function test_job_requests_pdf_uses_fixed_template_and_supports_download(): void
+    {
+        $this->ticket();
+        $this->actingAs($this->staff());
+        $pdf = $this->get('/report/jobs/pdf?all_dates=1')->assertOk()->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+        $reader = new \setasign\Fpdi\Tcpdf\Fpdi();
+        $reader->setSourceFile(\setasign\Fpdi\PdfParser\StreamReader::createByString($pdf->getContent()));
+        $size = $reader->getTemplateSize($reader->importPage(1));
+        $this->assertEqualsWithDelta(595.44, $size['width'] * 72 / 25.4, .001);
+        $this->get('/report/jobs/pdf?all_dates=1&download=1')->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="job-requests-report.pdf"');
         $this->assertDatabaseCount('supports', 1);
     }
 

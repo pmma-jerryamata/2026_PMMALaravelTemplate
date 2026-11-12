@@ -98,9 +98,6 @@ class AccomplishmentPdf
             $pdf->AddPage('P', [self::PAGE_WIDTH, self::PAGE_HEIGHT]);
             // Reuse the original PDF at its native dimensions. Never rebuild or scale its letterhead.
             $pdf->useImportedPage($template, 0, 0, self::PAGE_WIDTH, self::PAGE_HEIGHT);
-            // Hide only the template's red sidebar label below the department.
-            $pdf->SetFillColor(255, 255, 255);
-            $pdf->Rect(29, self::PAGE_HEIGHT - 147.5, 50, 17, 'F');
             $pdf->SetTextColor(0, 0, 0);
             if ($index === 0 && $contentHtml !== '') { $this->customContent($contentHtml); }
             elseif ($index === 0) {
@@ -116,7 +113,10 @@ class AccomplishmentPdf
                 $y += $row['height'];
             }
             if ($index === count($pages) - 1) { $this->signatures($y, $signatureLines); }
-            if (count($pages) > 1) { $this->pageNumber($index + 1, count($pages)); }
+            if (count($pages) > 1) {
+                $pdf->SetFont('cambria', '', 8);
+                $pdf->Text(self::RIGHT - 90, 814, 'Report page '.($index + 1).' of '.count($pages));
+            }
         }
         return $pdf->Output('accomplishment-report.pdf', 'S');
     }
@@ -255,15 +255,4 @@ class AccomplishmentPdf
         $this->signatureBlock('noted_position', $baseline + 14.04, $values['noted_position']);
     }
 
-    private function pageNumber(int $number, int $total): void
-    {
-        // Only this small sidebar region changes; the original header and all other template pixels remain.
-        $this->pdf->SetFillColor(255, 255, 255);
-        $this->pdf->Rect(53.5, 761, 30, 9, 'F');
-        $x = 54.02;
-        foreach ([['Page ', 'I'], [(string) $number, 'BI'], [' of ', 'I'], [(string) $total, 'BI']] as [$part, $style]) {
-            $this->text($x, 766.65, $part, $style, 5.04);
-            $x += $this->pdf->GetStringWidth($part);
-        }
-    }
 }

@@ -115,7 +115,8 @@ if (document.querySelector('[data-queue-refresh]')) {
     setTimeout(() => { if (!document.hidden) location.reload(); }, 30000);
 }
 
-document.querySelectorAll('form[method="post"]').forEach(form => form.addEventListener('submit', () => {
+document.querySelectorAll('form[method="post"]').forEach(form => form.addEventListener('submit', event => {
+    if (event.submitter?.formTarget && event.submitter.formTarget !== '_self') return;
     if (!form.checkValidity()) return;
     const button = form.querySelector('[type=submit], button:not([type])');
     if (button) { button.disabled = true; button.setAttribute('aria-busy', 'true'); }
