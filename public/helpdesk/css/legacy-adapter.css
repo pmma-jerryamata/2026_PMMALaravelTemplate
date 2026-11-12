@@ -142,3 +142,18 @@ body { margin: 0; }
 }
 
 .admin-sidebar .admin-nav-divider{border:0;border-top:1px solid #ffffff30;margin:16px 18px}.admin-sidebar nav .admin-nav-label{display:block;margin:16px 18px 8px;font-size:10px;letter-spacing:1.4px;color:#b6c8e4}
+
+/* Group related staff pages without extending the sidebar into a long flat list. */
+.admin-sidebar .admin-nav-group { min-width: 0; }
+.admin-sidebar .admin-nav-group > summary { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 12px 14px; border-radius: 8px; color: #d9e7fa; font-size: 12px; line-height: 1.5; cursor: pointer; list-style: none; }
+.admin-sidebar .admin-nav-group > summary::-webkit-details-marker { display: none; }
+.admin-sidebar .admin-nav-group > summary > span { flex: 1; }
+.admin-sidebar .admin-nav-group > summary:hover { background: #ffffff10; color: white; }
+.admin-sidebar .admin-nav-group > summary:focus-visible { outline: 2px solid #ffb65c; outline-offset: 2px; }
+.admin-sidebar .admin-nav-group[open] > summary { color: white; background: #ffffff0a; }
+.admin-sidebar .admin-nav-group[open] .nav-group-arrow { transform: rotate(180deg); }
+.admin-sidebar .nav-group-arrow { font-size: 10px; }
+.admin-sidebar .admin-nav-children { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 10px 20px; padding-left: 10px; border-left: 1px solid #ffffff30; }
+.admin-sidebar nav .admin-nav-children a { min-height: 44px; padding: 10px 12px; font-size: 12px; margin: 0; }
+.admin-sidebar .admin-nav-divider { margin: 12px 14px; }
+@media(max-width:768px) { .admin-sidebar .admin-nav-group > summary { padding: 12px 10px; min-height: 48px; } .admin-sidebar nav .admin-nav-children a { min-height: 46px; } }

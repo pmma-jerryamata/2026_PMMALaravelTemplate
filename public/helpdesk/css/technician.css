@@ -32,3 +32,16 @@
     .tech-meta dd { font-size: 14px; }
 }
 @media (max-width: 400px) { .tech-meta { grid-template-columns: minmax(0, 1fr); gap: 18px; } }
+
+.tech-filter-panel { margin-bottom: 28px; border: 1px solid #d8e1ee; border-radius: 12px; background: #fff; overflow: hidden; }
+.tech-filter-panel > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; min-height: 56px; list-style: none; color: #14396a; font-size: 14px; font-weight: 650; }
+.tech-filter-panel > summary::-webkit-details-marker { display: none; }
+.tech-filter-panel > summary > span { display: inline-flex; align-items: center; gap: 10px; }
+.tech-filter-toggle { font-size: 12px; }
+.tech-filter-panel .tech-filter-close-label { display: none; }
+.tech-filter-panel[open] .tech-filter-open-label { display: none; }
+.tech-filter-panel[open] .tech-filter-close-label { display: inline; }
+.tech-filter-panel[open] .tech-filter-toggle > i { transform: rotate(180deg); }
+.tech-filter-panel .tech-filters { border: 0; border-top: 1px solid #e5ebf3; border-radius: 0; margin-bottom: 0; }
+.tech-filter-panel > summary:focus-visible { outline-offset: -4px; }
+@media(max-width:640px) { .tech-filter-panel > summary { padding: 16px; } }

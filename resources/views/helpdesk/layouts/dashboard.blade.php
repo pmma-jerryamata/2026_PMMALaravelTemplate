@@ -20,12 +20,27 @@
 <hr class="admin-nav-divider">
 @endif
 <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>
-@foreach(['Pending' => 'inbox', 'Completed' => 'check2-circle', 'Cancelled' => 'archive'] as $status => $icon)<a href="{{ route('dashboard', ['status' => $status]) }}" @class(['selected' => request('status') === $status])><i class="bi bi-{{ $icon }}" aria-hidden="true"></i> {{ $status }} Tickets</a>@endforeach
+<details class="admin-nav-group" @if(request()->routeIs('dashboard.queue', 'dashboard.tickets.*') || (request()->routeIs('dashboard', 'admin.index', 'support') && request('status'))) open @endif>
+<summary><i class="bi bi-inbox" aria-hidden="true"></i><span>Tickets</span><i class="bi bi-chevron-down nav-group-arrow" aria-hidden="true"></i></summary>
+<div class="admin-nav-children">
+@foreach(['Pending' => 'inbox', 'Completed' => 'check2-circle', 'Cancelled' => 'archive'] as $status => $icon)<a href="{{ route('dashboard', ['status' => $status]) }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support') && request('status') === $status])><i class="bi bi-{{ $icon }}" aria-hidden="true"></i> {{ $status }} Tickets</a>@endforeach
 <a href="{{ route('dashboard.queue') }}" @class(['selected' => request()->routeIs('dashboard.queue')])><i class="bi bi-kanban" aria-hidden="true"></i> Ticket Queue</a>
-<a href="{{ route('report') }}" @class(['selected' => request()->routeIs('report')])><i class="bi bi-bar-chart" aria-hidden="true"></i> Reports</a>
+</div></details>
+<details class="admin-nav-group" @if(request()->routeIs('report', 'report.*', 'dashboard.surveys')) open @endif>
+<summary><i class="bi bi-bar-chart" aria-hidden="true"></i><span>Reports &amp; Feedback</span><i class="bi bi-chevron-down nav-group-arrow" aria-hidden="true"></i></summary>
+<div class="admin-nav-children">
+<a href="{{ route('report') }}" @class(['selected' => request()->routeIs('report', 'report.*')])><i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i> Reports</a>
 <a href="{{ route('dashboard.surveys') }}" @class(['selected' => request()->routeIs('dashboard.surveys')])><i class="bi bi-star" aria-hidden="true"></i> Survey Results</a>
-<a href="{{ route('dashboard.settings') }}" @class(['selected' => request()->routeIs('dashboard.settings*')])><i class="bi bi-gear" aria-hidden="true"></i> System Settings</a>
+</div></details>
+<details class="admin-nav-group" @if(request()->routeIs('dashboard.settings*')) open @endif>
+<summary><i class="bi bi-gear" aria-hidden="true"></i><span>System Settings</span><i class="bi bi-chevron-down nav-group-arrow" aria-hidden="true"></i></summary>
+<div class="admin-nav-children">
+@foreach(['employees' => 'Employees', 'departments' => 'Departments', 'technicians' => 'Technicians', 'services' => 'Services', 'issues' => 'Suggested Issues'] as $tab => $label)
+<a href="{{ route('dashboard.settings', ['tab' => $tab]) }}" @class(['selected' => request()->routeIs('dashboard.settings*') && request()->route('type', request('tab', 'employees')) === $tab])>{{ $label }}</a>
+@endforeach
+</div></details>
 <hr class="admin-nav-divider">
+<span class="admin-nav-label">HELP &amp; LINKS</span>
 <a href="{{ route('dashboard.user-guide') }}" @class(['selected' => request()->routeIs('dashboard.user-guide')])><i class="bi bi-book" aria-hidden="true"></i> User Guide</a>
 <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
 </nav><div class="admin-sidebar-bottom"><span>Information Technology Services Unit</span></div></aside>

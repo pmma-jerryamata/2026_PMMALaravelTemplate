@@ -13,6 +13,8 @@
 @if(session('success'))<div class="tech-alert" role="status">{{ session('success') }}</div>@endif
 @if($errors->any())<div class="tech-alert tech-error" role="alert"><strong>Changes were not saved.</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 <div class="tech-counts"><a href="{{ route('tech.index') }}"><strong>{{ $pendingCount }}</strong><span>Pending tickets</span></a><a href="{{ route('tech.index', ['technician' => 'unassigned']) }}"><strong>{{ $unassignedCount }}</strong><span>Unassigned</span></a></div>
+<details class="tech-filter-panel">
+<summary><span><i class="bi bi-funnel" aria-hidden="true"></i> Search &amp; Filters</span><span class="tech-filter-toggle"><span class="tech-filter-open-label">Show</span><span class="tech-filter-close-label">Hide</span><i class="bi bi-chevron-down" aria-hidden="true"></i></span></summary>
 <form method="get" action="{{ route('tech.index') }}" class="tech-filters" aria-label="Filter tickets">
 <div class="tech-search"><label for="ticket-search">Search tickets</label><input id="ticket-search" type="search" name="q" maxlength="150" value="{{ request('q') }}" placeholder="Ticket no., concern, requester or office"></div>
 <div><label for="filter-status">Status</label><select id="filter-status" name="status">@foreach(array_merge(['all' => 'All statuses'], array_combine($statuses, $statuses)) as $value => $label)<option value="{{ $value }}" @selected($activeStatus === $value)>{{ $label }}</option>@endforeach</select></div>
@@ -20,6 +22,7 @@
 @if($priorityEnabled)<div><label for="filter-priority">Priority</label><select id="filter-priority" name="priority"><option value="">All priorities</option>@foreach($priorities as $priority)<option @selected(request('priority') === $priority)>{{ $priority }}</option>@endforeach</select></div>@endif
 <div class="tech-filter-actions"><button class="tech-button" type="submit">Apply filters</button><a href="{{ route('tech.index') }}">Reset</a></div>
 </form>
+</details>
 <div class="tech-list-heading"><h2>{{ $activeStatus === 'Pending' ? 'Available tickets' : ($activeStatus === 'all' ? 'All tickets' : $activeStatus.' tickets') }} <span>{{ $tickets->total() }}</span></h2><p>{{ $priorityEnabled ? 'Highest priority first · Oldest first within each priority' : 'Oldest tickets first' }}</p></div>
 <div class="tech-ticket-list">
 @forelse($tickets as $ticket)
