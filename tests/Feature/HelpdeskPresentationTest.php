@@ -80,6 +80,7 @@ class HelpdeskPresentationTest extends TestCase
             (require base_path('database/migrations/2026_11_11_000001_add_public_ticket_flow.php'))->up();
         }
         (require base_path('database/migrations/2026_11_12_000004_add_support_submission_key.php'))->up();
+        (require base_path('database/migrations/2026_11_12_000005_add_directory_archival.php'))->up();
         DB::table('departments')->insert([['id' => 1, 'name' => 'ITSU'], ['id' => 44, 'name' => 'STUDENTS']]);
         DB::table('employees')->insert(['id' => 1, 'name' => 'Test Requester', 'email' => 'requester@pmma.edu.ph', 'department_id' => 1]);
         DB::table('tasks')->insert(['id' => 1, 'name' => 'Internet/Network Connectivity', 'content' => 'Network assistance', 'icon' => 'bi bi-wifi']);
@@ -1082,6 +1083,75 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertSame('<p align="center"><b>Title</b></p><p align="left"><i>Text</i></p>', $html);
         $this->assertSame($html, \App\Services\Reports\ReportContent::clean($html));
         $this->assertSame(769.68, \App\Services\Reports\AccomplishmentPdf::TABLE_BOTTOM);
+    }
+
+    public function test_directory_deletion_requires_authentication_and_confirmation(): void
+    {
+        DB::table('employees')->where('id', 1)->update(['activation_pending' => true, 'deleted_at' => now()]);
+        $this->get('/dashboard/settings/employees/1/delete')->assertRedirect('/login');
+        $this->delete('/dashboard/settings/employees/1')->assertRedirect('/login');
+        $this->actingAs($this->staff())->delete('/dashboard/settings/employees/1', [
+            'confirmation' => 'DELETE #2', 'password' => 'wrong-password', 'acknowledge' => '0',
+        ])->assertSessionHasErrors(['confirmation', 'password', 'acknowledge']);
+        $this->assertDatabaseHas('employees', ['id' => 1, 'directory_archived_at' => null]);
+    }
+
+    public function test_deleting_pending_user_removes_directory_entry_and_preserves_ticket_history(): void
+    {
+        $ticket = $this->ticket();
+        DB::table('employees')->where('id', 1)->update(['activation_pending' => true, 'deleted_at' => now()]);
+        $this->actingAs($this->staff())->get('/dashboard/settings?tab=employees&status=activation')->assertSee('Delete Test Requester');
+        $this->delete('/dashboard/settings/employees/1', [
+            'confirmation' => 'DELETE #1', 'password' => 'test-password', 'acknowledge' => '1',
+        ])->assertRedirect('/dashboard/settings?tab=employees&status=activation');
+        $this->assertNull(\App\Models\Employee::withTrashed()->find(1));
+        $this->assertNotNull(DB::table('employees')->where('id', 1)->value('directory_archived_at'));
+        $this->assertSame('Test Requester', $ticket->fresh()->employee->name);
+        $this->assertDatabaseHas('supports', ['id' => $ticket->id, 'employee_id' => 1]);
+        $this->getJson('/dashboard/tables/catalog/employees?status=activation')->assertOk()->assertJsonPath('recordsTotal', 0);
+        $this->postJson('/tickets/requester', ['email' => 'requester@pmma.edu.ph'])->assertStatus(422)->assertJsonPath('valid', false);
+        $this->post('/dashboard/tickets', ['department_id' => 1, 'employee_id' => 1, 'task_id' => 1,
+            'support_specifics' => 'Do not create a new request for a removed user.',
+            'submission_token' => (string) Str::uuid()])->assertSessionHasErrors('employee_id');
+    }
+
+    public function test_active_users_and_other_catalog_types_cannot_be_deleted(): void
+    {
+        $this->actingAs($this->staff())->get('/dashboard/settings/employees/1/delete')->assertNotFound();
+        $this->delete('/dashboard/settings/employees/1', [
+            'confirmation' => 'DELETE #1', 'password' => 'test-password', 'acknowledge' => '1',
+        ])->assertNotFound();
+        $this->delete('/dashboard/settings/departments/1')->assertStatus(405);
+        $this->assertDatabaseHas('employees', ['id' => 1, 'directory_archived_at' => null]);
+    }
+
+    public function test_old_pending_user_delete_form_cannot_delete_a_newly_activated_user(): void
+    {
+        DB::table('employees')->where('id', 1)->update(['activation_pending' => true, 'deleted_at' => now()]);
+        $this->actingAs($this->staff())->get('/dashboard/settings/employees/1/delete')->assertOk();
+        DB::table('employees')->where('id', 1)->update(['activation_pending' => false, 'deleted_at' => null]);
+        $this->delete('/dashboard/settings/employees/1', [
+            'confirmation' => 'DELETE #1', 'password' => 'test-password', 'acknowledge' => '1',
+        ])->assertNotFound();
+        $this->assertDatabaseHas('employees', ['id' => 1, 'directory_archived_at' => null]);
+    }
+
+    public function test_deleted_technician_is_hidden_but_existing_assignments_remain_readable(): void
+    {
+        $ticket = $this->ticket(); $ticket->update(['technician_id' => 1]);
+        $this->actingAs($this->staff())->delete('/dashboard/settings/technicians/1', [
+            'confirmation' => 'DELETE #1', 'password' => 'test-password', 'acknowledge' => '1',
+        ])->assertRedirect();
+        $this->assertNull(\App\Models\Technician::find(1));
+        $this->assertSame('Test Technician', $ticket->fresh()->technician->name);
+        $this->get('/dashboard/tickets/'.$ticket->id)->assertOk()->assertSee('Test Technician (deleted)');
+        $this->getJson('/dashboard/tables/catalog/technicians')->assertOk()->assertJsonPath('recordsTotal', 0);
+        $this->post('/dashboard/tickets/'.$ticket->id, ['status' => 'Pending', 'technician_id' => 1])->assertSessionHasNoErrors();
+        $ticket2 = $this->ticket();
+        $this->post('/dashboard/tickets/'.$ticket2->id, ['status' => 'Pending', 'technician_id' => 1])->assertSessionHasErrors('technician_id');
+        $this->assertDatabaseHas('supports', ['id' => $ticket2->id, 'technician_id' => null]);
+        $this->assertAuthenticated();
+        $this->get('/report/jobs?all_dates=1&technician_id=1')->assertOk()->assertSee('Test Technician');
     }
 
 }

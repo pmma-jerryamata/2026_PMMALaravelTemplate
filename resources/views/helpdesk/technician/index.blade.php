@@ -44,7 +44,7 @@
 </fieldset>
 <div @class(['tech-editor-grid', 'tech-editor-grid-single' => !$priorityEnabled])>
 @if($priorityEnabled)<div><label for="priority-{{ $ticket->id }}">Priority</label><select id="priority-{{ $ticket->id }}" name="priority" required>@foreach($priorities as $priority)<option @selected(($editing ? old('priority') : ($ticket->priority ?? 'Normal')) === $priority)>{{ $priority }}</option>@endforeach</select></div>@endif
-<div class="tech-assignment"><label for="technician-{{ $ticket->id }}">Assigned Technician</label><select id="technician-{{ $ticket->id }}" name="technician_id"><option value="">Unassigned</option>@foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected((string) ($editing ? old('technician_id') : $ticket->technician_id) === (string) $technician->id)>{{ $technician->name }}</option>@endforeach</select></div></div>
+<div class="tech-assignment"><label for="technician-{{ $ticket->id }}">Assigned Technician</label><select id="technician-{{ $ticket->id }}" name="technician_id"><option value="">Unassigned</option>@if($ticket->technician && $ticket->technician->directory_archived_at)<option value="{{ $ticket->technician_id }}" @selected((string) ($editing ? old('technician_id') : $ticket->technician_id) === (string) $ticket->technician_id)>{{ $ticket->technician->name }} (deleted)</option>@endif @foreach($technicians as $technician)<option value="{{ $technician->id }}" @selected((string) ($editing ? old('technician_id') : $ticket->technician_id) === (string) $technician->id)>{{ $technician->name }}</option>@endforeach</select></div></div>
 <button type="submit" class="tech-button tech-save"><i class="bi bi-check2" aria-hidden="true"></i> Save ticket update</button>
 </form></details>
 </article>

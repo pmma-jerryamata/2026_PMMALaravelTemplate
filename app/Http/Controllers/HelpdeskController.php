@@ -119,7 +119,7 @@ class HelpdeskController extends Controller
     {
         $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
         $data = $request->validate(['email' => ['required', 'email', 'max:255', 'regex:/^[^@]+@(?:cdt\.)?pmma\.edu\.ph$/i']]);
-        $employee = Employee::withTrashed()->where('email', $data['email'])->first();
+        $employee = Employee::withTrashed()->withArchived()->where('email', $data['email'])->first();
         if ($employee && $employee->trashed() && ! $employee->activation_pending) {
             return response()->json(['valid' => false, 'message' => 'This directory account is inactive. Please contact ITSU.'], 422)
                 ->header('Cache-Control', 'private, no-store');
@@ -160,11 +160,11 @@ class HelpdeskController extends Controller
             'email' => $staff ? 'exclude' : ['required', 'email', 'max:255', 'regex:/^[^@]+@(?:cdt\.)?pmma\.edu\.ph$/i'],
             'department_id' => $staff ? 'required|integer|exists:departments,id' : 'exclude',
             'employee_id' => $staff ? ['required', 'integer', Rule::exists('employees', 'id')
-                ->whereNull('deleted_at')->where('department_id', $request->input('department_id'))] : 'exclude',
+                ->whereNull('deleted_at')->whereNull('directory_archived_at')->where('department_id', $request->input('department_id'))] : 'exclude',
             'task_id' => 'required|integer|exists:tasks,id',
             'support_specifics' => 'required|string|max:10000',
             'submission_token' => 'required|uuid',
-            'technician_id' => $staff ? 'nullable|integer|exists:technicians,id' : 'prohibited',
+            'technician_id' => $staff ? ['nullable', 'integer', Rule::exists('technicians', 'id')->whereNull('directory_archived_at')] : 'prohibited',
             'privacy_consent' => $staff ? 'exclude' : 'accepted',
         ], ['email.exists' => 'Your email is not in the active PMMA directory. Please contact ITSU.']);
         $submissionKey = hash('sha256', ($staff ? 'user:'.$request->user()->id : 'session:'.$request->session()->getId()).':'.$data['submission_token']);
@@ -180,7 +180,7 @@ class HelpdeskController extends Controller
             return redirect()->route('tickets.receipt', ['ticket' => $request->session()->get($token)]);
         }
         if (! $staff) {
-            $employee = Employee::withTrashed()->where('email', $data['email'])->first();
+            $employee = Employee::withTrashed()->withArchived()->where('email', $data['email'])->first();
             if ($employee && $employee->trashed() && ! $employee->activation_pending) {
                 throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'This directory account is inactive. Please contact ITSU.']);
             }
@@ -203,7 +203,10 @@ class HelpdeskController extends Controller
             $support = DB::transaction(function () use ($staff, $data, $request, $registration, $submissionKey) {
                 $employee = $staff
                     ? Employee::where('department_id', $data['department_id'])->findOrFail($data['employee_id'])
-                    : Employee::withTrashed()->where('email', $data['email'])->first();
+                    : Employee::withTrashed()->withArchived()->where('email', $data['email'])->first();
+                if ($employee && $employee->directory_archived_at) {
+                    throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'This directory account is inactive. Please contact ITSU.']);
+                }
                 if (! $employee) {
                     $employee = Employee::create(['email' => $data['email'], 'name' => \App\Support\RegistrationName::fullName($registration),
                         'department_id' => $registration['registration_department_id'],
@@ -317,14 +320,14 @@ class HelpdeskController extends Controller
 
     public function update(Request $request, $ticket)
     {
+        $support = $this->tickets()->findOrFail($ticket);
         $data = $request->validate([
             'status' => ['required', Rule::in(self::STATUSES)],
-            'technician_id' => 'nullable|integer|exists:technicians,id', 'findings' => 'nullable|string|max:1023',
+            'technician_id' => ['nullable', 'integer', Rule::exists('technicians', 'id')->where(fn ($query) => $query->whereNull('directory_archived_at')->orWhere('id', $support->technician_id))], 'findings' => 'nullable|string|max:1023',
             'accomplished_at' => 'nullable|date',
             'priority' => Schema::hasColumn('supports', 'priority')
                 ? ['sometimes', 'required', Rule::in(Support::PRIORITIES)] : 'prohibited',
         ]);
-        $support = $this->tickets()->findOrFail($ticket);
         $support->status = $data['status'];
         $support->technician_id = $data['technician_id'] ?? null;
         $support->findings = $data['findings'] ?? null;

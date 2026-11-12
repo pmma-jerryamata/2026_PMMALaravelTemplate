@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/dashboard/tickets/{ticket}', [HelpdeskController::class, 'destroy'])->whereNumber('ticket')->middleware('throttle:5,1')->name('dashboard.tickets.destroy');
     Route::post('/dashboard/tickets/{ticket}', [HelpdeskController::class, 'update'])->whereNumber('ticket')->name('dashboard.tickets.update');
     Route::get('/dashboard/settings', [HelpdeskController::class, 'settings'])->name('dashboard.settings');
+    Route::get('/dashboard/settings/{type}/{id}/delete', [\App\Http\Controllers\DirectoryDeletionController::class, 'confirm'])->where('type', 'employees|technicians')->whereNumber('id')->name('dashboard.settings.confirm-delete');
+    Route::delete('/dashboard/settings/{type}/{id}', [\App\Http\Controllers\DirectoryDeletionController::class, 'destroy'])->where('type', 'employees|technicians')->whereNumber('id')->middleware('throttle:5,1')->name('dashboard.settings.destroy');
     Route::get('/dashboard/settings/{type}/create', [HelpdeskController::class, 'editRecord'])->name('dashboard.settings.create');
     Route::get('/dashboard/settings/{type}/{id}', [HelpdeskController::class, 'editRecord'])->whereNumber('id')->name('dashboard.settings.edit');
     Route::post('/dashboard/settings/{type}/{id?}', [HelpdeskController::class, 'saveRecord'])->whereNumber('id')->name('dashboard.settings.save');

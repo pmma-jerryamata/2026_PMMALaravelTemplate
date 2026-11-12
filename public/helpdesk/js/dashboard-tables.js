@@ -1,6 +1,6 @@
 'use strict';
 
-document.querySelectorAll('[data-ticket-delete-confirmation]').forEach(form => {
+document.querySelectorAll('[data-ticket-delete-confirmation], [data-directory-delete-confirmation]').forEach(form => {
     const submit = form.querySelector('button[type="submit"]');
     const matches = () => form.elements.confirmation.value === form.dataset.confirmation &&
         form.elements.password.value.length > 0 && form.elements.acknowledge.checked;
@@ -10,7 +10,7 @@ document.querySelectorAll('[data-ticket-delete-confirmation]').forEach(form => {
     form.addEventListener('submit', event => {
         if (!matches()) { event.preventDefault(); update(); return; }
         submit.disabled = true;
-        submit.textContent = 'Deleting ticket…';
+        submit.textContent = 'Deleting…';
     });
     window.addEventListener('pageshow', update);
     update();

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Technician extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Models\Concerns\ArchivesDirectoryRecords;
     protected $table = 'technicians';
     protected $fillable = [
         'name',

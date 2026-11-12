@@ -31,7 +31,7 @@ class Support extends Model
     ];
 
     public function employee(){
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class)->withTrashed()->withArchived();
     }
 
     public function task(){
@@ -39,7 +39,7 @@ class Support extends Model
     }
 
     public function technician(){
-        return $this->belongsTo(Technician::class);
+        return $this->belongsTo(Technician::class)->withArchived();
     }
 
     public function department(){

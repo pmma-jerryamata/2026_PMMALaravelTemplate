@@ -51,7 +51,7 @@ class JobRequestsSummary
             return $office + ['counts' => $values, 'total' => array_sum($values)];
         });
         $columnTotals = $reportServices->mapWithKeys(fn ($service) => [$service->id => $rows->sum(fn ($row) => $row['counts'][$service->id])])->all();
-        $technicians = Technician::orderBy('name')->get();
+        $technicians = Technician::withArchived()->orderBy('name')->get();
         $scope = [empty($filters['all_dates']) ? $from.' to '.$to : 'All dates',
             empty($filters['technician_id']) ? 'All technicians' : $technicians->firstWhere('id', $filters['technician_id'])->name,
             empty($filters['department_id']) ? 'All offices' : $departments->firstWhere('id', $filters['department_id'])->name,

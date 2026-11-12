@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Employee extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Models\Concerns\ArchivesDirectoryRecords;
     
     //Inserted code for soft deletes//
     use SoftDeletes;
