@@ -173,3 +173,22 @@ body { margin: 0; }
 .service-reorder-actions{display:inline-flex;gap:4px;margin:0;flex-shrink:0;vertical-align:middle}.service-reorder-actions form{display:inline-flex;margin:0}.service-reorder-actions button{min-width:44px;min-height:44px}
 
 .service-name-cell{display:flex;align-items:center;gap:14px;min-width:0}.service-name-label{min-width:0;overflow-wrap:anywhere;line-height:1.6}.service-name-cell .service-reorder-actions{flex-direction:column}.service-name-cell .service-reorder-actions button{margin:0;padding:8px;min-width:44px;min-height:44px}@media(max-width:640px){.service-name-cell{gap:10px}}
+
+/* Keep navigation width consistent when expanded groups introduce a scrollbar. */
+.admin-workspace { --staff-sidebar-width: 280px; }
+.admin-workspace .admin-sidebar { box-sizing: border-box; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: #7293bf66 transparent; overflow-x: hidden; }
+.admin-workspace .admin-sidebar::-webkit-scrollbar { width: 7px; }
+.admin-workspace .admin-sidebar::-webkit-scrollbar-track { background: transparent; }
+.admin-workspace .admin-sidebar::-webkit-scrollbar-thumb { background: #7293bf66; border-radius: 8px; }
+.admin-workspace .admin-sidebar > .admin-brand, .admin-workspace .admin-sidebar > nav, .admin-workspace .admin-sidebar-bottom { flex-shrink: 0; }
+.admin-workspace .admin-sidebar .admin-brand img { flex: 0 0 44px; width: 44px; height: 44px; }
+.admin-workspace .admin-sidebar .admin-brand > span { min-width: 0; }
+.admin-workspace .admin-sidebar .admin-brand strong { font-size: 17px; white-space: nowrap; overflow-wrap: normal; }
+@media(min-width:769px) {
+    .admin-workspace .admin-sidebar { width: var(--staff-sidebar-width); min-width: var(--staff-sidebar-width); padding: 26px 16px; }
+    .admin-workspace .admin-shell { margin-left: var(--staff-sidebar-width); }
+}
+@media(max-width:768px) {
+    .admin-workspace .admin-sidebar { width: min(300px, calc(100vw - 32px)); padding: 24px 14px; }
+    .admin-workspace .admin-shell { margin-left: 0; }
+}
