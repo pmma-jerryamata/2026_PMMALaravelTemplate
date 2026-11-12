@@ -141,19 +141,31 @@ body { margin: 0; }
     .portal-form .report-actions > .btn { width: 100%; align-self: stretch; white-space: normal; }
 }
 
-.admin-sidebar .admin-nav-divider{border:0;border-top:1px solid #ffffff30;margin:16px 18px}.admin-sidebar nav .admin-nav-label{display:block;margin:16px 18px 8px;font-size:10px;letter-spacing:1.4px;color:#b6c8e4}
 
-/* Group related staff pages without extending the sidebar into a long flat list. */
+/* Consistent navigation rows, compact groups, and a distinct technician shortcut. */
+.admin-sidebar #staff-navigation { gap: 5px; padding-top: 12px; }
+.admin-sidebar #staff-navigation > a, .admin-sidebar .admin-nav-group > summary { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 12px; margin: 0; border: 1px solid transparent; border-radius: 9px; color: #d3e0f3; font-size: 13px; font-weight: 500; line-height: 1.5; text-decoration: none; }
+.admin-sidebar #staff-navigation > a > i, .admin-sidebar .admin-nav-group > summary > i:first-child { display: inline-flex; justify-content: center; align-items: center; flex: 0 0 20px; width: 20px; font-size: 16px; color: #a9c9f3; }
+.admin-sidebar #staff-navigation > a:hover, .admin-sidebar .admin-nav-group > summary:hover { color: #fff; background: #ffffff0d; }
+.admin-sidebar #staff-navigation > a.selected { color: white; background: #244774; border-color: #6684ac66; box-shadow: inset 3px 0 #ffab42; }
+.admin-sidebar #staff-navigation > a.selected > i { color: #ffbb66; }
 .admin-sidebar .admin-nav-group { min-width: 0; }
-.admin-sidebar .admin-nav-group > summary { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 12px 14px; border-radius: 8px; color: #d9e7fa; font-size: 12px; line-height: 1.5; cursor: pointer; list-style: none; }
+.admin-sidebar .admin-nav-group > summary { cursor: pointer; list-style: none; }
 .admin-sidebar .admin-nav-group > summary::-webkit-details-marker { display: none; }
 .admin-sidebar .admin-nav-group > summary > span { flex: 1; }
-.admin-sidebar .admin-nav-group > summary:hover { background: #ffffff10; color: white; }
-.admin-sidebar .admin-nav-group > summary:focus-visible { outline: 2px solid #ffb65c; outline-offset: 2px; }
-.admin-sidebar .admin-nav-group[open] > summary { color: white; background: #ffffff0a; }
+.admin-sidebar .admin-nav-group > summary:focus-visible, .admin-sidebar #staff-navigation a:focus-visible { outline: 2px solid #ffbd6e; outline-offset: 2px; }
+.admin-sidebar .admin-nav-group[open] > summary { color: #fff; background: #ffffff08; }
+.admin-sidebar .admin-nav-group:has(.selected) > summary { color: white; }
+.admin-sidebar .nav-group-arrow { flex: 0 0 14px; font-size: 10px; color: #a9bdd8; }
 .admin-sidebar .admin-nav-group[open] .nav-group-arrow { transform: rotate(180deg); }
-.admin-sidebar .nav-group-arrow { font-size: 10px; }
-.admin-sidebar .admin-nav-children { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 10px 20px; padding-left: 10px; border-left: 1px solid #ffffff30; }
-.admin-sidebar nav .admin-nav-children a { min-height: 44px; padding: 10px 12px; font-size: 12px; margin: 0; }
-.admin-sidebar .admin-nav-divider { margin: 12px 14px; }
-@media(max-width:768px) { .admin-sidebar .admin-nav-group > summary { padding: 12px 10px; min-height: 48px; } .admin-sidebar nav .admin-nav-children a { min-height: 46px; } }
+.admin-sidebar .admin-nav-children { display: flex; flex-direction: column; gap: 3px; margin: 5px 0 10px 22px; padding: 2px 0 2px 12px; border-left: 1px solid #819fc144; }
+.admin-sidebar #staff-navigation .admin-nav-children a { gap: 10px; min-height: 44px; padding: 10px; margin: 0; border: 0; font-size: 12px; line-height: 1.5; border-radius: 7px; color: #bed0e9; }
+.admin-sidebar #staff-navigation .admin-nav-children a.selected { color: white; background: #244774; box-shadow: inset 2px 0 #ffab42; }
+.admin-sidebar .admin-nav-children i { width: 16px; text-align: center; font-size: 13px; }
+.admin-sidebar #staff-navigation .admin-nav-label { display: block; margin: 12px 12px 6px; font-size: 10px; font-weight: 650; letter-spacing: 1.4px; color: #9eb6d6; }
+.admin-sidebar .admin-nav-divider { border: 0; border-top: 1px solid #ffffff21; margin: 12px 10px 4px; }
+.admin-sidebar #staff-navigation > .admin-tech-shortcut { background: #ffffff08; border-color: #ffffff20; padding: 14px 12px; }
+.admin-sidebar .admin-tech-shortcut > span { min-width: 0; }
+.admin-sidebar .admin-tech-shortcut strong { display: block; font-size: 12px; font-weight: 650; color: #fff; }
+.admin-sidebar .admin-tech-shortcut small { display: block; margin-top: 4px; color: #a9bedb; font-size: 11px; font-weight: 400; }
+@media(max-width:768px) { .admin-sidebar #staff-navigation > a, .admin-sidebar .admin-nav-group > summary { min-height: 48px; } }

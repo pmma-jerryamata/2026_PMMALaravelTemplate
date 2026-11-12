@@ -317,7 +317,7 @@ class HelpdeskPresentationTest extends TestCase
         $ticket = $this->ticket();
         $this->get('/tech')->assertRedirect('/login');
         $this->post('/tech/tickets/'.$ticket->id, ['status' => 'Completed'])->assertRedirect('/login');
-        $this->actingAs($this->staff())->get('/tech')->assertOk()->assertSee('Tickets to work on')
+        $this->actingAs($this->staff())->get('/tech')->assertOk()->assertSee('Job Request')->assertSee('Create Ticket')->assertSee(route('dashboard.tickets.create'))
             ->assertSee('Diagnosis &amp; update', false)->assertSee('name="findings"', false)
             ->assertDontSee('name="priority"', false)->assertDontSee('dashboard-table');
         $this->post('/tech/tickets/'.$ticket->id, ['status' => 'Pending', 'findings' => 'Checking the network.', 'technician_id' => 1])

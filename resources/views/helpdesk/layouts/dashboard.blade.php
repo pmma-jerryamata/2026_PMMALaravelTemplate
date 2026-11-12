@@ -16,9 +16,10 @@
 <button type="button" class="admin-menu-close" aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
 <nav id="staff-navigation" aria-label="Staff navigation">
 @if(\App\Models\Technician::whereRaw('LOWER(email) = ?', [mb_strtolower(trim(auth()->user()->email))])->exists())
-<a href="{{ route('tech.index') }}" @class(['selected' => request()->routeIs('tech.*')])><i class="bi bi-tools" aria-hidden="true"></i> Technician Dashboard</a>
+<a href="{{ route('tech.index') }}" @class(['admin-tech-shortcut', 'selected' => request()->routeIs('tech.*')])><i class="bi bi-tools" aria-hidden="true"></i><span><strong>Technician Dashboard</strong><small>Work on support tickets</small></span></a>
 <hr class="admin-nav-divider">
 @endif
+<span class="admin-nav-label">WORKSPACE</span>
 <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>
 <details class="admin-nav-group" @if(request()->routeIs('dashboard.queue', 'dashboard.tickets.*') || (request()->routeIs('dashboard', 'admin.index', 'support') && request('status'))) open @endif>
 <summary><i class="bi bi-inbox" aria-hidden="true"></i><span>Tickets</span><i class="bi bi-chevron-down nav-group-arrow" aria-hidden="true"></i></summary>
@@ -40,7 +41,7 @@
 @endforeach
 </div></details>
 <hr class="admin-nav-divider">
-<span class="admin-nav-label">HELP &amp; LINKS</span>
+<span class="admin-nav-label">RESOURCES</span>
 <a href="{{ route('dashboard.user-guide') }}" @class(['selected' => request()->routeIs('dashboard.user-guide')])><i class="bi bi-book" aria-hidden="true"></i> User Guide</a>
 <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
 </nav><div class="admin-sidebar-bottom"><span>Information Technology Services Unit</span></div></aside>

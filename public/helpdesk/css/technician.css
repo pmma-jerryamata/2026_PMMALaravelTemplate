@@ -45,3 +45,6 @@
 .tech-filter-panel .tech-filters { border: 0; border-top: 1px solid #e5ebf3; border-radius: 0; margin-bottom: 0; }
 .tech-filter-panel > summary:focus-visible { outline-offset: -4px; }
 @media(max-width:640px) { .tech-filter-panel > summary { padding: 16px; } }
+
+.tech-heading-actions { display: flex; flex-shrink: 0; gap: 12px; flex-wrap: wrap; }
+@media(max-width:640px) { .tech-heading { flex-direction: column; align-items: stretch; gap: 20px; } .tech-heading-actions { width: 100%; gap: 10px; } .tech-heading-actions .tech-create { flex: 1; } }

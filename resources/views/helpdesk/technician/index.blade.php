@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#10264b">
-<title>Technician Dashboard | {{ $systemSettings['app_name'] }}</title>
+<title>Job Request | {{ $systemSettings['app_name'] }}</title>
 <link rel="icon" href="{{ asset('helpdesk/images/pmma-logo.png') }}">
 <link rel="stylesheet" href="{{ asset('helpdesk/icons/bootstrap-icons.css') }}">
 <link rel="stylesheet" href="{{ asset('helpdesk/css/technician.css') }}?v={{ filemtime(public_path('helpdesk/css/technician.css')) }}">
@@ -9,7 +9,7 @@
 <a class="tech-skip" href="#main-content">Skip to tickets</a>
 <header class="tech-header"><a class="tech-brand" href="{{ route('tech.index') }}"><img src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="" width="40" height="40"><span>PMMA Helpdesk<small>TECHNICIAN WORKSPACE</small></span></a><nav aria-label="Workspace"><a href="{{ route('dashboard') }}">Admin panel</a><form method="post" action="{{ route('logout') }}">@csrf<button type="submit">Log out</button></form></nav></header>
 <main id="main-content" class="tech-main">
-<section class="tech-heading"><div><p class="tech-eyebrow">{{ auth()->user()->name }}</p><h1>Tickets to work on</h1><p>Review the concern, record your diagnosis, and update the ticket.</p></div><a class="tech-button tech-secondary" href="{{ route('tech.index', request()->query()) }}"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh</a></section>
+<section class="tech-heading"><div><p class="tech-eyebrow">{{ auth()->user()->name }}</p><h1>Job Request</h1><p>Review the concern, record your diagnosis, and update the ticket.</p></div><div class="tech-heading-actions"><a class="tech-button tech-create" href="{{ route('dashboard.tickets.create') }}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create Ticket</a><a class="tech-button tech-secondary" href="{{ route('tech.index', request()->query()) }}"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Refresh</a></div></section>
 @if(session('success'))<div class="tech-alert" role="status">{{ session('success') }}</div>@endif
 @if($errors->any())<div class="tech-alert tech-error" role="alert"><strong>Changes were not saved.</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 <div class="tech-counts"><a href="{{ route('tech.index') }}"><strong>{{ $pendingCount }}</strong><span>Pending tickets</span></a><a href="{{ route('tech.index', ['technician' => 'unassigned']) }}"><strong>{{ $unassignedCount }}</strong><span>Unassigned</span></a></div>
