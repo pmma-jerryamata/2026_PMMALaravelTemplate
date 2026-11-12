@@ -140,3 +140,5 @@ body { margin: 0; }
     .portal-form .report-actions { flex-direction: column; align-items: stretch; }
     .portal-form .report-actions > .btn { width: 100%; align-self: stretch; white-space: normal; }
 }
+
+.admin-sidebar .admin-nav-divider{border:0;border-top:1px solid #ffffff30;margin:16px 18px}.admin-sidebar nav .admin-nav-label{display:block;margin:16px 18px 8px;font-size:10px;letter-spacing:1.4px;color:#b6c8e4}
