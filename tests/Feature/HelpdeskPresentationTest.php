@@ -317,7 +317,7 @@ class HelpdeskPresentationTest extends TestCase
         $this->travelTo(\Carbon\Carbon::parse('2026-11-12 12:00:00'));
         $recent = $this->ticket(); $recent->update(['status' => 'Completed']);
         $old = $this->ticket(); $old->update(['status' => 'Cancelled', 'created_at' => now()->subDays(40)]);
-        $this->get('/')->assertOk()->assertSeeInOrder(['Support requests at a glance', 'Recent Tickets'])
+        $this->get('/')->assertOk()->assertSeeInOrder(['Job Requests at a glance', 'Recent Tickets'])
             ->assertViewHas('summary', fn ($summary) => $summary['total'] === 2 && $summary['completed'] === 1 && $summary['cancelled'] === 1)
             ->assertDontSee('requester@pmma.edu.ph')->assertDontSee('Test Requester');
         $this->get('/?summary_range=7')->assertOk()->assertViewHas('summary', fn ($summary) => $summary['total'] === 1 && $summary['cancelled'] === 0);
