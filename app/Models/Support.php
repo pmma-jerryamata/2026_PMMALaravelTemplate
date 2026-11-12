@@ -17,6 +17,7 @@ class Support extends Model
 
     protected $table = 'supports';
     protected $fillable = [
+        'submission_key',
         'employee_id',
         'technician_id',
         'task_id',

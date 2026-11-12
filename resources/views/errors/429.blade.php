@@ -1,1 +1,1 @@
-@include('errors.helpdesk', ['code' => 429, 'title' => 'Please Wait a Moment', 'description' => 'Too many requests were received. Wait a little before trying again.'])
+@include('errors.helpdesk', ['code' => 429, 'title' => 'Please wait before trying again', 'description' => $message])

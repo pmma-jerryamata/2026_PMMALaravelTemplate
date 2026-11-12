@@ -43,6 +43,15 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
+        $this->renderable(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $exception, $request) {
+            $seconds = (int) ($exception->getHeaders()['Retry-After'] ?? 60);
+            $message = 'Too many attempts. Please try again in '.$seconds.' seconds.';
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 429, $exception->getHeaders());
+            }
+            return response()->view('errors.429', compact('message', 'seconds'), 429, $exception->getHeaders());
+        });
+
         $this->reportable(function (Throwable $e) {
             //
         });

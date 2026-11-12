@@ -45,6 +45,15 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+        RateLimiter::for('ticket-submissions', function (Request $request) {
+            $identity = $request->user() ? 'user:'.$request->user()->id : 'session:'.$request->session()->getId();
+            return [
+                Limit::perMinutes(10, 5)->by($identity),
+                // A generous shared-IP ceiling allows offices behind the same network.
+                Limit::perMinutes(10, 100)->by('ticket-ip:'.$request->ip()),
+            ];
+        });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });

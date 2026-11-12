@@ -79,6 +79,7 @@ class HelpdeskPresentationTest extends TestCase
         if (! Schema::hasColumn('employees', 'activation_pending')) {
             (require base_path('database/migrations/2026_11_11_000001_add_public_ticket_flow.php'))->up();
         }
+        (require base_path('database/migrations/2026_11_12_000004_add_support_submission_key.php'))->up();
         DB::table('departments')->insert([['id' => 1, 'name' => 'ITSU'], ['id' => 44, 'name' => 'STUDENTS']]);
         DB::table('employees')->insert(['id' => 1, 'name' => 'Test Requester', 'email' => 'requester@pmma.edu.ph', 'department_id' => 1]);
         DB::table('tasks')->insert(['id' => 1, 'name' => 'Internet/Network Connectivity', 'content' => 'Network assistance', 'icon' => 'bi bi-wifi']);
@@ -214,6 +215,32 @@ class HelpdeskPresentationTest extends TestCase
         $this->post('/tickets', $payload)->assertRedirect();
         $this->assertDatabaseCount('supports', 1);
         Mail::assertSent(Mailer::class, 1);
+    }
+
+    public function test_database_submission_key_prevents_replay_without_session_marker(): void
+    {
+        $payload = ['email' => 'requester@pmma.edu.ph', 'task_id' => 1,
+            'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1', 'submission_token' => (string) Str::uuid()];
+        $this->post('/tickets', $payload)->assertRedirect();
+        $this->withCookie(config('session.cookie'), session()->getId());
+        session()->forget('helpdesk.submitted.'.$payload['submission_token']);
+        $this->post('/tickets', $payload)->assertRedirect();
+        $this->assertDatabaseCount('supports', 1);
+        Mail::assertSent(Mailer::class, 1);
+    }
+
+    public function test_ticket_submission_limit_returns_retry_after_and_does_not_insert(): void
+    {
+        $payload = ['email' => 'requester@pmma.edu.ph', 'task_id' => 1,
+            'support_specifics' => 'Network unavailable.', 'privacy_consent' => '1'];
+        $this->withSession(['rate_limit_test' => true]);
+        $this->withCookie(config('session.cookie'), session()->getId());
+        for ($i = 0; $i < 5; $i++) {
+            $this->post('/tickets', $payload + ['submission_token' => (string) Str::uuid()])->assertRedirect();
+        }
+        $this->post('/tickets', $payload + ['submission_token' => (string) Str::uuid()])
+            ->assertStatus(429)->assertHeader('Retry-After')->assertSee('Please wait before trying again');
+        $this->assertDatabaseCount('supports', 5);
     }
 
     public function test_unknown_email_and_public_technician_assignment_are_rejected(): void

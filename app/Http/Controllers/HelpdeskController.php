@@ -167,6 +167,14 @@ class HelpdeskController extends Controller
             'technician_id' => $staff ? 'nullable|integer|exists:technicians,id' : 'prohibited',
             'privacy_consent' => $staff ? 'exclude' : 'accepted',
         ], ['email.exists' => 'Your email is not in the active PMMA directory. Please contact ITSU.']);
+        $submissionKey = hash('sha256', ($staff ? 'user:'.$request->user()->id : 'session:'.$request->session()->getId()).':'.$data['submission_token']);
+        $existing = Support::where('submission_key', $submissionKey)->first();
+        if ($existing) {
+            $request->session()->put('helpdesk.receipts.'.$existing->id, true);
+            return $staff
+                ? redirect(\App\Support\DashboardReturn::url(route('dashboard.tickets.show', $existing->id)))->with('success', 'Ticket already submitted.')
+                : redirect()->route('tickets.receipt', ['ticket' => $existing->id]);
+        }
         $token = 'helpdesk.submitted.'.$data['submission_token'];
         if ($request->session()->has($token)) {
             return redirect()->route('tickets.receipt', ['ticket' => $request->session()->get($token)]);
@@ -190,28 +198,37 @@ class HelpdeskController extends Controller
                 }
             }
         }
-        $support = DB::transaction(function () use ($staff, $data, $request, $registration) {
-            $employee = $staff
-                ? Employee::where('department_id', $data['department_id'])->findOrFail($data['employee_id'])
-                : Employee::withTrashed()->where('email', $data['email'])->first();
-            if (! $employee) {
-                $employee = Employee::create(['email' => $data['email'], 'name' => \App\Support\RegistrationName::fullName($registration),
-                    'department_id' => $registration['registration_department_id'],
-                    'deleted_at' => now(), 'activation_pending' => true, 'updated_at' => now()]);
-            }
-            return Support::create([
-                'employee_id' => $employee->id, 'task_id' => $data['task_id'],
-                'status' => 'Pending', 'support_specifics' => $data['support_specifics'],
-                'technician_id' => $staff ? ($data['technician_id'] ?? null) : null, 'ip' => $request->ip(),
-            ]);
-        });
+        $created = true;
+        try {
+            $support = DB::transaction(function () use ($staff, $data, $request, $registration, $submissionKey) {
+                $employee = $staff
+                    ? Employee::where('department_id', $data['department_id'])->findOrFail($data['employee_id'])
+                    : Employee::withTrashed()->where('email', $data['email'])->first();
+                if (! $employee) {
+                    $employee = Employee::create(['email' => $data['email'], 'name' => \App\Support\RegistrationName::fullName($registration),
+                        'department_id' => $registration['registration_department_id'],
+                        'deleted_at' => now(), 'activation_pending' => true, 'updated_at' => now()]);
+                }
+                return Support::create([
+                    'employee_id' => $employee->id, 'task_id' => $data['task_id'],
+                    'submission_key' => $submissionKey,
+                    'status' => 'Pending', 'support_specifics' => $data['support_specifics'],
+                    'technician_id' => $staff ? ($data['technician_id'] ?? null) : null, 'ip' => $request->ip(),
+                ]);
+            });
+        } catch (\Illuminate\Database\QueryException $exception) {
+            // A concurrent request may have committed the same submission first.
+            $support = Support::where('submission_key', $submissionKey)->first();
+            if (! $support) { throw $exception; }
+            $created = false;
+        }
         $employee = Employee::withTrashed()->findOrFail($support->employee_id);
         $request->session()->put($token, $support->id);
         $request->session()->put('helpdesk.receipts.'.$support->id, true);
         if (! $staff) { $request->session()->forget('helpdesk.draft'); }
         // Keep the existing confirmation mail; transport failures must not create duplicate tickets.
         try {
-            Mail::to($employee->email)->send(new Mailer($support->id));
+            if ($created) { Mail::to($employee->email)->send(new Mailer($support->id)); }
         } catch (\Throwable $exception) {
             report($exception);
         }
