@@ -48,7 +48,14 @@ class ReportController extends Controller
             $signatories[$field] = trim(preg_replace('/\s+/u', ' ', $input[$field] ?? ''));
         }
         $contentHtml = \App\Services\Reports\ReportContent::clean(! empty($input['content_default']) ? '' : ($input['content_html'] ?? ''));
-        return compact('from', 'to', 'tickets', 'groups', 'signatories', 'contentHtml') + [
+        $period = Carbon::parse($from)->format('F j, Y').' - '.Carbon::parse($to)->format('F j, Y');
+        $scope = [];
+        foreach (['technician_id' => [\App\Models\Technician::class, 'Technician'], 'department_id' => [\App\Models\Department::class, 'Office'], 'task_id' => [\App\Models\Task::class, 'Service type']] as $field => [$model, $label]) {
+            if (! empty($input[$field])) $scope[] = $label.': '.$model::findOrFail($input[$field])->name;
+        }
+        $defaultContentHtml = '<p align="center"><b>ACCOMPLISHMENT REPORT</b></p><p align="center">('.e($period).')</p><p>Submitted herewith is the accomplishment report of the undersigned for the period as of '.e($period).'.</p>';
+        if ($scope) $defaultContentHtml .= '<p>'.e(implode(' | ', $scope)).'.</p>';
+        return compact('from', 'to', 'tickets', 'groups', 'signatories', 'contentHtml', 'defaultContentHtml') + [
             'departments' => \App\Models\Department::orderBy('name')->get(), 'services' => \App\Models\Task::displayOrder()->get(),
             'departmentId' => $input['department_id'] ?? '', 'taskId' => $input['task_id'] ?? '',
             'technicianId' => $input['technician_id'] ?? '', 'technicians' => Technician::orderBy('name')->get(),
@@ -77,7 +84,7 @@ class ReportController extends Controller
     public function pdf(Request $request, AccomplishmentPdf $document)
     {
         $data = $this->data($request);
-        $bytes = $document->render($data['groups'], $data['from'], $data['to'], $data['signatories'], $data['contentHtml']);
+        $bytes = $document->render($data['groups'], $data['from'], $data['to'], $data['signatories'], $data['contentHtml'] ?: $data['defaultContentHtml']);
         $filename = 'accomplishment-report-'.$data['from'].'-to-'.$data['to'].'.pdf';
         return response($bytes, 200, [
             'Content-Type' => 'application/pdf',

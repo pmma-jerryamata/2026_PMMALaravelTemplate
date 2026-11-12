@@ -58,7 +58,29 @@
         toolbar.querySelectorAll('[data-editor-command]').forEach(button => { button.disabled = sourceMode; });
         (sourceMode ? source : editor).focus();
     });
+    function refreshIntroduction(force = false) {
+        if (!defaultField || (!force && defaultField.value !== '1')) return;
+        const from = source.form.elements.from?.value, to = source.form.elements.to?.value;
+        if (!from || !to) return;
+        const format = value => new Intl.DateTimeFormat('en-US', {year:'numeric', month:'long', day:'numeric'}).format(new Date(value + 'T12:00:00'));
+        const period = format(from) + ' - ' + format(to);
+        const content = document.createElement('div');
+        const title = document.createElement('p'); title.setAttribute('align','center');
+        const bold = document.createElement('b'); bold.textContent = 'ACCOMPLISHMENT REPORT'; title.append(bold); content.append(title);
+        const dates = document.createElement('p'); dates.setAttribute('align','center'); dates.textContent = '(' + period + ')'; content.append(dates);
+        const intro = document.createElement('p'); intro.textContent = 'Submitted herewith is the accomplishment report of the undersigned for the period as of ' + period + '.'; content.append(intro);
+        const scope = [];
+        for (const [name, label] of [['technician_id','Technician'],['department_id','Office'],['task_id','Service type']]) {
+            const field = source.form.elements[name];
+            if (field?.value) scope.push(label + ': ' + field.selectedOptions[0].textContent.trim());
+        }
+        if (scope.length) { const line = document.createElement('p'); line.textContent = scope.join(' | ') + '.'; content.append(line); }
+        source.value = content.innerHTML; editor.replaceChildren(clean(source.value)); defaultField.value = '1';
+    }
+    for (const name of ['from','to','technician_id','department_id','task_id']) source.form.elements[name]?.addEventListener('change', () => refreshIntroduction());
     source.form.addEventListener('submit', () => {
+        if (!(sourceMode ? source.value.trim() : editor.textContent.trim())) refreshIntroduction(true);
+        else refreshIntroduction();
         if (!sourceMode) source.value = editor.innerHTML;
     });
 })();

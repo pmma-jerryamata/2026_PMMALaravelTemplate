@@ -827,6 +827,16 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertDatabaseCount('supports', 1);
     }
 
+    public function test_report_initial_introduction_matches_selected_filters(): void
+    {
+        $this->actingAs($this->staff())->get('/report?from=2026-11-01&to=2026-11-12&technician_id=1&department_id=1&task_id=1')
+            ->assertOk()->assertViewHas('defaultContentHtml', fn ($html) => str_contains($html, 'November 1, 2026 - November 12, 2026')
+                && str_contains($html, 'Technician: Test Technician') && str_contains($html, 'Office: ITSU')
+                && str_contains($html, 'Service type: Internet/Network Connectivity'));
+        $this->post('/report', ['from' => '2026-11-01', 'to' => '2026-11-12', 'content_default' => 0,
+            'content_html' => '<p>My custom introduction.</p>'])->assertOk()->assertViewHas('contentHtml', '<p align="left">My custom introduction.</p>');
+    }
+
     public function test_job_requests_report_counts_and_filters_offices_services_and_statuses(): void
     {
         DB::table('tasks')->insert(['id' => 2, 'name' => 'Microsoft Account Concerns', 'content' => 'Account help', 'icon' => 'bi bi-person-lock']);
@@ -857,9 +867,21 @@ class HelpdeskPresentationTest extends TestCase
         $reader = new \setasign\Fpdi\Tcpdf\Fpdi();
         $reader->setSourceFile(\setasign\Fpdi\PdfParser\StreamReader::createByString($pdf->getContent()));
         $size = $reader->getTemplateSize($reader->importPage(1));
-        $this->assertEqualsWithDelta(595.44, $size['width'] * 72 / 25.4, .001);
+        $this->assertEqualsWithDelta(841.68, $size['width'] * 72 / 25.4, .001);
+        $this->assertEqualsWithDelta(595.44, $size['height'] * 72 / 25.4, .001);
         $this->get('/report/jobs/pdf?all_dates=1&download=1')->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="job-requests-report.pdf"');
         $this->assertDatabaseCount('supports', 1);
+    }
+
+    public function test_job_requests_title_and_introduction_follow_filters_and_allow_manual_edits(): void
+    {
+        $this->actingAs($this->staff())->post('/report/jobs', ['from' => '2026-11-01', 'to' => '2026-11-12',
+            'technician_id' => 1])->assertOk()->assertViewHas('reportTitle', 'JOB REQUESTS REPORT')
+            ->assertViewHas('introduction', fn ($text) => str_contains($text, 'November 1, 2026 - November 12, 2026') && str_contains($text, 'Test Technician'));
+        $this->post('/report/jobs', ['report_title' => 'Custom Job Request Summary', 'introduction' => 'Prepared for the selected offices.',
+            'intro_default' => 0])->assertOk()->assertViewHas('reportTitle', 'Custom Job Request Summary')
+            ->assertViewHas('introduction', 'Prepared for the selected offices.');
+        $this->postJson('/report/jobs/pdf', ['report_title' => str_repeat('A', 151)])->assertUnprocessable();
     }
 
     public function test_report_download_is_a_pdf_attachment_and_invalid_filters_do_not_export(): void

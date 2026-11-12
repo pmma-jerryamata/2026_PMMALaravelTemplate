@@ -21,7 +21,7 @@
         </div>
         <p class="field-hint">Dates follow the completion/update date of completed tickets. Accomplishment text uses recorded findings, with concern details as the fallback.</p>
         <details class="report-options"><summary>Customize introduction and signatories</summary><fieldset class="report-signatories report-content-editor"><legend>Report title and introduction</legend>
-            <p class="field-hint">Edit the title and introductory paragraphs below. Cambria 12 pt is fixed for printing; the official letterhead stays unchanged. Clear the editor to use the standard title and date-based introduction.</p>
+            <p class="field-hint">Edit the title and introductory paragraphs below. Cambria 12 pt is fixed for printing; the official letterhead stays unchanged. The initial introduction follows your selected dates and filters. Your manual edits are preserved. Clear the editor to restore the automatic introduction.</p>
             <div class="report-editor-toolbar" role="toolbar" aria-label="Text formatting" hidden>
                 <button type="button" data-editor-command="bold"><b>Bold</b></button><button type="button" data-editor-command="italic"><i>Italic</i></button><button type="button" data-editor-command="underline"><u>Underline</u></button>
                 <button type="button" data-editor-command="justifyLeft">Left</button><button type="button" data-editor-command="justifyCenter">Center</button><button type="button" data-editor-command="justifyRight">Right</button>
@@ -30,7 +30,7 @@
             <div id="report-content-editor" contenteditable="true" role="textbox" aria-label="Report title and introduction" aria-multiline="true" hidden></div>
             <label for="content_html" class="report-source-label">HTML content</label>
             <input type="hidden" id="content_default" name="content_default" value="{{ $contentHtml === '' ? '1' : '0' }}">
-            <textarea id="content_html" name="content_html" maxlength="12000" rows="8">{{ $contentHtml ?: '<p align="center"><b>ACCOMPLISHMENT REPORT</b></p><p align="center">('.Carbon\Carbon::parse($from)->format('F j, Y').' - '.Carbon\Carbon::parse($to)->format('F j, Y').')</p><p>Submitted herewith is the accomplishment report of the undersigned for the period as of '.Carbon\Carbon::parse($from)->format('F j, Y').' - '.Carbon\Carbon::parse($to)->format('F j, Y').'.</p>' }}</textarea>
+            <textarea id="content_html" name="content_html" maxlength="12000" rows="8">{{ $contentHtml ?: $defaultContentHtml }}</textarea>
         </fieldset>
         <fieldset class="report-signatories"><legend>Report Signatories</legend><p class="text-muted">Enter the names and positions for this document. These values are not saved to the database.</p><div class="form-grid">
             <div><label for="prepared_by">Prepared by</label><input id="prepared_by" name="prepared_by" maxlength="100" value="{{ $signatories['prepared_by'] }}" placeholder="Full name"></div>

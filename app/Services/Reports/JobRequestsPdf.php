@@ -8,57 +8,56 @@ class JobRequestsPdf
 {
     public function render(array $data): string
     {
-        $pdf = new class('P', 'pt', [595.44, 841.68], true, 'UTF-8', false) extends Fpdi {
+        $pdf = new class('L', 'pt', [841.68, 595.44], true, 'UTF-8', false) extends Fpdi {
             public function __construct(...$args) { parent::__construct(...$args); $this->tcpdflink = false; }
         };
         $pdf->setPrintHeader(false); $pdf->setPrintFooter(false);
         $pdf->setMargins(0, 0, 0); $pdf->setAutoPageBreak(false, 0);
-        $pdf->SetCreator('PMMA Helpdesk'); $pdf->SetTitle('Job Requests Report');
+        $pdf->SetCreator('PMMA Helpdesk'); $pdf->SetTitle($data['reportTitle']);
         $pdf->setSourceFile(resource_path('reports/ar_blank.pdf'));
         $template = $pdf->importPage(1);
-        $left = 108.02; $width = 453.94; $bottom = 796;
-        $pdf->setCellPaddings(5, 5, 5, 5);
-        $pdf->setCellHeightRatio(1.2);
+        $left = 78; $width = 739.68; $bottom = 567;
+        $pdf->setCellPaddings(4, 4, 4, 4); $pdf->setCellHeightRatio(1.15);
+        $services = $data['reportServices'];
+        $columns = array_merge(['Department / Unit'], $services->pluck('name')->all(), ['Total']);
+        $serviceWidth = ($width - 150 - 44) / max(1, $services->count());
+        $widths = array_merge([150], array_fill(0, $services->count(), $serviceWidth), [44]);
         $page = 0;
-        foreach ($data['reportServices']->chunk(3) as $part => $services) {
-            $columns = array_merge(['Department / Unit'], $services->pluck('name')->all(), ['Subtotal']);
-            $serviceWidth = ($width - 145 - 44) / max(1, $services->count());
-            $widths = array_merge([145], array_fill(0, $services->count(), $serviceWidth), [44]);
-            $startPage = function () use ($pdf, $template, &$page, $part, $data, $left, $width, $columns, $widths) {
-                $pdf->AddPage('P', [595.44, 841.68]);
-                $pdf->useImportedPage($template, 0, 0, 595.44, 841.68);
-                $pdf->SetTextColor(16, 38, 75); $pdf->SetFont('helvetica', 'B', 14);
-                $pdf->MultiCell($width, 20, 'JOB REQUESTS REPORT', 0, 'C', false, 1, $left, 108);
-                $pdf->SetFont('helvetica', '', 8);
-                $scope = implode(' | ', $data['scope']);
-                $height = max(28, $pdf->getStringHeight($width, $scope));
-                $pdf->MultiCell($width, $height, $scope, 0, 'L', false, 1, $left, 134);
-                $pdf->MultiCell($width, 18, 'Total requests: '.$data['total'].' | Service group '.($part + 1).' | Report page '.(++$page), 0, 'L', false, 1, $left, 134 + $height);
-                $y = 156 + $height;
-                $pdf->SetFont('helvetica', 'B', 8);
-                $h = 32;
-                foreach ($columns as $i => $label) $h = max($h, $pdf->getStringHeight($widths[$i], $label));
-                $this->row($pdf, $left, $y, $widths, $columns, $h, true, false);
-                return $y + $h;
-            };
-            $y = $startPage();
-            foreach ($data['rows'] as $index => $row) {
-                $values = array_merge([$row['name']], $services->map(fn ($service) => (string) $row['counts'][$service->id])->all(),
-                    [(string) $services->sum(fn ($service) => $row['counts'][$service->id])]);
-                $pdf->SetFont('helvetica', '', 9);
-                $h = max(28, $pdf->getStringHeight(145, $row['name']));
-                if ($y + $h > $bottom) $y = $startPage();
-                $this->row($pdf, $left, $y, $widths, $values, $h, false, $index % 2 === 0); $y += $h;
-            }
-            if ($y + 30 > $bottom) $y = $startPage();
-            $values = array_merge(['TOTAL'], $services->map(fn ($service) => (string) $data['columnTotals'][$service->id])->all(),
-                [(string) $services->sum(fn ($service) => $data['columnTotals'][$service->id])]);
-            $this->row($pdf, $left, $y, $widths, $values, 30, true, false);
+        $startPage = function () use ($pdf, $template, &$page, $data, $left, $width, $columns, $widths) {
+            $pdf->AddPage('L', [841.68, 595.44]);
+            // Fit the original page to the landscape sheet's height, preserving its aspect ratio.
+            // The official header/sidebar are imported as artwork, never rebuilt or covered.
+            $pdf->useImportedPage($template, 0, 0, 595.44 * 595.44 / 841.68, 595.44);
+            $pdf->SetTextColor(16, 38, 75); $pdf->SetFont('helvetica', 'B', 13);
+            $titleHeight = max(22, $pdf->getStringHeight($width, $data['reportTitle']));
+            $pdf->MultiCell($width, $titleHeight, $data['reportTitle'], 0, 'C', false, 1, $left, 82);
+            $pdf->SetFont('helvetica', '', 10);
+            $pdf->MultiCell($width, 20, '('.$data['period'].')', 0, 'C', false, 1, $left, 82 + $titleHeight);
+            $pdf->SetFont('helvetica', '', 9);
+            $introHeight = max(24, $pdf->getStringHeight($width, $data['introduction']));
+            if ($introHeight > 145) throw \Illuminate\Validation\ValidationException::withMessages(['introduction' => 'Please shorten the introduction to leave room for the report table.']);
+            $introY = 106 + $titleHeight;
+            $pdf->MultiCell($width, $introHeight, $data['introduction'], 0, 'L', false, 1, $left, $introY);
+            $pdf->SetFont('helvetica', '', 8);
+            $pdf->MultiCell($width, 18, 'Total requests: '.$data['total'].' | Report page '.(++$page), 0, 'L', false, 1, $left, $introY + $introHeight + 3);
+            $y = $introY + $introHeight + 24;
+            $pdf->SetFont('helvetica', 'B', 8);
+            $h = 32;
+            foreach ($columns as $i => $label) $h = max($h, $pdf->getStringHeight($widths[$i], $label));
+            $this->row($pdf, $left, $y, $widths, $columns, $h, true, false);
+            return $y + $h;
+        };
+        $y = $startPage();
+        foreach ($data['rows'] as $index => $row) {
+            $values = array_merge([$row['name']], $services->map(fn ($service) => (string) $row['counts'][$service->id])->all(), [(string) $row['total']]);
+            $pdf->SetFont('helvetica', '', 9);
+            $h = max(25, $pdf->getStringHeight(150, $row['name']));
+            if ($y + $h > $bottom) $y = $startPage();
+            $this->row($pdf, $left, $y, $widths, $values, $h, false, $index % 2 === 0); $y += $h;
         }
-        if ($page === 0) {
-            $pdf->AddPage(); $pdf->useImportedPage($template, 0, 0, 595.44, 841.68);
-            $pdf->SetFont('helvetica', '', 12); $pdf->Text($left, 120, 'No services are available for this report.');
-        }
+        if ($y + 28 > $bottom) $y = $startPage();
+        $values = array_merge(['TOTAL'], $services->map(fn ($service) => (string) $data['columnTotals'][$service->id])->all(), [(string) $data['total']]);
+        $this->row($pdf, $left, $y, $widths, $values, 28, true, false);
         return $pdf->Output('job-requests-report.pdf', 'S');
     }
 

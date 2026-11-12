@@ -17,6 +17,7 @@ class JobRequestsSummary
             'all_dates' => 'nullable|boolean', 'technician_id' => 'nullable|integer|exists:technicians,id',
             'department_id' => 'nullable|integer|exists:departments,id', 'task_id' => 'nullable|integer|exists:tasks,id',
             'status' => 'nullable|in:Pending,Completed,Cancelled', 'download' => 'nullable|boolean',
+            'report_title' => 'nullable|string|max:150', 'introduction' => 'nullable|string|max:3000', 'intro_default' => 'nullable|boolean',
         ]);
         $from = $filters['from'] ?? now()->startOfMonth()->toDateString();
         $to = $filters['to'] ?? now()->toDateString();
@@ -57,6 +58,15 @@ class JobRequestsSummary
             empty($filters['task_id']) ? 'All service types' : $services->firstWhere('id', $filters['task_id'])->name,
             $filters['status'] ?? 'All statuses'];
         $total = $rows->sum('total');
-        return compact('filters', 'from', 'to', 'rows', 'columnTotals', 'total', 'departments', 'services', 'reportServices', 'technicians', 'scope');
+        $reportTitle = trim($filters['report_title'] ?? '') ?: 'JOB REQUESTS REPORT';
+        $period = empty($filters['all_dates']) ? \Carbon\Carbon::parse($from)->format('F j, Y').' - '.\Carbon\Carbon::parse($to)->format('F j, Y') : 'All dates';
+        $defaultIntroduction = 'Submitted herewith is the job requests report '.(empty($filters['all_dates']) ? 'for the period as of '.$period : 'covering all recorded dates').'.';
+        $scopeText = fn ($value) => str_starts_with($value, 'All ') ? lcfirst($value) : $value;
+        $defaultIntroduction .= ' This report covers '.$scopeText($scope[1]).', '.$scopeText($scope[2]).', and '.$scopeText($scope[3]).' ('.$scopeText($scope[4]).').';
+        $introduction = !empty($filters['intro_default']) ? $defaultIntroduction : (trim($filters['introduction'] ?? '') ?: $defaultIntroduction);
+        $filters['report_title'] = $reportTitle;
+        $filters['introduction'] = $introduction;
+        $filters['intro_default'] = (int) ($introduction === $defaultIntroduction);
+        return compact('reportTitle', 'period', 'introduction', 'filters', 'from', 'to', 'rows', 'columnTotals', 'total', 'departments', 'services', 'reportServices', 'technicians', 'scope');
     }
 }
