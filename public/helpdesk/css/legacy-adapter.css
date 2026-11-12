@@ -192,3 +192,9 @@ body { margin: 0; }
     .admin-workspace .admin-sidebar { width: min(300px, calc(100vw - 32px)); padding: 24px 14px; }
     .admin-workspace .admin-shell { margin-left: 0; }
 }
+
+.admin-sidebar #staff-navigation > .admin-tech-shortcut { background: #e6ad3420; border-color: #e6ad3470; box-shadow: inset 3px 0 #f2bd4d; }
+.admin-sidebar #staff-navigation > .admin-tech-shortcut > i, .admin-sidebar .admin-tech-shortcut strong { color: #ffcf6a; }
+.admin-sidebar .admin-tech-shortcut small { color: #eed8ad; }
+.admin-sidebar #staff-navigation > .admin-tech-shortcut:hover, .admin-sidebar #staff-navigation > .admin-tech-shortcut.selected { background: #e6ad3435; border-color: #f2bd4d; box-shadow: inset 3px 0 #ffcf6a; }
+.admin-sidebar #staff-navigation > .admin-tech-shortcut:focus-visible { outline-color: #ffcf6a; }

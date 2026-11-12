@@ -15,10 +15,7 @@
 <a class="admin-brand" href="{{ route('dashboard') }}"><img src="{{ asset('helpdesk/images/pmma-logo.png') }}" width="48" height="48" alt="PMMA seal"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>STAFF WORKSPACE</small></span></a>
 <button type="button" class="admin-menu-close" aria-label="Close navigation"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
 <nav id="staff-navigation" aria-label="Staff navigation">
-@if(\App\Models\Technician::whereRaw('LOWER(email) = ?', [mb_strtolower(trim(auth()->user()->email))])->exists())
-<a href="{{ route('tech.index') }}" @class(['admin-tech-shortcut', 'selected' => request()->routeIs('tech.*')])><i class="bi bi-tools" aria-hidden="true"></i><span><strong>Technician Dashboard</strong><small>Work on support tickets</small></span></a>
-<hr class="admin-nav-divider">
-@endif
+
 <span class="admin-nav-label">WORKSPACE</span>
 <a href="{{ route('dashboard') }}" @class(['selected' => request()->routeIs('dashboard', 'admin.index', 'support') && !request('status')])><i class="bi bi-grid-1x2" aria-hidden="true"></i> Overview</a>
 <details class="admin-nav-group" @if(request()->routeIs('dashboard.queue', 'dashboard.tickets.*') || (request()->routeIs('dashboard', 'admin.index', 'support') && request('status'))) open @endif>
@@ -44,6 +41,10 @@
 <span class="admin-nav-label">RESOURCES</span>
 <a href="{{ route('dashboard.user-guide') }}" @class(['selected' => request()->routeIs('dashboard.user-guide')])><i class="bi bi-book" aria-hidden="true"></i> User Guide</a>
 <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
+@if(\App\Models\Technician::whereRaw('LOWER(email) = ?', [mb_strtolower(trim(auth()->user()->email))])->exists())
+<hr class="admin-nav-divider">
+<a href="{{ route('tech.index') }}" @class(['admin-tech-shortcut', 'selected' => request()->routeIs('tech.*')])><i class="bi bi-tools" aria-hidden="true"></i><span><strong>Technician Dashboard</strong><small>Work on support tickets</small></span></a>
+@endif
 </nav><div class="admin-sidebar-bottom"><span>Information Technology Services Unit</span></div></aside>
 <button type="button" class="admin-menu-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
 <div class="admin-shell"><header class="admin-topbar"><button type="button" class="admin-menu-toggle" aria-label="Open navigation" aria-controls="staff-sidebar" aria-expanded="false"><i class="bi bi-list" aria-hidden="true"></i></button><div><span class="admin-topbar-label">PMMA / Support Operations</span><strong>@yield('title', 'Dashboard')</strong></div><div class="admin-account"><span class="admin-avatar">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><a href="{{ route('profile.edit') }}" class="admin-account-name">{{ auth()->user()->name }}<small>Helpdesk Staff</small></a><form method="post" action="{{ route('logout') }}">@csrf<button type="submit" class="staff-logout ui-action" aria-label="Logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Logout</span></button></form></div></header>

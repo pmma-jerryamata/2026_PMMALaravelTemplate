@@ -1,9 +1,13 @@
 @extends('helpdesk.layouts.portal')
 @section('title', 'Home')
+@push('page-assets')
+<link rel="stylesheet" href="{{ asset('helpdesk/css/public-summary.css') }}?v={{ filemtime(public_path('helpdesk/css/public-summary.css')) }}">
+@endpush
 @section('content')
 @if(session('alert'))<div class="container"><div class="portal-alert" role="status">{{ session('alert') }}</div></div>@endif
 <section class="support-intro"><div class="container"><div><span class="portal-eyebrow">PMMA HELPDESK</span><h1>What Do You Need Help With?</h1><p>Submit a ticket to choose a service and tell us how we can help.</p></div><div class="support-intro-actions"><a href="{{ route('tickets.create') }}" class="btn btn-primary ui-action public-submit-large"><x-action-icon name="send" /><span>Submit a Ticket</span></a></div></div></section>
 
+@include('helpdesk.portal.partials.transparency-summary')
 <section class="public-recent-section" id="recent-tickets"><div class="container"><section class="portal-panel recent-tickets"><div class="section-heading-row"><div><h2>Recent Tickets</h2><p>The 10 most recently submitted support requests.</p></div><a href="{{ route('queue') }}" class="btn btn-secondary btn-sm">View Queue</a></div><div class="dashboard-table-wrap"><table class="dashboard-table"><thead><tr><th>Ticket No.</th><th>Service</th><th>Department</th><th>Status</th><th>Submitted</th></tr></thead><tbody>
 @forelse($recentTickets as $recent)<tr><td>#{{ $recent->id }}</td><td>{{ optional($recent->task)->name }}</td><td>{{ optional(optional($recent->employee)->department)->name ?? 'Not specified' }}</td><td><span class="dashboard-status" data-status="{{ $recent->status }}">{{ $recent->status }}</span></td><td>{{ optional($recent->created_at)->format('M d, Y · h:i A') }}</td></tr>@empty<tr><td colspan="5" class="empty-cell">No support requests have been submitted yet.</td></tr>@endforelse
 </tbody></table></div></section></div></section>

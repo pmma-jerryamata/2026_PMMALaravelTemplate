@@ -312,6 +312,19 @@ class HelpdeskPresentationTest extends TestCase
         $this->get('/dashboard/tickets/'.$ticket->id)->assertOk()->assertSee('Please reconnect the network.');
     }
 
+    public function test_public_transparency_summary_precedes_recent_tickets_and_filters_by_submission_date(): void
+    {
+        $this->travelTo(\Carbon\Carbon::parse('2026-11-12 12:00:00'));
+        $recent = $this->ticket(); $recent->update(['status' => 'Completed']);
+        $old = $this->ticket(); $old->update(['status' => 'Cancelled', 'created_at' => now()->subDays(40)]);
+        $this->get('/')->assertOk()->assertSeeInOrder(['Support requests at a glance', 'Recent Tickets'])
+            ->assertViewHas('summary', fn ($summary) => $summary['total'] === 2 && $summary['completed'] === 1 && $summary['cancelled'] === 1)
+            ->assertDontSee('requester@pmma.edu.ph')->assertDontSee('Test Requester');
+        $this->get('/?summary_range=7')->assertOk()->assertViewHas('summary', fn ($summary) => $summary['total'] === 1 && $summary['cancelled'] === 0);
+        $this->get('/?summary_range=today')->assertOk()->assertViewHas('summary', fn ($summary) => $summary['completed'] === 1);
+        $this->travelBack();
+    }
+
     public function test_public_ticket_requires_privacy_agreement(): void
     {
         $payload = ['email' => 'requester@pmma.edu.ph', 'task_id' => 1,
