@@ -21,6 +21,10 @@ Requirements: PHP 8.2+ with PDO MySQL and standard Laravel extensions, Composer,
 
 The current layouts load ready-to-use assets from `public/assets`; Node/Vite is not needed to run these layouts. If you start using the Vite entrypoints, install npm dependencies and run `npm run build` separately.
 
+## UI preview
+
+After starting the application locally, open `/preview` (for example, `http://127.0.0.1:8000/preview`) to inspect the reusable public portal, admin-style staff dashboard, cards, tables, form controls, status badges, and dialog layout in one place. The preview is static: it does not require login, write data, or invoke ticket workflows.
+
 ## Rename and brand
 
 - `.env`: APP_NAME="My Application", BRAND_ORGANIZATION="Your Organization", APP_REFERENCE_PREFIX=APP.

@@ -37,6 +37,10 @@ Route::middleware(['auth', 'can:staff-dashboard'])->group(function () {
 
 Route::get('/time', TimeController::class)->middleware('throttle:60,1')->name('time');
 
+// Visual reference for the reusable Laravel template. This route is static and
+// deliberately separate from the ticket, authentication, and database flows.
+Route::view('/preview', 'preview')->name('preview');
+
 Route::get('/', [PortalController::class, 'home'])->name('home');
 Route::get('/services', [PortalController::class, 'services'])->name('services');
 Route::get('/services/{slug}', [PortalController::class, 'service'])->name('services.show');
