@@ -11,9 +11,14 @@ Requesters submit concerns using an active email in the PMMA directory and track
 | [System documentation](docs/SYSTEM_DOCUMENTATION.md) | Scope, users, features, operating procedures, and limitations |
 | [Technical specifications](docs/TECHNICAL_SPECIFICATIONS.md) | Architecture, database, routes, validation, security boundaries, and report format |
 | [Process flows](docs/PROCESS_FLOW.md) | Request, tracking, status, feedback, reporting, and directory diagrams |
+| [Layout preview](docs/layout-preview.html) | Standalone visual reference for the public portal, ticket wizard, printable report, and staff dashboard |
 | [Design notices](HELPDESK_DESIGN_NOTICES.md) | Design origin and bundled asset attribution |
 
 Documentation describes the repository implementation reviewed on **7 November 2026**. It does not certify the configuration or availability of the hosted deployment.
+
+## Layout preview
+
+Open [docs/layout-preview.html](docs/layout-preview.html) in a browser for a self-contained visual sample of the current public and authenticated layout patterns. It is documentation only: its controls are non-functional and it contains no real ticket data.
 
 ## Features
 
