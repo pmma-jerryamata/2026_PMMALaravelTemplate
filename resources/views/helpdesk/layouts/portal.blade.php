@@ -18,6 +18,7 @@
     <script src="{{ asset('helpdesk/js/legacy-adapter.js') }}?v={{ $designVersion }}" defer></script>
     @stack('page-assets')
     <link rel="stylesheet" href="{{ asset('helpdesk/css/government-footer.css') }}?v={{ filemtime(public_path('helpdesk/css/government-footer.css')) }}">
+<script src="{{ asset('helpdesk/js/new-tab-links.js') }}" defer></script>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>

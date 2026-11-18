@@ -54,7 +54,7 @@
 <div class="privacy-consent"><input type="checkbox" id="privacy_consent" name="privacy_consent" value="1" required @checked(old('privacy_consent'))><span><label for="privacy_consent">I agree to the processing of my information for this support request.</label> Read the <a href="https://privacy.gov.ph/data-privacy-act/" aria-haspopup="dialog" data-privacy-act-link>Data Privacy Act of 2012 (RA 10173)</a>.</span></div>
 <div class="wizard-actions"><a class="btn btn-secondary" href="{{ route('tickets.create', ['step' => 'issue', 'category' => $draft['task_id']]) }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to issue</a><button type="submit" class="btn btn-primary">Submit Ticket <i class="bi bi-send" aria-hidden="true"></i></button></div>
 </form>
-<dialog id="privacy-act-dialog" class="portal-panel" aria-labelledby="privacy-act-title" style="width: min(36rem, calc(100% - 2rem));">
+<dialog id="privacy-act-dialog" class="portal-panel" aria-labelledby="privacy-act-title" style="position: fixed; inset: 0; margin: auto; box-sizing: border-box; width: min(36rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); overflow-y: auto;">
     <article>
         <h2 id="privacy-act-title">Data Privacy Act of 2012 (RA 10173)</h2>
         <p>The Philippine Data Privacy Act protects personal information handled by government and private organizations.</p>

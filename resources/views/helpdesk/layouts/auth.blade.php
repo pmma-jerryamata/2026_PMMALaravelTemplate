@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('helpdesk/icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/css/pmma.css') }}">
     <link rel="stylesheet" href="{{ asset('helpdesk/css/legacy-adapter.css') }}?v={{ $designVersion }}">
+<script src="{{ asset('helpdesk/js/new-tab-links.js') }}" defer></script>
 </head>
 <body class="auth-page">
     <main class="auth-main" id="main-content">
