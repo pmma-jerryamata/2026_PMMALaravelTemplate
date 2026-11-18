@@ -58,16 +58,16 @@ class MailerStatus extends Mailable
     public function content()
     {
         return new Content(
-            markdown: 'mail.mailer-status',
+            view: 'mail.ticket-card',
             with: [
                 //'ticket' => $this->ticket,
                 //'status' => $this->status,
                 'ticketNumber' => $this->ticketNumber,
                 'status' => $this->status,
                 'dateRequest' => $this->dateRequest,
-                'name' => $this->name,
+                'requestor' => $this->name,
                 'department' => $this->department,
-                'task' => $this->task,
+                'category' => $this->task,
                 'specifics' => $this->specifics,
                 'findings' => $this->findings,
                 'technician' => $this->technician,

@@ -47,7 +47,7 @@ class Mailer extends Mailable
         $ticket = Support::with(['task', 'technician', 'employee.department'])->find($this->mailTicket);
 
         return new Content(
-            markdown: 'mail.mailer',
+            view: 'mail.ticket-card',
             with: [
                 'ticketNumber' => $this->mailTicket,
                 'department' => optional(optional($ticket)->employee)->department->name ?? 'Not specified',
@@ -56,6 +56,7 @@ class Mailer extends Mailable
                 'details' => optional($ticket)->support_specifics ?? 'Not specified',
                 'technician' => optional(optional($ticket)->technician)->name ?? 'Unassigned',
                 'submittedAt' => optional(optional($ticket)->created_at)->format('m/d/Y h:iA') ?? 'Not specified',
+                'status' => 'Pending',
             ],
         );
     }
