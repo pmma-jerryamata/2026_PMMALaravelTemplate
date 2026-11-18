@@ -204,6 +204,7 @@ class HelpdeskPresentationTest extends TestCase
 
         $this->get($url)->assertOk()->assertDontSee('Priority')
             ->assertSee('header img { width: 110%', false)
+            ->assertSee('Ticket email details')->assertSee('Subject')->assertSee('From')->assertSee('To')
             ->assertSee('ticket-mail-footer.png', false);
     }
 

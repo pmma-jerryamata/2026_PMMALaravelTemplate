@@ -19,6 +19,9 @@
         th, td { border: 1px solid #9aa9c4; padding: 8px; vertical-align: top; overflow-wrap: anywhere; }
         th { width: 28%; text-align: left; }
         td { white-space: pre-wrap; }
+        .email-meta { margin-top: 16px; border-top: 1px solid #dbe2ed; border-bottom: 1px solid #dbe2ed; padding: 8px 0; font-size: 12px; line-height: 1.45; break-inside: avoid; }
+        .email-meta p { margin: 2px 0; overflow-wrap: anywhere; }
+        .email-meta strong { display: inline-block; min-width: 54px; }
         footer { margin-top: 16px; break-inside: avoid; }
         .print-controls { margin-bottom: 12px; }
         @media print { body { margin: 0; padding: 0; } .print-controls { display: none; } }
@@ -30,6 +33,16 @@
     <h1>Ticket #{{ $ticket->id }} — Support Request Report</h1>
     @php
         $formatDate = fn ($date) => $date?->copy()->timezone('Asia/Manila')->format('m/d/Y h:i A').' PHT';
+        $emailAction = match (strtolower((string) $ticket->status)) {
+            'completed' => 'Completed',
+            'cancelled', 'canceled' => 'Canceled',
+            default => 'Updated',
+        };
+        $senderName = strtoupper((string) config('mail.from.name', 'PMMA ICTO Helpdesk'));
+        $senderAddress = (string) config('mail.from.address', '');
+        $requestorName = $ticket->employee?->name ?? 'Requestor';
+        $requestorEmail = $ticket->employee?->email ?? '';
+        $emailDate = $ticket->updated_at ?? $ticket->created_at;
         $fields = [
             'Status' => $ticket->status,
             'Department' => $ticket->employee?->department?->name,
@@ -47,6 +60,12 @@
             <tr><th scope="row">{{ $label }}</th><td>{{ $value ?? '—' }}</td></tr>
         @endforeach
     </table>
+    <section class="email-meta" aria-label="Ticket email details">
+        <p><strong>Subject</strong> PMMA ICTO Helpdesk | Ticket #{{ $ticket->id }} {{ $emailAction }}</p>
+        <p><strong>From</strong> {{ $senderName }}@if($senderAddress) &lt;{{ $senderAddress }}&gt;@endif</p>
+        <p><strong>Date</strong> {{ $emailDate ? $formatDate($emailDate) : '—' }}</p>
+        <p><strong>To</strong> {{ $requestorName }}@if($requestorEmail) &lt;{{ $requestorEmail }}&gt;@endif</p>
+    </section>
     <footer><img src="{{ asset('helpdesk/images/ticket-mail-footer.png') }}" alt="For inquiries: itsupport@pmma.edu.ph"></footer>
 </body>
 </html>
