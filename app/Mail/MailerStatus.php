@@ -43,10 +43,14 @@ class MailerStatus extends Mailable
      */
     public function envelope()
     {
+        $action = match (strtolower((string) $this->status)) {
+            'completed' => 'Completed',
+            'cancelled', 'canceled' => 'Canceled',
+            default => 'Updated',
+        };
+
         return new Envelope(
-            subject: $this->event === 'completed'
-                ? 'ITSU - JOB REQUEST COMPLETED (#'.$this->ticketNumber.')'
-                : 'ITSU - JOB REQUEST UPDATED (#'.$this->ticketNumber.')',
+            subject: 'PMMA ICTO Helpdesk | Ticket #'.$this->ticketNumber.' '.$action,
         );
     }
 

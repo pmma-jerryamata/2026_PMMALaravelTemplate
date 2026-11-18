@@ -21,7 +21,7 @@
 {{-- Footer --}}
 <x-slot:footer>
 <x-mail::footer>
-© {{ date('Y') }} PMMA - ITSU
+© {{ date('Y') }} PMMA ICTO
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>

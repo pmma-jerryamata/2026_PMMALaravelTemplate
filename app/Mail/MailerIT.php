@@ -32,7 +32,7 @@ class MailerIT extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'ITSU - JOB REQUEST CONFIRMATION',
+            subject: 'PMMA ICTO Helpdesk | New Ticket #'.$this->mailTicket,
         );
     }
 

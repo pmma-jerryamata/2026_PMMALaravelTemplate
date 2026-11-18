@@ -334,17 +334,28 @@ class HelpdeskController extends Controller
         $support->findings = $data['findings'] ?? null;
         if (isset($data['priority'])) { $support->priority = $data['priority']; }
         $support->updated_at = now();
+        $technicianChanged = $support->isDirty('technician_id');
         $support->save();
-        if ($support->employee && config('mail.ticket_notifications.'.($support->status === 'Completed' ? 'completed' : 'updated'))) {
-            $support->load('technician');
-            try {
-                Mail::to($support->employee->email)->send(new MailerStatus(
+        $event = $support->status === 'Completed' ? 'completed' : 'updated';
+        if ($support->employee && config('mail.ticket_notifications.'.$event)) {
+            if ($technicianChanged) {
+                $support->load('technician');
+            }
+            $recipient = $support->employee->email;
+            $notification = new MailerStatus(
                     $support->id, $support->status, $support->created_at, $support->employee->name,
                     optional($support->employee->department)->name, optional($support->task)->name,
                     $support->support_specifics, $support->findings, optional($support->technician)->name ?? 'Unassigned',
-                    $support->updated_at, $support->status === 'Completed' ? 'completed' : 'updated'
-                ));
-            } catch (\Throwable $exception) { report($exception); }
+                    $support->updated_at, $event
+            );
+            // Laravel terminates after sending the redirect on PHP-FPM.
+            app()->terminating(static function () use ($recipient, $notification) {
+                try {
+                    Mail::to($recipient)->send($notification);
+                } catch (\Throwable $exception) {
+                    report($exception);
+                }
+            });
         }
         if ($request->routeIs('tech.tickets.update')) {
             return redirect(\App\Support\DashboardReturn::url(route('tech.index', array_filter([
