@@ -9,7 +9,6 @@
 <script src="{{ asset('helpdesk/vendor/datatables/jquery.min.js') }}" defer></script>
 <script src="{{ asset('helpdesk/vendor/datatables/dataTables.min.js') }}" defer></script>
 <script src="{{ asset('helpdesk/js/dashboard-tables.js') }}?v={{ $designVersion }}" defer></script>
-<script src="{{ asset('helpdesk/js/new-tab-links.js') }}" defer></script>
 </head><body class="admin-workspace"><div id="staff-app">
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <aside id="staff-sidebar" class="admin-sidebar" aria-label="Staff sidebar">
