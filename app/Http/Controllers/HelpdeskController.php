@@ -242,6 +242,15 @@ class HelpdeskController extends Controller
             : redirect()->route('tickets.receipt', ['ticket' => $support->id]);
     }
 
+    public function printTicket($ticket)
+    {
+        return response()->view('helpdesk.portal.ticket-print', [
+            'ticket' => $this->tickets()->findOrFail($ticket),
+        ])->header('Cache-Control', 'private, no-store')
+            ->header('Referrer-Policy', 'no-referrer')
+            ->header('X-Robots-Tag', 'noindex, nofollow');
+    }
+
     public function receipt(Request $request)
     {
         $id = $request->integer('ticket');

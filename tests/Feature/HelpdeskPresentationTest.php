@@ -831,6 +831,20 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertStringContainsString('COMPLETED', $mail->render());
     }
 
+    public function test_ticket_print_report_requires_a_valid_signature(): void
+    {
+        $ticket = $this->ticket();
+        $this->get(route('tickets.print', $ticket->id))->assertForbidden();
+
+        $url = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'tickets.print', now()->addMinutes(5), ['ticket' => $ticket->id]
+        );
+        $this->get($url)->assertOk()
+            ->assertSee('Submission Date')
+            ->assertSee('Last Updated Date')
+            ->assertSee($ticket->support_specifics);
+    }
+
     public function test_all_active_public_and_staff_page_layouts_render(): void
     {
         $ticket = $this->ticket();

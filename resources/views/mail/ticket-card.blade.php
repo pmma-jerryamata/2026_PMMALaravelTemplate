@@ -37,7 +37,14 @@
     <tr><td align="center" style="padding:26px 8px 10px;font-size:24px;font-weight:bold">
         Status:<br><span style="font-size:30px;color:{{ $statusColor }}">{{ $statusLabel }}</span>
     </td></tr>
+    <tr><td align="center" style="padding:12px 16px">
+        Please accomplish this Customer Satisfaction Survey:
+        <a href="https://forms.cloud.microsoft/r/ewF3yD5GEm">https://forms.cloud.microsoft/r/ewF3yD5GEm</a>
+    </td></tr>
     <tr><td><a href="mailto:itsupport@pmma.edu.ph"><img width="640" style="display:block;width:100%;height:auto" src="{{ asset('helpdesk/images/ticket-mail-footer.png') }}" alt="For inquiries: itsupport@pmma.edu.ph"></a></td></tr>
+    <tr><td align="center" style="padding:16px">
+        <a href="{{ URL::temporarySignedRoute('tickets.print', now()->addDays(30), ['ticket' => $ticketNumber]) }}" style="display:inline-block;background:#0032a0;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Print</a>
+    </td></tr>
 </table>
 </body>
 </html>

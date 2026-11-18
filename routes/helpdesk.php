@@ -12,6 +12,8 @@ Route::post('/tickets/details', [HelpdeskController::class, 'ticketDetails'])->m
 Route::post('/tickets/requester', [HelpdeskController::class, 'requester'])->middleware('throttle:20,1')->name('tickets.requester');
 Route::post('/tickets', [HelpdeskController::class, 'store'])->middleware('throttle:ticket-submissions')->name('tickets.store');
 Route::get('/tickets/receipt', [HelpdeskController::class, 'receipt'])->name('tickets.receipt');
+Route::get('/tickets/{ticket}/print', [HelpdeskController::class, 'printTicket'])
+    ->whereNumber('ticket')->middleware(['signed', 'throttle:30,1'])->name('tickets.print');
 Route::match(['get', 'post'], '/track', [HelpdeskController::class, 'track'])->middleware('throttle:30,1')->name('track');
 Route::get('/queue', [HelpdeskController::class, 'queue'])->name('queue');
 Route::view('/faq', 'helpdesk.portal.faq')->name('faq');
