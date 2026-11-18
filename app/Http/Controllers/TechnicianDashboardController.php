@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Support;
-use App\Models\Technician;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
@@ -26,7 +26,7 @@ class TechnicianDashboardController extends Controller
         if (($filters['technician'] ?? '') === 'unassigned') {
             $query->whereNull('technician_id');
         } elseif (! empty($filters['technician'])) {
-            $request->validate(['technician' => 'integer|exists:technicians,id']);
+            $request->validate(['technician' => 'integer|exists:users,id']);
             $query->where('technician_id', $filters['technician']);
         }
         if ($priorityEnabled && ! empty($filters['priority'])) { $query->where('priority', $filters['priority']); }
@@ -40,7 +40,7 @@ class TechnicianDashboardController extends Controller
         }
         return view('helpdesk.technician.index', [
             'tickets' => $query->orderByDesc('created_at')->orderByDesc('id')->paginate(12)->withQueryString(),
-            'technicians' => Technician::orderBy('name')->get(),
+            'technicians' => User::orderBy('name')->get(),
             'departments' => \App\Models\Department::orderBy('name')->get(['id', 'name']),
             'employees' => \App\Models\Employee::orderBy('name')->get(['id', 'name', 'department_id']),
             'services' => \App\Models\Task::displayOrder()->get(['id', 'name']),

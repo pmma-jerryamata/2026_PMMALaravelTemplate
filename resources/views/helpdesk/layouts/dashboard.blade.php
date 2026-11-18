@@ -41,7 +41,7 @@
 <span class="admin-nav-label">RESOURCES</span>
 <a href="{{ route('dashboard.user-guide') }}" @class(['selected' => request()->routeIs('dashboard.user-guide')])><i class="bi bi-book" aria-hidden="true"></i> User Guide</a>
 <a href="{{ route('home') }}"><i class="bi bi-house" aria-hidden="true"></i> Public Portal</a>
-@if(\App\Models\Technician::whereRaw('LOWER(email) = ?', [mb_strtolower(trim(auth()->user()->email))])->exists())
+@if(auth()->check())
 <hr class="admin-nav-divider">
 <a href="{{ route('tech.index') }}" @class(['admin-tech-shortcut', 'selected' => request()->routeIs('tech.*')])><i class="bi bi-tools" aria-hidden="true"></i><span><strong>Technician Dashboard</strong><small>Work on support tickets</small></span></a>
 @endif

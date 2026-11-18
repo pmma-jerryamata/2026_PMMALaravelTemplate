@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Support;
-use App\Models\Technician;
+use App\Models\User;
 use App\Services\Reports\AccomplishmentPdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ class ReportController extends Controller
     {
         $input = $request->validate([
             'from' => 'nullable|date_format:Y-m-d', 'to' => 'nullable|date_format:Y-m-d|after_or_equal:from',
-            'technician_id' => 'nullable|integer|exists:technicians,id',
+            'technician_id' => 'nullable|integer|exists:users,id',
             'department_id' => 'nullable|integer|exists:departments,id', 'task_id' => 'nullable|integer|exists:tasks,id',
             'prepared_by' => 'nullable|string|max:100', 'prepared_position' => 'nullable|string|max:100',
             'noted_by' => 'nullable|string|max:100', 'noted_position' => 'nullable|string|max:100',
@@ -50,9 +50,9 @@ class ReportController extends Controller
         $contentHtml = \App\Services\Reports\ReportContent::clean(! empty($input['content_default']) ? '' : ($input['content_html'] ?? ''));
         $period = Carbon::parse($from)->format('F j, Y').' - '.Carbon::parse($to)->format('F j, Y');
         $scope = [];
-        foreach (['technician_id' => [\App\Models\Technician::class, 'Technician'], 'department_id' => [\App\Models\Department::class, 'Office'], 'task_id' => [\App\Models\Task::class, 'Service type']] as $field => [$model, $label]) {
+        foreach (['technician_id' => [User::class, 'Technician'], 'department_id' => [\App\Models\Department::class, 'Office'], 'task_id' => [\App\Models\Task::class, 'Service type']] as $field => [$model, $label]) {
             if (! empty($input[$field])) {
-                $lookup = $model === Technician::class ? $model::withArchived() : $model::query();
+                $lookup = $model::query();
                 $scope[] = $label.': '.$lookup->findOrFail($input[$field])->name;
             }
         }
@@ -61,7 +61,7 @@ class ReportController extends Controller
         return compact('from', 'to', 'tickets', 'groups', 'signatories', 'contentHtml', 'defaultContentHtml') + [
             'departments' => \App\Models\Department::orderBy('name')->get(), 'services' => \App\Models\Task::displayOrder()->get(),
             'departmentId' => $input['department_id'] ?? '', 'taskId' => $input['task_id'] ?? '',
-            'technicianId' => $input['technician_id'] ?? '', 'technicians' => Technician::withArchived()->orderBy('name')->get(),
+            'technicianId' => $input['technician_id'] ?? '', 'technicians' => User::orderBy('name')->get(),
         ];
     }
 

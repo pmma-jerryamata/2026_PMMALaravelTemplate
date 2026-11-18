@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
-use App\Models\Technician;
+use App\Models\User;
 use App\Support\DashboardReturn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +16,7 @@ class DirectoryDeletionController extends Controller
         abort_unless(in_array($type, ['employees', 'technicians'], true), 404);
         $query = $type === 'employees'
             ? Employee::withTrashed()->where('activation_pending', true)->whereNotNull('deleted_at')
-            : Technician::query();
+            : User::query();
         if ($lock) $query->lockForUpdate();
         return $query->findOrFail($id);
     }
@@ -41,7 +41,6 @@ class DirectoryDeletionController extends Controller
             // Recheck eligibility under a lock: an activated user cannot be deleted by an old form.
             $record = $this->record($type, $id, true);
             $record->timestamps = false;
-            $record->directory_archived_at = now();
             if ($type === 'employees') {
                 $record->activation_pending = false;
                 $record->updated_at = now();

@@ -10,7 +10,7 @@ use App\Models\RatingResult;
 use App\Models\Support;
 use App\Models\ServiceIssue;
 use App\Models\Task;
-use App\Models\Technician;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -109,7 +109,7 @@ class HelpdeskController extends Controller
             'services' => $this->services(), 'staff' => $staff, 'emailValid' => $emailValid,
             'email' => $email, 'selected' => (string) $request->query('category', $request->query('tasks1', '')),
             'submissionToken' => (string) Str::uuid(),
-            'technicians' => $staff ? Technician::orderBy('name')->get() : collect(),
+            'technicians' => $staff ? User::orderBy('name')->get() : collect(),
             'departments' => $staff ? Department::orderBy('name')->get(['id', 'name']) : collect(),
             'employees' => $staff ? Employee::orderBy('name')->get(['id', 'name', 'department_id']) : collect(),
         ]);
@@ -164,7 +164,7 @@ class HelpdeskController extends Controller
             'task_id' => 'required|integer|exists:tasks,id',
             'support_specifics' => 'required|string|max:10000',
             'submission_token' => 'required|uuid',
-            'technician_id' => $staff ? ['nullable', 'integer', Rule::exists('technicians', 'id')->whereNull('directory_archived_at')] : 'prohibited',
+            'technician_id' => $staff ? 'nullable|integer|exists:users,id' : 'prohibited',
             'privacy_consent' => $staff ? 'exclude' : 'accepted',
         ], ['email.exists' => 'Your email is not in the active PMMA directory. Please contact ITSU.']);
         $submissionKey = hash('sha256', ($staff ? 'user:'.$request->user()->id : 'session:'.$request->session()->getId()).':'.$data['submission_token']);
@@ -278,7 +278,7 @@ class HelpdeskController extends Controller
             'status' => ['nullable', Rule::in(self::STATUSES)], 'q' => 'nullable|string|max:150',
             'task_id' => 'nullable|integer|exists:tasks,id',
             'department_id' => 'nullable|integer|exists:departments,id',
-            'technician_id' => 'nullable|integer|exists:technicians,id',
+            'technician_id' => 'nullable|integer|exists:users,id',
         ]);
         foreach (['status', 'task_id', 'technician_id'] as $field) {
             if (! empty($filters[$field])) { $query->where($field, $filters[$field]); }
@@ -301,7 +301,7 @@ class HelpdeskController extends Controller
         return $this->page('dashboard.index', [
             'tickets' => $query->orderByDesc('created_at')->orderByDesc('id')->paginate(15)->withQueryString(),
             'counts' => $counts, 'services' => $services, 'analytics' => $analytics,
-            'departments' => Department::orderBy('name')->get(), 'technicians' => Technician::orderBy('name')->get(),
+            'departments' => Department::orderBy('name')->get(), 'technicians' => User::orderBy('name')->get(),
             'statuses' => self::STATUSES,
         ]);
     }
@@ -310,7 +310,7 @@ class HelpdeskController extends Controller
     {
         return $this->page('dashboard.ticket', [
             'ticket' => $this->tickets()->findOrFail($ticket),
-            'technicians' => Technician::orderBy('name')->get(), 'statuses' => self::STATUSES,
+            'technicians' => User::orderBy('name')->get(), 'statuses' => self::STATUSES,
         ]);
     }
 
@@ -325,7 +325,7 @@ class HelpdeskController extends Controller
         $support = $this->tickets()->findOrFail($ticket);
         $data = $request->validate([
             'status' => ['required', Rule::in(self::STATUSES)],
-            'technician_id' => ['nullable', 'integer', Rule::exists('technicians', 'id')->where(fn ($query) => $query->whereNull('directory_archived_at')->orWhere('id', $support->technician_id))], 'findings' => 'nullable|string|max:1023',
+            'technician_id' => 'nullable|integer|exists:users,id', 'findings' => 'nullable|string|max:1023',
             'accomplished_at' => 'nullable|date',
             'priority' => Schema::hasColumn('supports', 'priority')
                 ? ['sometimes', 'required', Rule::in(Support::PRIORITIES)] : 'prohibited',
@@ -411,7 +411,7 @@ class HelpdeskController extends Controller
     {
         abort_unless(in_array($type, ['employees', 'departments', 'technicians', 'services', 'issues'], true), 404);
         return ['employees' => Employee::class, 'departments' => Department::class,
-            'technicians' => Technician::class, 'services' => Task::class, 'issues' => ServiceIssue::class][$type];
+            'technicians' => User::class, 'services' => Task::class, 'issues' => ServiceIssue::class][$type];
     }
 
     public function settings(Request $request)

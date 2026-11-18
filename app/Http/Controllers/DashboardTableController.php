@@ -8,7 +8,7 @@ use App\Models\RatingResult;
 use App\Models\Support;
 use App\Models\ServiceIssue;
 use App\Models\Task;
-use App\Models\Technician;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -53,13 +53,13 @@ class DashboardTableController extends Controller
         $filters = $request->validate([
             'status' => ['nullable', Rule::in(HelpdeskController::STATUSES)],
             'task_id' => 'nullable|integer|exists:tasks,id', 'department_id' => 'nullable|integer|exists:departments,id',
-            'technician_id' => 'nullable|integer|exists:technicians,id',
+            'technician_id' => 'nullable|integer|exists:users,id',
         ]);
         $query = Support::with(['task', 'technician', 'employee' => fn ($employee) => $employee->withTrashed()->with('department')])
             ->leftJoin('employees', 'employees.id', '=', 'supports.employee_id')
             ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
             ->leftJoin('tasks', 'tasks.id', '=', 'supports.task_id')
-            ->leftJoin('technicians', 'technicians.id', '=', 'supports.technician_id')->select('supports.*');
+            ->leftJoin('users as technicians', 'technicians.id', '=', 'supports.technician_id')->select('supports.*');
         foreach (['status', 'task_id', 'technician_id'] as $field) {
             if (! empty($filters[$field])) { $query->where('supports.'.$field, $filters[$field]); }
         }
@@ -83,7 +83,7 @@ class DashboardTableController extends Controller
     public function catalog(Request $request, string $type)
     {
         $models = ['employees' => Employee::class, 'departments' => Department::class,
-            'technicians' => Technician::class, 'services' => Task::class, 'issues' => ServiceIssue::class];
+            'technicians' => User::class, 'services' => Task::class, 'issues' => ServiceIssue::class];
         abort_unless(isset($models[$type]), 404);
         $parameters = $this->parameters($request);
         $model = $models[$type];
@@ -100,7 +100,7 @@ class DashboardTableController extends Controller
             $query = $model::query();
             $columns = [$table.'.name'];
             $searchColumns = $columns;
-            if ($type === 'technicians') { $columns[] = 'technicians.email'; $searchColumns[] = 'technicians.email'; }
+            if ($type === 'technicians') { $columns[] = $table.'.email'; $searchColumns[] = $table.'.email'; }
             if ($type === 'services') { $columns[] = 'tasks.content'; $searchColumns[] = 'tasks.content'; }
             $columns[] = null;
             if ($type === 'issues') {

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Rating;
 use App\Models\Support;
-use App\Models\Technician;
 use App\Models\RatingResult;
 use Illuminate\Http\Request;
 use App\Models\RatingMeasure;

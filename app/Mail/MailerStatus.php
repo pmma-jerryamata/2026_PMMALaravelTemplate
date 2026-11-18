@@ -8,7 +8,6 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\URL;
 
 class MailerStatus extends Mailable
 {
@@ -58,9 +57,6 @@ class MailerStatus extends Mailable
      */
     public function content()
     {
-        // Generate a signed URL with the ticket number
-        $signedUrl = URL::signedRoute('take-survey', ['taskId' => $this->ticketNumber]);
-
         return new Content(
             markdown: 'mail.mailer-status',
             with: [
@@ -76,7 +72,6 @@ class MailerStatus extends Mailable
                 'findings' => $this->findings,
                 'technician' => $this->technician,
                 'dateAccomplished' => $this->dateAccomplished,
-                'surveyUrl' => $signedUrl,
                 'isCompleted' => $this->event === 'completed',
             ],
         );

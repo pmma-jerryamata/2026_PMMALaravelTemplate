@@ -4,7 +4,7 @@ namespace App\Services\Reports;
 
 use App\Models\Department;
 use App\Models\Task;
-use App\Models\Technician;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +14,7 @@ class JobRequestsSummary
     {
         $filters = $request->validate([
             'from' => 'nullable|date_format:Y-m-d', 'to' => 'nullable|date_format:Y-m-d|after_or_equal:from',
-            'all_dates' => 'nullable|boolean', 'technician_id' => 'nullable|integer|exists:technicians,id',
+            'all_dates' => 'nullable|boolean', 'technician_id' => 'nullable|integer|exists:users,id',
             'department_id' => 'nullable|integer|exists:departments,id', 'task_id' => 'nullable|integer|exists:tasks,id',
             'status' => 'nullable|in:Pending,Completed,Cancelled', 'download' => 'nullable|boolean',
             'report_title' => 'nullable|string|max:150', 'introduction' => 'nullable|string|max:3000', 'intro_default' => 'nullable|boolean',
@@ -51,7 +51,7 @@ class JobRequestsSummary
             return $office + ['counts' => $values, 'total' => array_sum($values)];
         });
         $columnTotals = $reportServices->mapWithKeys(fn ($service) => [$service->id => $rows->sum(fn ($row) => $row['counts'][$service->id])])->all();
-        $technicians = Technician::withArchived()->orderBy('name')->get();
+        $technicians = User::orderBy('name')->get();
         $scope = [empty($filters['all_dates']) ? $from.' to '.$to : 'All dates',
             empty($filters['technician_id']) ? 'All technicians' : $technicians->firstWhere('id', $filters['technician_id'])->name,
             empty($filters['department_id']) ? 'All offices' : $departments->firstWhere('id', $filters['department_id'])->name,

@@ -829,7 +829,7 @@ class HelpdeskPresentationTest extends TestCase
         $mail = new \App\Mail\MailerStatus($ticket->id, 'Completed', $ticket->created_at,
             'Test Requester', 'ITSU', 'Internet/Network Connectivity', $ticket->support_specifics,
             'Cable replaced.', 'Test Technician', now());
-        $this->assertStringContainsString('Completed', $mail->render());
+        $this->assertStringContainsString('COMPLETED', $mail->render());
     }
 
     public function test_all_active_public_and_staff_page_layouts_render(): void

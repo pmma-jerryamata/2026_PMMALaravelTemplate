@@ -10,7 +10,7 @@ use App\Models\Support;
 use App\Models\Employee;
 use App\Mail\MailerStatus;
 use App\Models\Department;
-use App\Models\Technician;
+use App\Models\User as Technician;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;

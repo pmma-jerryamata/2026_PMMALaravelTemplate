@@ -19,7 +19,7 @@ class DashboardAnalytics
             'analytics_status' => ['nullable', Rule::in(HelpdeskController::STATUSES)],
             'analytics_task_id' => 'nullable|integer|exists:tasks,id',
             'analytics_department_id' => 'nullable|integer|exists:departments,id',
-            'analytics_technician_id' => 'nullable|integer|exists:technicians,id',
+            'analytics_technician_id' => 'nullable|integer|exists:users,id',
         ]);
         $period = $filters['analytics_period'] ?? 'all';
         $today = Carbon::today('Asia/Manila');

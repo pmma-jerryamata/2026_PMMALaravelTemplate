@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Support;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -43,10 +44,18 @@ class Mailer extends Mailable
      */
     public function content()
     {
+        $ticket = Support::with(['task', 'technician', 'employee.department'])->find($this->mailTicket);
+
         return new Content(
             markdown: 'mail.mailer',
             with: [
-                'ticket' => $this->mailTicket,
+                'ticketNumber' => $this->mailTicket,
+                'department' => optional(optional($ticket)->employee)->department->name ?? 'Not specified',
+                'requestor' => optional(optional($ticket)->employee)->name ?? 'Not specified',
+                'category' => optional($ticket)->task->name ?? 'Not specified',
+                'details' => optional($ticket)->support_specifics ?? 'Not specified',
+                'technician' => optional(optional($ticket)->technician)->name ?? 'Unassigned',
+                'submittedAt' => optional(optional($ticket)->created_at)->format('m/d/Y h:iA') ?? 'Not specified',
             ],
         );
     }

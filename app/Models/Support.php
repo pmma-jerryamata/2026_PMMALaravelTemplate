@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Models\Task;
 use App\Models\Employee;
 use App\Models\Department;
-use App\Models\Technician;
+use App\Models\User;
 use App\Models\RatingResult;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,7 +39,7 @@ class Support extends Model
     }
 
     public function technician(){
-        return $this->belongsTo(Technician::class)->withArchived();
+        return $this->belongsTo(User::class, 'technician_id');
     }
 
     public function department(){
