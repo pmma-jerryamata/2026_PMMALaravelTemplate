@@ -10,3 +10,6 @@
 .wizard-fullscreen .privacy-consent input[type="checkbox"] {
     margin-top: 0;
 }
+
+/* The wizard also serves as the public home page, inside the portal shell. */
+.wizard-portal .ticket-wizard{max-width:1148px}.wizard-portal .ticket-steps{padding:14px 18px;margin-bottom:24px;border:0;background:#f5f7fb;gap:20px;font-size:12px}.wizard-portal .ticket-steps li span{width:26px;height:26px;font-size:12px}.wizard-portal .portal-form{padding:0;border:0;box-shadow:none;background:none}.wizard-portal .issue-form>h2,.wizard-portal .service-choice-heading h2{font-size:24px;margin:8px 0 10px}.wizard-portal .portal-eyebrow{font-size:10px;margin-bottom:8px}.wizard-portal .issue-suggestions{gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))}.wizard-portal .issue-card{min-height:146px;padding:22px;margin:0}.wizard-portal .service-choice-card{min-height:170px}.wizard-portal [data-public-email-form]{max-width:650px;margin:auto}@media(max-width:800px){.wizard-portal .issue-suggestions{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:540px){.wizard-portal .ticket-steps{gap:10px;padding:14px 10px;margin-bottom:22px;font-size:11px}.wizard-portal .issue-suggestions{grid-template-columns:1fr;gap:12px}.wizard-portal .issue-card{min-height:112px;padding:20px}}

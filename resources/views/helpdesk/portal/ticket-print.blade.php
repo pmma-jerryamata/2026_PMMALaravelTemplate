@@ -8,7 +8,12 @@
         @page { size: A4 portrait; margin: 12mm; }
         * { box-sizing: border-box; }
         body { max-width: 186mm; margin: 16px auto; padding: 0 8px; color: #17223b; font: 14px/1.5 Arial, sans-serif; }
-        img { display: block; width: 100%; height: auto; }
+        img { display: block; height: auto; }
+        header, footer { width: 100%; overflow: hidden; }
+        /* The print header artwork has a transparent edge. Expand it in its
+           container so the colored banner aligns with the report table. */
+        header img { width: 110%; max-width: none; margin-left: -5%; }
+        footer img { width: 100%; }
         h1 { font-size: 22px; margin: 8px 0 14px; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th, td { border: 1px solid #9aa9c4; padding: 8px; vertical-align: top; overflow-wrap: anywhere; }
@@ -27,7 +32,6 @@
         $formatDate = fn ($date) => $date?->copy()->timezone('Asia/Manila')->format('m/d/Y h:i A').' PHT';
         $fields = [
             'Status' => $ticket->status,
-            'Priority' => $ticket->priority,
             'Department' => $ticket->employee?->department?->name,
             'Requestor' => $ticket->employee?->name,
             'Category' => $ticket->task?->name,

@@ -26,7 +26,8 @@
     <a class="portal-brand" href="{{ route('home') }}" aria-label="PMMA Helpdesk home"><img class="brand-seal" src="{{ asset('helpdesk/images/pmma-logo.png') }}" alt="PMMA seal" width="64" height="64"><span><strong>{{ $systemSettings['app_name'] }}</strong><small>{{ $systemSettings['portal_subtitle'] }}</small></span></a>
     <nav id="main-navigation" class="main-nav" aria-label="Main navigation"><ul>
         @foreach(['home' => 'Home', 'queue' => 'Live Queue', 'faq' => 'FAQs', 'contact' => 'Contact'] as $route => $label)
-        <li><a href="{{ route($route) }}" @class(['active' => request()->routeIs($route, $route.'.*')]) @if(request()->routeIs($route, $route.'.*')) aria-current="page" @endif>{{ $label }}</a></li>
+        @php($isActive = $route === 'home' ? request()->routeIs('home', 'tickets.create') : request()->routeIs($route, $route.'.*'))
+        <li><a href="{{ route($route) }}" @class(['active' => $isActive]) @if($isActive) aria-current="page" @endif>{{ $label }}</a></li>
         @endforeach
         <li class="nav-account"><a class="btn btn-primary nav-login ui-action" aria-label="{{ auth()->check() ? 'Dashboard' : 'Login' }}" title="{{ auth()->check() ? 'Dashboard' : 'Login' }}" href="{{ auth()->check() ? route('dashboard') : route('login') }}" @if(request()->routeIs('login', 'dashboard', 'dashboard.*')) aria-current="page" @endif><i class="bi bi-{{ auth()->check() ? 'grid' : 'box-arrow-in-right' }}" aria-hidden="true"></i><span>{{ auth()->check() ? 'Dashboard' : 'Login' }}</span></a></li>
     </ul></nav>

@@ -1,12 +1,13 @@
-@extends('helpdesk.layouts.wizard')
+@extends('helpdesk.layouts.portal')
 @section('title', 'Submit a Ticket')
 @push('page-assets')
 <link rel="stylesheet" href="{{ asset('helpdesk/css/ticket-wizard.css') }}?v={{ filemtime(public_path('helpdesk/css/ticket-wizard.css')) }}">
 <script src="{{ asset('helpdesk/js/ticket-wizard.js') }}?v={{ filemtime(public_path('helpdesk/js/ticket-wizard.js')) }}" defer></script>
 <link rel="stylesheet" href="{{ asset('helpdesk/css/service-choices.css') }}?v={{ filemtime(public_path('helpdesk/css/service-choices.css')) }}">
+<link rel="stylesheet" href="{{ asset('helpdesk/css/wizard-modal.css') }}?v={{ filemtime(public_path('helpdesk/css/wizard-modal.css')) }}">
 @endpush
 @section('content')
-<section class="section"><div class="container ticket-wizard">
+<section class="section wizard-portal"><div class="container ticket-wizard">
 <ol class="ticket-steps" aria-label="Submission progress">
 @foreach(['services' => 'Choose a service', 'issue' => 'Describe the issue', 'email' => 'Your PMMA email'] as $key => $label)
 <li @if($step === $key) aria-current="step" @endif><span>{{ $loop->iteration }}</span>{{ $label }}</li>

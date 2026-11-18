@@ -57,12 +57,9 @@ class HelpdeskController extends Controller
 
     public function home(Request $request)
     {
-        return $this->page('portal.home', [
-            'summary' => app(\App\Services\PublicTicketSummary::class)->data($request),
-            'services' => $this->services(),
-            'recentTickets' => $this->tickets()
-                ->orderByDesc('created_at')->orderByDesc('id')->limit(10)->get(),
-        ]);
+        // The ticket wizard is the public landing experience. Keep this URL so
+        // existing links to the portal home continue to work.
+        return $this->create($request);
     }
 
     public function servicesIndex(Request $request)

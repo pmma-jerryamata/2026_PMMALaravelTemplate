@@ -189,10 +189,22 @@ class HelpdeskPresentationTest extends TestCase
 
     public function test_portal_uses_existing_categories_and_omits_unsupported_fields(): void
     {
-        $this->get('/')->assertOk()->assertSee('What Do You Need Help With?')->assertDontSee('home-service-card')->assertDontSee('Track an Existing Ticket');
+        $this->get('/')->assertOk()->assertSee('What do you need help with?')
+            ->assertSee('main-navigation')->assertSee('Choose a service')
+            ->assertDontSee('home-service-card')->assertDontSee('Track an Existing Ticket');
         $this->get('/tickets/create?step=issue&category=1')->assertOk()->assertSee('name="task_id"', false)
             ->assertDontSee('name="priority"', false)->assertDontSee('name="subject"', false)
             ->assertDontSee('Ticket Timeline');
+    }
+
+    public function test_printable_ticket_hides_priority_and_uses_full_width_header_and_footer(): void
+    {
+        $ticket = $this->ticket();
+        $url = URL::temporarySignedRoute('tickets.print', now()->addMinute(), ['ticket' => $ticket->id]);
+
+        $this->get($url)->assertOk()->assertDontSee('Priority')
+            ->assertSee('header img { width: 110%', false)
+            ->assertSee('ticket-mail-footer.png', false);
     }
 
     public function test_submission_maps_to_legacy_columns_and_does_not_create_a_requester(): void
@@ -340,17 +352,13 @@ class HelpdeskPresentationTest extends TestCase
         $this->get('/dashboard/tickets/'.$ticket->id)->assertOk()->assertSee('Please reconnect the network.');
     }
 
-    public function test_public_transparency_summary_precedes_recent_tickets_and_filters_by_submission_date(): void
+    public function test_public_landing_is_the_ticket_wizard_instead_of_the_previous_home_content(): void
     {
-        $this->travelTo(\Carbon\Carbon::parse('2026-11-12 12:00:00'));
-        $recent = $this->ticket(); $recent->update(['status' => 'Completed']);
-        $old = $this->ticket(); $old->update(['status' => 'Cancelled', 'created_at' => now()->subDays(40)]);
-        $this->get('/')->assertOk()->assertSeeInOrder(['Job Requests at a glance', 'Recent Tickets'])
-            ->assertViewHas('summary', fn ($summary) => $summary['total'] === 2 && $summary['completed'] === 1 && $summary['cancelled'] === 1)
+        $this->ticket();
+        $this->get('/')->assertOk()->assertSee('STEP 1 OF 3')
+            ->assertSee('What do you need help with?')
+            ->assertDontSee('Job Requests at a glance')->assertDontSee('Recent Tickets')
             ->assertDontSee('requester@pmma.edu.ph')->assertDontSee('Test Requester');
-        $this->get('/?summary_range=7')->assertOk()->assertViewHas('summary', fn ($summary) => $summary['total'] === 1 && $summary['cancelled'] === 0);
-        $this->get('/?summary_range=today')->assertOk()->assertViewHas('summary', fn ($summary) => $summary['completed'] === 1);
-        $this->travelBack();
     }
 
     public function test_public_ticket_requires_privacy_agreement(): void
@@ -580,8 +588,8 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertCount(9, $options);
         $issue = $options->firstWhere('name', 'Cannot connect to Wi-Fi');
         $this->assertSame('I have a problem with Wi-Fi connectivity. My device cannot connect to the Wi-Fi access point.', $issue->description);
-        $this->get('/tickets/create?step=issue&category=1')->assertOk()->assertSee('aria-modal="true"', false)
-            ->assertSee('Suggested issue')->assertSee('Other / Write my own issue');
+        $this->get('/tickets/create?step=issue&category=1')->assertOk()->assertSee('main-navigation')
+            ->assertDontSee('aria-modal="true"', false)->assertSee('Suggested issue')->assertSee('Other / Write my own issue');
         $this->post('/tickets/details', ['task_id' => 1, 'issue_name' => $issue->name, 'support_specifics' => 'tampered description'])
             ->assertRedirect()->assertSessionHas('helpdesk.draft.support_specifics', $issue->description);
         $this->get('/tickets/create?step=email')->assertOk()->assertSee($issue->description);
