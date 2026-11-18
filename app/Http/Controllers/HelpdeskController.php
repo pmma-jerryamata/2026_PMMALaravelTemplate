@@ -445,6 +445,11 @@ class HelpdeskController extends Controller
     {
         $model = $this->catalogModel($type);
         $record = $id ? ($type === 'employees' ? Employee::withTrashed()->findOrFail($id) : $model::findOrFail($id)) : new $model;
+        if ($type === 'technicians' && ! $record->exists) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Technician assignments now use an existing staff account from the users table. Create the staff account through the approved account-provisioning process first.',
+            ]);
+        }
         $rules = ['name' => 'required|string|max:255'];
         if (in_array($type, ['employees', 'technicians'], true)) {
             $rules['email'] = ['required', 'email', 'max:255', Rule::unique($record->getTable(), 'email')->ignore($record->getKey())];

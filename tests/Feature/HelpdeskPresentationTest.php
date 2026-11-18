@@ -284,11 +284,11 @@ class HelpdeskPresentationTest extends TestCase
     {
         $this->actingAs($this->staff());
         $this->post('/dashboard/settings/departments', ['name' => 'Library'])->assertRedirect();
-        $this->post('/dashboard/settings/technicians', ['name' => 'Another Technician', 'email' => 'another@example.test'])->assertRedirect();
+        $this->post('/dashboard/settings/technicians', ['name' => 'Another Technician', 'email' => 'another@example.test'])->assertSessionHasErrors('email');
         $this->post('/dashboard/settings/services/1', ['name' => 'Network Support', 'content' => 'Network help', 'icon' => 'bi bi-wifi'])->assertRedirect();
         $this->assertDatabaseHas('departments', ['name' => 'Library']);
         $this->assertDatabaseHas('tasks', ['id' => 1, 'name' => 'Network Support']);
-        $this->assertDatabaseHas('technicians', ['email' => 'another@example.test']);
+        $this->assertDatabaseMissing('users', ['email' => 'another@example.test']);
     }
 
     public function test_dashboard_remains_protected_and_filters_existing_records(): void
@@ -732,7 +732,6 @@ class HelpdeskPresentationTest extends TestCase
         $this->actingAs($this->staff());
         $catalogs = [
             'departments' => ['name' => 'New Office'],
-            'technicians' => ['name' => 'New Technician', 'email' => 'new.tech@example.test'],
             'services' => ['name' => 'New Service', 'content' => 'New service description', 'icon' => 'bi bi-headset'],
         ];
         foreach ($catalogs as $type => $payload) {
