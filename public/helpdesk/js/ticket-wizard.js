@@ -1,4 +1,13 @@
 'use strict';
+const privacyActLink = document.querySelector('[data-privacy-act-link]');
+const privacyActDialog = document.getElementById('privacy-act-dialog');
+privacyActLink?.addEventListener('click', event => {
+    if (typeof privacyActDialog?.showModal !== 'function' ||
+        event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    privacyActDialog.showModal();
+});
+
 const issueCards = document.querySelectorAll('[data-issue], [data-manual-issue]');
 const issueEditor = document.querySelector('[data-issue-editor]');
 const issueNext = document.querySelector('[data-issue-next]');

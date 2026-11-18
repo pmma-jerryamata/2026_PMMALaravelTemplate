@@ -51,9 +51,20 @@
 </div></div>
 <div data-employee-department><label for="registration_department_id">Department / Office</label><select id="registration_department_id" name="registration_department_id"><option value="">Choose your department</option>@foreach($departments->reject(fn ($department) => strtoupper($department->name) === 'STUDENTS') as $department)<option value="{{ $department->id }}" @selected((string) old('registration_department_id') === (string) $department->id)>{{ strtoupper($department->name) === 'STUDENTS' ? 'STUDENTS (Cadets / Students)' : $department->name }}</option>@endforeach</select></div>
 </fieldset>
-<label class="privacy-consent" for="privacy_consent"><input type="checkbox" id="privacy_consent" name="privacy_consent" value="1" required @checked(old('privacy_consent'))><span>I have read the <a href="{{ route('privacy') }}" target="_blank" rel="noopener">Data Privacy Notice (opens in a new tab)</a> and agree to the processing of my information for this support request.</span></label>
+<div class="privacy-consent"><input type="checkbox" id="privacy_consent" name="privacy_consent" value="1" required @checked(old('privacy_consent'))><span><label for="privacy_consent">I agree to the processing of my information for this support request.</label> Read the <a href="https://privacy.gov.ph/data-privacy-act/" aria-haspopup="dialog" data-privacy-act-link>Data Privacy Act of 2012 (RA 10173)</a>.</span></div>
 <div class="wizard-actions"><a class="btn btn-secondary" href="{{ route('tickets.create', ['step' => 'issue', 'category' => $draft['task_id']]) }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to issue</a><button type="submit" class="btn btn-primary">Submit Ticket <i class="bi bi-send" aria-hidden="true"></i></button></div>
 </form>
+<dialog id="privacy-act-dialog" class="portal-panel" aria-labelledby="privacy-act-title" style="width: min(36rem, calc(100% - 2rem));">
+    <article>
+        <h2 id="privacy-act-title">Data Privacy Act of 2012 (RA 10173)</h2>
+        <p>The Philippine Data Privacy Act protects personal information handled by government and private organizations.</p>
+        <h3>Section 16. Rights of the Data Subject</h3>
+        <p>You have the right to know how your personal information is processed, request access to it, and ask for corrections. Under the conditions set by law, you may also request that information be blocked or removed and seek compensation for damages.</p>
+        <p><a href="https://privacy.gov.ph/data-privacy-act/">Read the full law on the National Privacy Commission website</a></p>
+        <p><a href="{{ route('privacy') }}">Read how PMMA Helpdesk handles your information</a></p>
+    </article>
+    <form method="dialog"><button class="btn btn-secondary" autofocus>Close</button></form>
+</dialog>
 @endif
 </div></section>
 @endsection
