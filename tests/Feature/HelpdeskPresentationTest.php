@@ -444,6 +444,19 @@ class HelpdeskPresentationTest extends TestCase
         $this->assertDatabaseHas('supports', ['id' => $ticket->id, 'status' => 'Completed', 'priority' => 'High']);
     }
 
+    public function test_pending_ticket_updates_notify_the_requester(): void
+    {
+        $ticket = $this->ticket();
+
+        $this->actingAs($this->staff())->post('/dashboard/tickets/'.$ticket->id, [
+            'status' => 'Pending', 'technician_id' => 1, 'findings' => 'Technician assigned and checking the connection.',
+        ])->assertSessionHasNoErrors()->assertRedirect();
+
+        Mail::assertSent(\App\Mail\MailerStatus::class, function ($mail) {
+            return $mail->event === 'updated';
+        });
+    }
+
     public function test_staff_requester_must_be_active_and_belong_to_the_department(): void
     {
         $this->actingAs($this->staff());

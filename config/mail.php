@@ -98,6 +98,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Helpdesk Ticket Notifications
+    |--------------------------------------------------------------------------
+    |
+    | Keep ticket lifecycle messages independently switchable. These settings
+    | are intentionally environment-driven so staging can use a safe transport
+    | or disable a message type without changing application code.
+    |
+    */
+
+    'ticket_notifications' => [
+        'submitted' => env('MAIL_TICKET_SUBMITTED', true),
+        'updated' => env('MAIL_TICKET_UPDATED', true),
+        'completed' => env('MAIL_TICKET_COMPLETED', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown Mail Settings
     |--------------------------------------------------------------------------
     |

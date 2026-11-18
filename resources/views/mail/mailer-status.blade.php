@@ -1,5 +1,9 @@
 @component('mail::message')
-Your support request has been processed. Below are the details:
+@if($isCompleted)
+Your support request has been completed. Below are the details:
+@else
+Your support request has been updated. Below are the latest details:
+@endif
 
 |                          |                           |
 |--------------------------|---------------------------|
@@ -21,11 +25,13 @@ Your support request has been processed. Below are the details:
             }
         }
     </style>
+@if($isCompleted)
 <span class="no-print">We kindly invite you to share your feedback on your recent experience with our tech support by completing a brief survey below.
     @component('mail::button', ['url' => 'https://support.pmma.edu.ph/feedback', 'color' => 'success'])
     Rate Our Service
     @endcomponent
 </span>
+@endif
 </div>
 Thank you!<br/><br/>
 <b>Information Technology Services Unit</b>

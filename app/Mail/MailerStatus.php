@@ -19,7 +19,7 @@ class MailerStatus extends Mailable
      *
      * @return void
      */
-    public function __construct($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished)
+    public function __construct($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished, $_event = null)
     {
         //$this->ticket = $ticket;
         //$this->status = $status;
@@ -34,6 +34,7 @@ class MailerStatus extends Mailable
         $this->findings = $_findings;
         $this->technician = $_technician;
         $this->dateAccomplished = $_dateAccomplished;
+        $this->event = $_event ?: (strcasecmp((string) $_status, 'Completed') === 0 ? 'completed' : 'updated');
     }
 
     /**
@@ -44,7 +45,9 @@ class MailerStatus extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'ITSU - JOB COMPLETION REPORT',
+            subject: $this->event === 'completed'
+                ? 'ITSU - JOB REQUEST COMPLETED (#'.$this->ticketNumber.')'
+                : 'ITSU - JOB REQUEST UPDATED (#'.$this->ticketNumber.')',
         );
     }
 
@@ -73,7 +76,8 @@ class MailerStatus extends Mailable
                 'findings' => $this->findings,
                 'technician' => $this->technician,
                 'dateAccomplished' => $this->dateAccomplished,
-                'surveyUrl' => $signedUrl, // <-- Pass signed URL to the Blade template
+                'surveyUrl' => $signedUrl,
+                'isCompleted' => $this->event === 'completed',
             ],
         );
     }

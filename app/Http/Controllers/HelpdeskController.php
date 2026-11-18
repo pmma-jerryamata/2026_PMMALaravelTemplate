@@ -231,7 +231,9 @@ class HelpdeskController extends Controller
         if (! $staff) { $request->session()->forget('helpdesk.draft'); }
         // Keep the existing confirmation mail; transport failures must not create duplicate tickets.
         try {
-            if ($created) { Mail::to($employee->email)->send(new Mailer($support->id)); }
+            if ($created && config('mail.ticket_notifications.submitted')) {
+                Mail::to($employee->email)->send(new Mailer($support->id));
+            }
         } catch (\Throwable $exception) {
             report($exception);
         }
@@ -334,14 +336,14 @@ class HelpdeskController extends Controller
         if (isset($data['priority'])) { $support->priority = $data['priority']; }
         $support->updated_at = $data['accomplished_at'] ?? now();
         $support->save();
-        if ($support->status !== 'Pending' && $support->employee) {
+        if ($support->employee && config('mail.ticket_notifications.'.($support->status === 'Completed' ? 'completed' : 'updated'))) {
             $support->load('technician');
             try {
                 Mail::to($support->employee->email)->send(new MailerStatus(
                     $support->id, $support->status, $support->created_at, $support->employee->name,
                     optional($support->employee->department)->name, optional($support->task)->name,
                     $support->support_specifics, $support->findings, optional($support->technician)->name ?? 'Unassigned',
-                    $support->updated_at
+                    $support->updated_at, $support->status === 'Completed' ? 'completed' : 'updated'
                 ));
             } catch (\Throwable $exception) { report($exception); }
         }

@@ -58,8 +58,9 @@ class SupportController extends Controller
         $_dateAccomplished = $request->accDate;
         ////////////////////////////////////////////////////////////////////////////SEND E-MAIL CONFIRMATION TO CLIENT//
         //Mail::to($request['email'])->send(new MailerStatus($request->id, $request->selectStatus));
-        if($result && $_status !== "Pending"){
-            Mail::to($_emailAddress)->send(new MailerStatus($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished));
+        $event = $_status === 'Completed' ? 'completed' : 'updated';
+        if ($result && config('mail.ticket_notifications.'.$event)) {
+            Mail::to($_emailAddress)->send(new MailerStatus($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished, $event));
             //Mail::to('ma.amoroso@pmma.edu.ph')->send(new MailerStatus($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished));
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -540,7 +541,10 @@ class SupportController extends Controller
         //print($_emailAddress . ", " . $_ticketNumber . ", " . $_status . ", " . $_dateRequest . ", " . $_department . ", " . $_name . ", " . $_task . ", " . $_specifics . ", " . $_findings . ", " . $_technician . ", " . $_dateAccomplished);
         ////////////////////////////////////////////////////////////////////////////SEND E-MAIL CONFIRMATION TO CLIENT//
         //Mail::to($emailEmployee[0]['employee']->email)->send(new MailerStatus($request->taskId, $request->status));
-        Mail::to($_emailAddress)->send(new MailerStatus($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished));
+        $event = $_status === 'Completed' ? 'completed' : 'updated';
+        if (config('mail.ticket_notifications.'.$event)) {
+            Mail::to($_emailAddress)->send(new MailerStatus($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished, $event));
+        }
         //Mail::to('ma.amoroso@pmma.edu.ph')->send(new MailerStatus($_ticketNumber, $_status, $_dateRequest, $_name, $_department, $_task, $_specifics, $_findings, $_technician, $_dateAccomplished));
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
