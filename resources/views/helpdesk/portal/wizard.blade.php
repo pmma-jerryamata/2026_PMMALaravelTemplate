@@ -60,8 +60,8 @@
         <p>The Philippine Data Privacy Act protects personal information handled by government and private organizations.</p>
         <h3>Section 16. Rights of the Data Subject</h3>
         <p>You have the right to know how your personal information is processed, request access to it, and ask for corrections. Under the conditions set by law, you may also request that information be blocked or removed and seek compensation for damages.</p>
-        <p><a href="https://privacy.gov.ph/data-privacy-act/">Read the full law on the National Privacy Commission website</a></p>
-        <p><a href="{{ route('privacy') }}">Read how PMMA Helpdesk handles your information</a></p>
+        <p><a href="https://privacy.gov.ph/data-privacy-act/" target="_blank" rel="noopener">Read the full law on the National Privacy Commission website (opens in a new tab)</a></p>
+        <p><a href="{{ route('privacy') }}" target="_blank" rel="noopener">Read how PMMA Helpdesk handles your information (opens in a new tab)</a></p>
     </article>
     <form method="dialog"><button class="btn btn-secondary" autofocus>Close</button></form>
 </dialog>

@@ -326,7 +326,6 @@ class HelpdeskController extends Controller
         $data = $request->validate([
             'status' => ['required', Rule::in(self::STATUSES)],
             'technician_id' => 'nullable|integer|exists:users,id', 'findings' => 'nullable|string|max:1023',
-            'accomplished_at' => 'nullable|date',
             'priority' => Schema::hasColumn('supports', 'priority')
                 ? ['sometimes', 'required', Rule::in(Support::PRIORITIES)] : 'prohibited',
         ]);
@@ -334,7 +333,7 @@ class HelpdeskController extends Controller
         $support->technician_id = $data['technician_id'] ?? null;
         $support->findings = $data['findings'] ?? null;
         if (isset($data['priority'])) { $support->priority = $data['priority']; }
-        $support->updated_at = $data['accomplished_at'] ?? now();
+        $support->updated_at = now();
         $support->save();
         if ($support->employee && config('mail.ticket_notifications.'.($support->status === 'Completed' ? 'completed' : 'updated'))) {
             $support->load('technician');
