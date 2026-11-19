@@ -6,7 +6,7 @@
     const summary = document.getElementById('analytics-summary');
     let activeRequest;
     const numberAxis = {beginAtZero:true, ticks:{precision:0, font:{size:10}}, grid:{color:'#e9eef5'}};
-    Chart.defaults.font.family = "Inter, 'Segoe UI', Arial, sans-serif";
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
     Chart.defaults.color = '#65748b';
     function tableSection(title, headings, rows, container) {
         const heading = document.createElement('h4'); heading.textContent = title;

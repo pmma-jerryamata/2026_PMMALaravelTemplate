@@ -12,7 +12,7 @@ class PortalTest extends TestCase
 
     public function test_portal_pages_render_and_unknown_services_return_not_found(): void
     {
-        foreach (['/', '/services', '/services/internet-network', '/tickets/create', '/track', '/faq', '/contact', '/privacy'] as $url) {
+        foreach (['/', '/services', '/services/internet-network', '/tickets/create', '/track', '/faq', '/contact', '/privacy', '/preview'] as $url) {
             $this->get($url)->assertOk();
         }
         $this->get('/services/unknown')->assertNotFound();

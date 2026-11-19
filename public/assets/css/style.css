@@ -12,7 +12,7 @@
     --color-text: #1A1A1A;
     --color-text-light: #666666;
     --color-white: #FFFFFF;
-    --font-main: 'Inter', sans-serif;
+    --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
     --line-height-body: 1.6;
     --line-height-heading: 1.2;
     --spacing-xs: 8px;
