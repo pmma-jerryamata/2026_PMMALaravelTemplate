@@ -59,6 +59,37 @@ through the approved SSH workflow. Report deployment blockers honestly.
 - Do not claim a check passed unless it actually ran successfully.
 - Clearly distinguish local checks from live production checks.
 
+## Security and production readiness
+
+- Keep real .env files, credentials, API secrets, and private keys out of
+  Git, logs, screenshots, browser code, and generated builds. Ignore .env
+  variants and track only secret-free examples with placeholder values.
+  Store production secrets in the approved server environment or secret
+  manager. If a secret was exposed, report it without quoting it and
+  arrange authorized rotation. Removing it from Git alone is insufficient.
+- Explain who can read or change a user's data, including the owner,
+  authorized staff, other signed-in users, and guests. Check ownership and
+  roles on the server for each affected route or API, including lists,
+  details, edits, downloads, and exports. Use synthetic users and records
+  to verify allowed access and refusal for users without permission.
+- Review public APIs, client bundles, and config for exposed private data
+  or secrets. Keep private keys server-side and use HTTPS and approved
+  encryption at rest where needed, with encryption keys stored separately.
+  Explain which public identifiers are safe to expose and why.
+- For app changes that affect a release, build using the production command
+  and locked dependencies. Verify the generated output, required config,
+  and relevant smoke checks. Confirm debug mode is disabled in the intended
+  production environment when access is authorized. Report which checks
+  ran locally and which ran in production.
+- Check rate limits on public, login, and expensive endpoints. For expected
+  traffic and multiple instances, review load balancing health checks and
+  shared sessions, caches, limit counters, and queues as applicable. Report
+  readiness and gaps using available evidence, including any untested load
+  or infrastructure. Change live configuration only when authorized.
+- In the final reply, acknowledge applicable security findings, fixes,
+  and verification gaps in simple language. For a security review, cover
+  all areas above and identify anything outside the available access.
+
 ## Production deployment through SSH
 
 After an application update passes the required checks, deploy the
