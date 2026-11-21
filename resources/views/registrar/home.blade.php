@@ -2,6 +2,7 @@
 
 @push('page-assets')
     <link rel="stylesheet" href="{{ asset('assets/icons/bootstrap-icons.css') }}">
+    <script src="{{ asset('assets/js/registrar-privacy.js') }}" defer></script>
 @endpush
 
 @section('heading')
@@ -48,4 +49,10 @@
             </a>
         </div>
     </section>
+
+    <div class="registrar-privacy-entry">
+        <button class="btn btn-secondary" type="button" data-open-privacy-policy aria-haspopup="dialog" aria-controls="registrar-privacy-policy">PMMA Data Privacy Policy</button>
+    </div>
+
+    @include('registrar.partials.privacy-policy')
 @endsection

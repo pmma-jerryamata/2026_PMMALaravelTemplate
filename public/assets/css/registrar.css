@@ -214,6 +214,97 @@
     font-size: 1rem;
 }
 
+.registrar-privacy-entry {
+    margin-block-start: 1.5rem;
+}
+
+.registrar-privacy-entry .btn,
+.registrar-privacy-header .btn {
+    min-height: 44px;
+}
+
+.registrar-privacy-dialog {
+    position: fixed;
+    inset: 0;
+    width: min(calc(100% - 1.5rem), 52rem);
+    max-width: none;
+    max-height: calc(100vh - 1.5rem);
+    max-height: calc(100dvh - 1.5rem);
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: .75rem;
+    background: #fff;
+    color: #10264b;
+    box-shadow: 0 1rem 3rem #09182f55;
+}
+
+.registrar-privacy-dialog[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.registrar-privacy-dialog::backdrop {
+    background: #09182faa;
+}
+
+.registrar-privacy-header,
+.registrar-privacy-body {
+    padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.registrar-privacy-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: linear-gradient(110deg, #10264b, #0032a0);
+    border-block-end: 3px solid #ff8c12;
+}
+
+.registrar-privacy-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.125rem, 4vw, 1.625rem);
+    line-height: 1.2;
+}
+
+.registrar-privacy-header .btn {
+    padding-inline: .75rem;
+    background: #fff;
+}
+
+.registrar-privacy-body {
+    overflow: auto;
+    overscroll-behavior: contain;
+    overflow-wrap: anywhere;
+}
+
+.registrar-privacy-intro {
+    display: grid;
+    grid-template-columns: clamp(3.75rem, 16vw, 7rem) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(.75rem, 3vw, 1.5rem);
+}
+
+.registrar-privacy-intro img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.registrar-privacy-body h3,
+.registrar-privacy-body h4 {
+    margin-block: 1.25rem .5rem;
+    color: #10264b;
+}
+
+.registrar-privacy-body a {
+    color: #0032a0;
+    text-decoration: underline;
+}
+
 .registrar-contact-grid {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
 }
