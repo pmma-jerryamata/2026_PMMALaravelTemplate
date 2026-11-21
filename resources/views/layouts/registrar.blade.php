@@ -8,7 +8,6 @@
     <title>@yield('title', config('app.name')) | {{ config('branding.organization') }}</title>
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/accessibility.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pmma.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/registrar.css') }}">
     @stack('page-assets')
@@ -19,13 +18,23 @@
     <header class="registrar-header">
         <div class="container registrar-header-inner">
             <a class="portal-brand registrar-brand" href="{{ route('home') }}">
-                <span class="registrar-brand-mark" aria-hidden="true"><i class="bi bi-mortarboard"></i></span>
-                <span>{{ config('branding.organization') }}</span>
+                <img class="registrar-brand-mark" src="{{ asset('assets/images/pmma-wordmark.png') }}" alt="" width="103" height="103">
+                <span>
+                    <span class="registrar-academy-name">{{ config('branding.organization') }}</span>
+                    <span class="registrar-office-name">{{ config('branding.office') }}</span>
+                </span>
             </a>
-            <nav class="registrar-nav" aria-label="Main navigation">
-                <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
-            </nav>
+            <div class="registrar-header-logos">
+                <img src="{{ asset('assets/images/philippine-transparency-seal.png') }}" alt="Philippine Transparency Seal" width="103" height="103">
+                <img src="{{ asset('assets/images/freedom-of-information.png') }}" alt="Freedom of Information Philippines" width="103" height="103">
+                <img src="{{ asset('assets/images/pmma-ims.png') }}" alt="PMMA Information Management System" width="103" height="103">
+            </div>
         </div>
+        <nav class="registrar-nav" aria-label="Main navigation">
+            <div class="container">
+                <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
+            </div>
+        </nav>
     </header>
 
     <main id="main-content" tabindex="-1">
