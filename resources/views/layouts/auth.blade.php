@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#10264b">
-    <title>@yield('title', 'Staff Login') | {{ $systemSettings['app_name'] }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/images/app-logo.svg') }}">
+    <title>@yield('title', 'Staff Login') | {{ $systemSettings['app_name'] ?? config('app.name') }}</title>
+    <link rel="icon" href="{{ asset(($enrollmentPlaceholder ?? false) ? 'assets/images/pmma-seal.png' : 'assets/images/app-logo.svg') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/icons/bootstrap-icons.css') }}">

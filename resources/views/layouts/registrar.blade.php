@@ -14,7 +14,7 @@
     @if(is_file($clockScript))
         <script src="{{ asset('assets/js/philippine-time.js') }}?v={{ filemtime($clockScript) }}" defer></script>
     @endif
-    <script src="{{ asset('assets/js/registrar-navigation.js') }}" defer></script>
+    <script src="{{ asset('assets/js/registrar-navigation.js') }}?v=2" defer></script>
     @stack('page-assets')
 </head>
 <body class="registrar-portal">
@@ -37,16 +37,19 @@
         </div>
         <nav class="registrar-nav" aria-label="Main navigation">
             <div class="container">
-                <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
-                <a href="{{ route('services', absolute: false) }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
-                <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualifications &amp; Requirements</a>
-                <details @class(['registrar-nav-menu', 'active' => request()->routeIs('transparency.*')])>
-                    <summary>Transparency</summary>
-                    <div class="registrar-nav-submenu">
-                        <a href="/transparency/citizens-charter" @if(request()->routeIs('transparency.citizens-charter')) aria-current="page" @endif>Citizen’s Charter</a>
-                    </div>
-                </details>
-                <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
+                <button class="registrar-nav-toggle" type="button" aria-controls="registrar-nav-links" aria-expanded="false" hidden>Menu</button>
+                <div class="registrar-nav-links" id="registrar-nav-links">
+                    <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
+                    <a href="{{ route('services', absolute: false) }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
+                    <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualifications &amp; Requirements</a>
+                    <details @class(['registrar-nav-menu', 'active' => request()->routeIs('transparency.*')])>
+                        <summary>Transparency</summary>
+                        <div class="registrar-nav-submenu">
+                            <a href="/transparency/citizens-charter" @if(request()->routeIs('transparency.citizens-charter')) aria-current="page" @endif>Citizen’s Charter</a>
+                        </div>
+                    </details>
+                    <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
+                </div>
                 <a class="registrar-nav-login" href="/login" @if(request()->routeIs('login')) aria-current="page" @endif>LOGIN</a>
             </div>
         </nav>
