@@ -13,21 +13,85 @@
 @endsection
 
 @section('content')
-    @php($registrarCharter = asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf'))
-    @php($fullCharter = 'https://drive.google.com/file/d/1xDh1_8OvdRoJRLAniFjgcBfl6V2l1IwI')
+    @php($services = require resource_path('data/registrar-charter.php'))
 
     <div class="registrar-charter">
-        <section class="portal-panel registrar-service-panel" aria-labelledby="registrar-charter-heading">
+        <div>
             <h2 id="registrar-charter-heading">Registrar Unit External Services</h2>
-            <p>Pages 19–26 cover enrollment procedures and requests for school documents.</p>
-            <p><a href="{{ $registrarCharter }}" target="_blank" rel="noopener">Open Registrar Unit PDF (pages 19–26)</a></p>
-            <iframe src="{{ $registrarCharter }}" title="PMMA Citizen’s Charter 2026, Registrar Unit, pages 19–26" class="registrar-charter-viewer"></iframe>
-        </section>
+            <p>Source: <a href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">PMMA Citizen’s Charter 2026, pages 19–26</a></p>
+        </div>
 
-        <section class="portal-panel registrar-service-panel" aria-labelledby="full-charter-heading">
-            <h2 id="full-charter-heading">Full PMMA Citizen’s Charter 2026</h2>
-            <p><a href="{{ $fullCharter }}/view" target="_blank" rel="noopener">Open the full Charter in Google Drive</a></p>
-            <iframe src="{{ $fullCharter }}/preview" title="Full PMMA Citizen’s Charter 2026" class="registrar-charter-viewer" loading="lazy"></iframe>
-        </section>
+        @foreach ($services as $service)
+            <section class="portal-panel registrar-service-panel registrar-charter-service" aria-labelledby="{{ $service['id'] }}-heading">
+                <h3 id="{{ $service['id'] }}-heading">{{ $service['title'] }}</h3>
+                <p>{{ $service['description'] }}</p>
+
+                <dl class="registrar-charter-details">
+                    <div><dt>Classification</dt><dd>Simple</dd></div>
+                    <div><dt>Type of Transaction</dt><dd>G2C (Government to Citizen)</dd></div>
+                    <div><dt>Who May Avail</dt><dd>{{ $service['who'] }}</dd></div>
+                </dl>
+
+                <table class="registrar-charter-table">
+                    <caption>Checklist of Requirements</caption>
+                    <thead>
+                        <tr><th scope="col">Requirement</th><th scope="col">Where to Secure</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($service['requirements'] as $requirement)
+                            <tr><td>{{ $requirement }}</td><td>Registrar Unit</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <div class="registrar-charter-scroll" role="region" aria-labelledby="{{ $service['id'] }}-steps" tabindex="0">
+                    <table class="registrar-charter-table registrar-charter-steps">
+                        <caption id="{{ $service['id'] }}-steps">Transaction Steps</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Step</th>
+                                <th scope="col">Client Steps</th>
+                                <th scope="col">Agency Action</th>
+                                <th scope="col">Fees to Be Paid</th>
+                                <th scope="col">Processing Time</th>
+                                <th scope="col">Person Responsible</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($service['steps'] as $step)
+                                <tr>
+                                    <th scope="row">{{ $loop->iteration }}</th>
+                                    <td>
+                                        @foreach ($step['client'] as $action)
+                                            <p>{{ $action }}</p>
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        @foreach ($step['agency'] as $action)
+                                            <p>{{ $loop->parent->iteration }}.{{ $loop->iteration }}. {{ $action }}</p>
+                                        @endforeach
+                                    </td>
+                                    <td>{{ $step['fee'] }}</td>
+                                    <td>{{ $step['time'] }}</td>
+                                    <td>{{ $step['staff'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row" colspan="3">Total</th>
+                                <td>{{ $service['total_fee'] }}</td>
+                                <td>{{ $service['total_time'] }}</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                @isset($service['note'])
+                    <p class="registrar-charter-note">{{ $service['note'] }}</p>
+                @endisset
+            </section>
+        @endforeach
     </div>
 @endsection
