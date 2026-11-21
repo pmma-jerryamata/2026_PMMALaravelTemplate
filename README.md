@@ -20,7 +20,7 @@ Open http://127.0.0.1:8000. You can also use a local Herd site with its document
 - Add pages in `resources/views/registrar`. Extend `layouts.registrar` and fill the `heading` and `content` sections.
 - Register pages in `routes/web.php` and update the navigation in `resources/views/layouts/registrar.blade.php`.
 - Set `APP_NAME`, `BRAND_ORGANIZATION` and `BRAND_OFFICE` in `.env` to customize labels. Keep shared design rules in `public/assets/css/pmma.css` and Registrar-specific rules in `public/assets/css/registrar.css`.
-- The Academy emblem, Philippine Transparency Seal, Freedom of Information logo and PMMA Information Management System logo come from the [PMMA website masthead](https://web.archive.org/web/20261004220343/https://pmma.edu.ph/) and are served from `public/assets/images`.
+- The Registrar masthead uses the supplied `public/assets/images/pmma-seal.png`. The three logos on the right come from the [PMMA website masthead](https://web.archive.org/web/20261004220343/https://pmma.edu.ph/) and are also served locally from `public/assets/images`.
 
 The upstream Helpdesk demo remains available to its PHPUnit tests. Its routes, staff creation command and database migrations load only when `APP_ENV=testing` and `HELPDESK_DEMO=true`. The PHPUnit configuration sets both for the existing suite. A normal installation serves the Registrar portal and uses only the base Laravel migrations. [CUSTOMIZATION.md](CUSTOMIZATION.md) and [REUSE_GUIDE.md](REUSE_GUIDE.md) describe the upstream components.
 

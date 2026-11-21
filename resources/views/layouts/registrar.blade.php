@@ -18,7 +18,7 @@
     <header class="registrar-header">
         <div class="container registrar-header-inner">
             <a class="portal-brand registrar-brand" href="{{ route('home') }}">
-                <img class="registrar-brand-mark" src="{{ asset('assets/images/pmma-wordmark.png') }}" alt="" width="103" height="103">
+                <img class="registrar-brand-mark" src="{{ asset('assets/images/pmma-seal.png') }}" alt="" width="1000" height="1000">
                 <span>
                     <span class="registrar-academy-name">{{ config('branding.organization') }}</span>
                     <span class="registrar-office-name">{{ config('branding.office') }}</span>
