@@ -9,9 +9,9 @@ return [
         'requirements' => [
             'PMMA-REG 010 (Clearance Form), 1 copy',
             'PMMA-REG 004 (Certificate of Registration), 1 copy',
-            'Incoming 2CL only: PMMA-REG 013 (Registration for Embarkation), 1 copy',
-            'Incoming 2CL only: PMMA-REG 014A (Certificate of Shipboard, Deck Cadet), 1 copy',
-            'Incoming 2CL only: PMMA-REG 014B (Certificate for Shipboard, Engine Cadet), 1 copy',
+            'PMMA-REG 013 (Registration for Embarkation), 1 copy for incoming 2CL only',
+            'PMMA-REG 014A (Certificate of Shipboard, Deck Cadet), 1 copy for incoming 2CL only',
+            'PMMA-REG 014B (Certificate for Shipboard, Engine Cadet), 1 copy for incoming 2CL only',
         ],
         'steps' => [
             [
@@ -27,12 +27,12 @@ return [
                 'agency' => [
                     'Verify that all required signatories signed the Clearance Form.',
                     'Issue PMMA-REG 004 (Certificate of Registration).',
-                    'For incoming 2CL (third-year) students, issue PMMA-REG 013, PMMA-REG 014A (Deck Cadet), and PMMA-REG 014B (Engine Cadet), as applicable.',
+                    'For incoming 2CL (third-year) students, issue PMMA-REG 013, PMMA-REG 014A (Deck Cadet), and PMMA-REG 014B (Engine Cadet).',
                 ],
                 'fee' => 'None', 'time' => '5 minutes', 'staff' => 'Registrar Staff',
             ],
             [
-                'client' => ['Complete PMMA-REG 004. Incoming 2CL students also complete PMMA-REG 013 and the applicable shipboard form, PMMA-REG 014A or PMMA-REG 014B.'],
+                'client' => ['Complete PMMA-REG 004. Incoming 2CL students also complete PMMA-REG 013 for embarkation, PMMA-REG 014A for deck cadets, and PMMA-REG 014B for engine cadets.'],
                 'agency' => ['Assist students with questions or concerns.'],
                 'fee' => 'None', 'time' => '5 minutes', 'staff' => 'Registrar Staff',
             ],
@@ -77,8 +77,8 @@ return [
             [
                 'client' => [
                     'Submit the request to the Office of the Registrar. Requests may be sent by email to registrar@pmma.edu.ph.',
-                    'Option 1: Visit the Office of the Registrar in person to process the request.',
-                    'Option 2: Execute a Special Power of Attorney (SPA) for an authorized representative, who then visits the Academy to process the request.',
+                    'Option 1. Visit the Office of the Registrar in person to process the request.',
+                    'Option 2. Execute a Special Power of Attorney (SPA) for an authorized representative, who then visits the Academy to process the request.',
                     'Processing and release follow these options under the Data Privacy Act of 2012. Complete your clearance before the requested documents can be released.',
                 ],
                 'agency' => [

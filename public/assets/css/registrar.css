@@ -247,17 +247,104 @@
 
 .registrar-charter {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
 }
 
-.registrar-charter-viewer {
-    display: block;
-    width: 100%;
-    height: clamp(22rem, 74vh, 53rem);
-    margin-block-start: 1rem;
-    border: 1px solid #dfe6f0;
+.registrar-charter > div a {
+    color: #0032a0;
+    text-decoration: underline;
+}
+
+.registrar-charter-service h3 {
+    margin-top: 0;
+    color: #10264b;
+    font-size: 1.375rem;
+}
+
+.registrar-charter-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: .75rem 1rem;
+    margin-block: 1rem;
+    padding: .875rem;
     border-radius: .5rem;
-    background: #f5f7fb;
+    background: #edf3ff;
+}
+
+.registrar-charter-details dt {
+    color: #10264b;
+    font-weight: 700;
+}
+
+.registrar-charter-details dd {
+    margin-inline-start: 0;
+}
+
+.registrar-charter-scroll {
+    margin-block-start: 1.25rem;
+    overflow-x: auto;
+}
+
+.registrar-charter-scroll-hint {
+    display: none;
+}
+
+@media (max-width: 65rem) {
+    .registrar-charter-scroll-hint {
+        display: block;
+        margin-block-start: .5rem;
+    }
+}
+
+.registrar-charter-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9375rem;
+}
+
+.registrar-charter-table caption {
+    padding-block: .25rem .5rem;
+    color: #10264b;
+    font-weight: 700;
+    text-align: start;
+}
+
+.registrar-charter-steps {
+    min-width: 59rem;
+}
+
+.registrar-charter-table th,
+.registrar-charter-table td {
+    padding: .625rem .75rem;
+    border: 1px solid #dfe6f0;
+    text-align: start;
+    vertical-align: top;
+}
+
+.registrar-charter-table thead,
+.registrar-charter-table tfoot {
+    background: #edf3ff;
+    color: #10264b;
+    font-weight: 700;
+}
+
+.registrar-charter-table td p {
+    margin: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.registrar-charter-table td p + p {
+    margin-block-start: .5rem;
+}
+
+.registrar-charter-service .registrar-charter-note {
+    margin-block-start: 1rem;
+    padding: .75rem;
+    border-inline-start: 3px solid #ff8c12;
+    background: #fff7ea;
+    color: #10264b;
 }
 
 .registrar-service-contact {

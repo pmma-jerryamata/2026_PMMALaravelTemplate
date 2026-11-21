@@ -18,7 +18,8 @@
     <div class="registrar-charter">
         <div>
             <h2 id="registrar-charter-heading">Registrar Unit External Services</h2>
-            <p>Source: <a href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">PMMA Citizen’s Charter 2026, pages 19–26</a></p>
+            <p><a href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">View the original charter pages 19–26</a></p>
+            <p class="registrar-charter-scroll-hint">Scroll the transaction tables sideways to see all columns.</p>
         </div>
 
         @foreach ($services as $service)
