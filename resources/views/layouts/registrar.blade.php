@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pmma.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/registrar.css') }}?v={{ filemtime(public_path('assets/css/registrar.css')) }}">
+    <script src="{{ asset('assets/js/philippine-time.js') }}?v={{ filemtime(public_path('assets/js/philippine-time.js')) }}" defer></script>
     @stack('page-assets')
 </head>
 <body class="registrar-portal">
@@ -38,6 +39,14 @@
                 <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
             </div>
         </nav>
+        @php($philippineTime = now('Asia/Manila'))
+        <div class="registrar-time-bar">
+            <div class="container registrar-time-inner">
+                <strong>Philippine Standard Time</strong>
+                <time id="ph-clock" datetime="{{ $philippineTime->toIso8601String() }}" data-sync-url="{{ route('time') }}">{{ $philippineTime->format('M j, Y, g:i:s A') }}</time>
+                <span data-ph-clock-source>Server clock</span>
+            </div>
+        </div>
     </header>
 
     <main id="main-content" tabindex="-1">

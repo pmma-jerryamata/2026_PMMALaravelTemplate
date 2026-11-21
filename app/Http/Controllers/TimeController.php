@@ -20,10 +20,12 @@ class TimeController extends Controller
                 // NTP v4 client request. A random transmit value validates the reply origin.
                 $nonce = random_bytes(8);
                 $packet = "\x23".str_repeat("\0", 39).$nonce;
-                fwrite($socket, $packet);
-                $reply = fread($socket, 512);
+                if (@fwrite($socket, $packet) !== strlen($packet)) {
+                    return ['offset' => 0, 'synced' => false];
+                }
+                $reply = @fread($socket, 512);
                 $received = microtime(true);
-                if (strlen($reply) < 48 || substr($reply, 24, 8) !== $nonce) {
+                if (! is_string($reply) || strlen($reply) < 48 || substr($reply, 24, 8) !== $nonce) {
                     return ['offset' => 0, 'synced' => false];
                 }
                 $mode = ord($reply[0]) & 7;

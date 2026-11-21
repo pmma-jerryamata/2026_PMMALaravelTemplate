@@ -4,37 +4,6 @@ menu?.addEventListener('click', () => {
     menu.setAttribute('aria-expanded', String(expanded));
     document.getElementById('main-navigation')?.classList.toggle('active', expanded);
 });
-const clock = document.getElementById('ph-clock');
-let timeAnchor = Date.now();
-let performanceAnchor = performance.now();
-let clockSource = 'Synchronizing time';
-function updateClock() {
-    if (!clock) return;
-    const date = new Date(timeAnchor + performance.now() - performanceAnchor);
-    clock.textContent = new Intl.DateTimeFormat('en-PH', { timeZone: 'Asia/Manila', month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(date);
-    clock.title = clockSource;
-}
-async function syncClock() {
-    if (!clock) return;
-    try {
-        const start = performance.now();
-        const response = await fetch(clock.dataset.syncUrl, { cache: 'no-store', signal: AbortSignal.timeout(7000) });
-        if (!response.ok) throw new Error('Time source unavailable');
-        const data = await response.json();
-        if (!Number.isFinite(data.timestamp)) throw new Error('Invalid time');
-        timeAnchor = data.timestamp + (performance.now() - start) / 2;
-        performanceAnchor = performance.now();
-        clockSource = data.synced ? 'Time synchronized' : 'Server time · synchronization unavailable';
-    } catch {
-        clockSource = 'Local time · synchronization unavailable';
-    }
-    updateClock();
-}
-updateClock();
-syncClock();
-setInterval(updateClock, 1000);
-setInterval(syncClock, 60000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) syncClock(); });
 document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
     let copied = false;
     try {

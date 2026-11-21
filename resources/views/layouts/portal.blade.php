@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('assets/icons/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pmma.css') }}?v={{ filemtime(public_path('assets/css/pmma.css')) }}">
     <script src="{{ asset('assets/js/portal.js') }}?v={{ filemtime(public_path('assets/js/portal.js')) }}" defer></script>
+    <script src="{{ asset('assets/js/philippine-time.js') }}?v={{ filemtime(public_path('assets/js/philippine-time.js')) }}" defer></script>
     @stack('page-assets')
 <link rel="stylesheet" href="{{ asset('assets/css/shared-components.css') }}?v={{ filemtime(public_path('assets/css/shared-components.css')) }}">
 </head>

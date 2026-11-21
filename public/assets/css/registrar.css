@@ -87,6 +87,30 @@
     background: #edf3ff;
 }
 
+.registrar-time-bar {
+    background: #edf3ff;
+    color: #10264b;
+}
+
+.registrar-time-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: .125rem .75rem;
+    padding-block: .5rem;
+    font-size: .875rem;
+}
+
+.registrar-time-inner time {
+    font-variant-numeric: tabular-nums;
+}
+
+.registrar-time-inner [data-ph-clock-source] {
+    color: #3e5278;
+    font-size: .8125rem;
+}
+
 .registrar-portal main {
     flex: 1;
 }
@@ -500,6 +524,10 @@
         line-height: 1.25;
         text-align: center;
         overflow-wrap: anywhere;
+    }
+
+    .registrar-time-inner {
+        justify-content: flex-start;
     }
 
     .registrar-intro {
