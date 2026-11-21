@@ -95,8 +95,8 @@
         @endforeach
 
         <div>
-            <p><a href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">View the original charter pages 19–26</a></p>
-            <p><a href="https://drive.google.com/file/d/1xDh1_8OvdRoJRLAniFjgcBfl6V2l1IwI/view">View the full PMMA Citizen’s Charter 2026</a></p>
+            <p><a target="_blank" rel="noopener" href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">View the original charter pages 19–26</a></p>
+            <p><a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1xDh1_8OvdRoJRLAniFjgcBfl6V2l1IwI/view">View the full PMMA Citizen’s Charter 2026</a></p>
         </div>
     </div>
 @endsection

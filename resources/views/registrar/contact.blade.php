@@ -27,9 +27,9 @@
                     <dt>Email</dt>
                     <dd><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></dd>
                     <dt>Website</dt>
-                    <dd><a href="{{ $contact['website'] }}">pmma.edu.ph</a></dd>
+                    <dd><a target="_blank" rel="noopener" href="{{ $contact['website'] }}">pmma.edu.ph</a></dd>
                     <dt>Facebook</dt>
-                    <dd><a href="{{ $contact['facebook'] }}">PMMA - Office of the Registrar</a></dd>
+                    <dd><a target="_blank" rel="noopener" href="{{ $contact['facebook'] }}">PMMA - Office of the Registrar</a></dd>
                 </dl>
             </address>
         </section>

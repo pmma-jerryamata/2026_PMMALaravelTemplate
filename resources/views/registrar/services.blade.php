@@ -47,8 +47,8 @@
         <ul>
             <li><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
             <li><a href="tel:{{ $contact['phone_uri'] }}">{{ $contact['phone'] }}</a></li>
-            <li><a href="{{ $contact['facebook'] }}">PMMA Office of the Registrar on Facebook</a></li>
-            <li><a href="{{ route('contact') }}">Contact form</a></li>
+            <li><a target="_blank" rel="noopener" href="{{ $contact['facebook'] }}">PMMA Office of the Registrar on Facebook</a></li>
+            <li><a target="_blank" rel="noopener" href="{{ route('contact') }}">Contact form</a></li>
         </ul>
     </section>
 @endsection

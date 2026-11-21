@@ -74,7 +74,7 @@
         @include('registrar.partials.government-footer')
         <div class="container registrar-footer-inner">
             <span>&copy; {{ now('Asia/Manila')->year }} {{ config('branding.organization') }} · {{ config('branding.office') }}</span>
-            <a class="registrar-footer-contact" href="{{ route('contact', absolute: false) }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
+            <a target="_blank" rel="noopener" class="registrar-footer-contact" href="{{ route('contact', absolute: false) }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
         </div>
     </footer>
 </body>

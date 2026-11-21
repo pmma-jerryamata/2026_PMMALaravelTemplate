@@ -1,5 +1,5 @@
 <div class="container registrar-government-footer">
-    <a class="registrar-government-emblem" href="https://www.gov.ph/" aria-label="Republic of the Philippines government portal">
+    <a target="_blank" rel="noopener" class="registrar-government-emblem" href="https://www.gov.ph/" aria-label="Republic of the Philippines government portal">
         <img class="registrar-footer-seal" src="{{ asset('assets/images/republic-of-the-philippines.png') }}" alt="Coat of arms of the Republic of the Philippines" width="155" height="171" loading="lazy">
     </a>
 

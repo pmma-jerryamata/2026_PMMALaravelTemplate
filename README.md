@@ -19,6 +19,7 @@ Open http://127.0.0.1:8000. You can also use a local Herd site with its document
 
 - Add pages in `resources/views/registrar`. Extend `layouts.registrar` and fill the `heading` and `content` sections.
 - Register pages in `routes/web.php` and update the navigation in `resources/views/layouts/registrar.blade.php`.
+- Use `target="_blank" rel="noopener"` for web and document links outside navigation. Use regular links for phone, email, and in-page shortcuts.
 - Set `APP_NAME`, `BRAND_ORGANIZATION` and `BRAND_OFFICE` in `.env` to customize labels. Keep shared design rules in `public/assets/css/pmma.css` and Registrar-specific rules in `public/assets/css/registrar.css`.
 - The Registrar masthead uses the supplied `public/assets/images/pmma-seal.png`. The three logos on the right come from the [PMMA website masthead](https://web.archive.org/web/20261004220343/https://pmma.edu.ph/) and are also served locally from `public/assets/images`.
 

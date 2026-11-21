@@ -14,7 +14,7 @@
 
 @section('content')
     <div class="faq-container registrar-faq registrar-qualifications">
-        <p>This checklist is based on the <a href="https://web.archive.org/web/20250317191212/https://pmma.edu.ph/qualification-requirements/">archived PMMA qualification requirements</a>. Confirm the requirements for your intake with the <a href="mailto:admissions@pmma.edu.ph">PMMA Admissions Office</a>.</p>
+        <p>This checklist is based on the <a target="_blank" rel="noopener" href="https://web.archive.org/web/20250317191212/https://pmma.edu.ph/qualification-requirements/">archived PMMA qualification requirements</a>. Confirm the requirements for your intake with the <a href="mailto:admissions@pmma.edu.ph">PMMA Admissions Office</a>.</p>
 
         <section class="portal-panel" aria-labelledby="basic-qualifications">
             <h2 id="basic-qualifications">Basic Qualification Requirements</h2>
@@ -109,7 +109,7 @@
                         <li>Kidney disease or kidney stones.</li>
                         <li>Current or maintenance medication, including for hypertension, asthma, epilepsy, seizures, syncope, or vertigo. Ask PMMA Admissions and the screening clinician how this item applies to your prescriptions.</li>
                     </ol>
-                    <p><a href="https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/2/87423">Republic Act No. 11166, Section 49(b)</a> prohibits refusal of admission based wholly or partly on actual, perceived, or suspected HIV status.</p>
+                    <p><a target="_blank" rel="noopener" href="https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/2/87423">Republic Act No. 11166, Section 49(b)</a> prohibits refusal of admission based wholly or partly on actual, perceived, or suspected HIV status.</p>
                 </div>
             </details>
 

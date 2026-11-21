@@ -8,9 +8,7 @@
 
     <div class="registrar-privacy-body" role="region" aria-label="Privacy policy text" tabindex="0">
         <div class="registrar-privacy-intro">
-            <a href="{{ asset('assets/images/pmma-privacy-registration-seal.jpg') }}" target="_blank" rel="noopener" aria-label="View the full-size National Privacy Commission registration seal in a new tab">
-                <img src="{{ asset('assets/images/pmma-privacy-registration-seal.jpg') }}" alt="National Privacy Commission DPO/DPS Registered seal" width="768" height="1411">
-            </a>
+            <img src="{{ asset('assets/images/pmma-privacy-registration-seal.jpg') }}" alt="National Privacy Commission DPO/DPS Registered seal" width="768" height="1411">
             <p>The Data Privacy Office of the Philippine Merchant Marine Academy protects the personal and sensitive personal information of its personnel, students, clients, and third parties in accordance with Republic Act No. 10173, the Data Privacy Act of 2012.</p>
         </div>
 
@@ -33,7 +31,7 @@
         <p>The academy recognizes the rights of its personnel, students, clients, and third-parties to their personal data, as provided by the Data Privacy Act of 2012. If any of these data subjects want to exercise any of their rights, or should they have any concern or question regarding them, or any matter involving the Academy and data privacy, they may contact the PMMA Data Protection Officer at:</p>
         <ul class="registrar-privacy-contact">
             <li>Landline: <a href="tel:+63479134396;ext=190">(047) 913 4396 local 190</a></li>
-            <li>Website: <a href="{{ config('registrar.contact.website') }}">www.pmma.edu.ph</a></li>
+            <li>Website: <a target="_blank" rel="noopener" href="{{ config('registrar.contact.website') }}">www.pmma.edu.ph</a></li>
             <li>Email: <a href="mailto:dpo@pmma.edu.ph">dpo@pmma.edu.ph</a></li>
             <li>Address: San Narciso, Zambales</li>
         </ul>
