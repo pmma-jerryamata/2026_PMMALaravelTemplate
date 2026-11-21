@@ -9,7 +9,7 @@
 @endpush
 
 @section('heading')
-    <section class="support-intro registrar-intro" aria-labelledby="registrar-heading">
+    <section class="support-intro registrar-intro registrar-home-intro" aria-labelledby="registrar-heading">
         <div class="container">
             <div>
                 <p class="registrar-kicker">{{ config('app.name') }}</p>

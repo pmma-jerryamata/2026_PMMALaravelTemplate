@@ -188,6 +188,12 @@
     border-bottom: 3px solid #ff8c12;
 }
 
+.registrar-home-intro {
+    background:
+        linear-gradient(110deg, rgb(16 38 75 / 80%), rgb(0 50 160 / 80%)),
+        #10264b url("../images/pmma-cadet-parade.jpg") center / cover no-repeat;
+}
+
 .registrar-intro .registrar-kicker {
     margin-bottom: .625rem;
     color: #ffb65c;
