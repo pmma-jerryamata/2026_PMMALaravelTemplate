@@ -14,3 +14,4 @@ if (app()->environment('testing') && config('helpdesk.demo')) {
 Route::view('/', 'registrar.home')->name('home');
 Route::view('/services', 'registrar.services')->name('services');
 Route::view('/faq', 'registrar.faq')->name('faq');
+Route::view('/qualification-requirements', 'registrar.qualifications')->name('qualifications');

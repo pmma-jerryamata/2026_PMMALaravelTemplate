@@ -209,6 +209,28 @@
     text-decoration: underline;
 }
 
+.registrar-qualifications .portal-panel {
+    margin-block-start: 1.25rem;
+    padding: clamp(1rem, 3vw, 1.875rem);
+}
+
+.registrar-qualifications .portal-panel h2 {
+    margin: 0 0 .875rem;
+}
+
+.registrar-qualifications .portal-panel h3 {
+    margin-block: 1.25rem .625rem;
+}
+
+.registrar-qualifications ol {
+    list-style: decimal;
+    padding-inline-start: 1.5rem;
+}
+
+.registrar-qualifications li + li {
+    margin-block-start: .375rem;
+}
+
 .registrar-footer {
     padding-block: 1.25rem;
     background: #10264b;

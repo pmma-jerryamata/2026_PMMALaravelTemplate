@@ -58,7 +58,7 @@
         <details class="portal-faq">
             <summary>What are the requirements to qualify for the PMMA Entrance Examination?</summary>
             <div class="registrar-faq-answer">
-                <p>Review the <a href="https://pmma.edu.ph/qualification-requirements/">PMMA qualification requirements</a> and follow the application instructions for your intake on the <a href="https://admissions.pmma.edu.ph/">PMMA Admissions Portal</a>. Ask the Admissions Office about accepted submission methods and deadlines.</p>
+                <p>Review the <a href="{{ route('qualifications') }}">PMMA qualification requirements</a> and follow the application instructions for your intake on the <a href="https://admissions.pmma.edu.ph/">PMMA Admissions Portal</a>. Ask the Admissions Office about accepted submission methods and deadlines.</p>
             </div>
         </details>
 
@@ -92,7 +92,7 @@
         <details class="portal-faq">
             <summary>Is there a limit to how many times I can take the exam?</summary>
             <div class="registrar-faq-answer">
-                <p>Eligibility to apply again depends on meeting the requirements for the new intake, including its age limit. Check the <a href="https://pmma.edu.ph/qualification-requirements/">qualification requirements</a> for the applicable cutoff date and ask Admissions about repeat applications.</p>
+                <p>Eligibility to apply again depends on meeting the requirements for the new intake, including its age limit. Check the <a href="{{ route('qualifications') }}">qualification requirements</a> and ask Admissions about the applicable cutoff date and repeat applications.</p>
             </div>
         </details>
 
