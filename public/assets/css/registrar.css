@@ -163,6 +163,52 @@
     gap: .5rem 1.5rem;
 }
 
+.registrar-faq {
+    margin-inline: auto;
+}
+
+.registrar-faq .portal-faq summary {
+    font-size: 1rem;
+}
+
+.registrar-faq summary::after {
+    content: "";
+    flex: 0 0 .5rem;
+    height: .5rem;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.registrar-faq details[open] summary::after {
+    transform: rotate(225deg);
+}
+
+.registrar-faq-answer {
+    padding: 0 1.125rem 1.125rem;
+    overflow-wrap: anywhere;
+}
+
+.registrar-faq-answer p {
+    padding: 0;
+    color: inherit;
+    font-size: 1rem;
+}
+
+.registrar-faq-answer > :not(:first-child) {
+    margin-block-start: .75rem;
+}
+
+.registrar-faq-answer ul {
+    list-style: disc;
+    padding-inline-start: 1.375rem;
+}
+
+.registrar-faq-answer a {
+    color: #0032a0;
+    text-decoration: underline;
+}
+
 .registrar-footer {
     padding-block: 1.25rem;
     background: #10264b;
