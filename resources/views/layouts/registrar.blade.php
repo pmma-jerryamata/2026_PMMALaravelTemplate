@@ -14,6 +14,7 @@
     @if(is_file($clockScript))
         <script src="{{ asset('assets/js/philippine-time.js') }}?v={{ filemtime($clockScript) }}" defer></script>
     @endif
+    <script src="{{ asset('assets/js/registrar-navigation.js') }}" defer></script>
     @stack('page-assets')
 </head>
 <body class="registrar-portal">
@@ -39,6 +40,14 @@
                 <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
                 <a href="{{ route('services', absolute: false) }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
                 <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualifications &amp; Requirements</a>
+                @if(\Illuminate\Support\Facades\Route::has('transparency.citizens-charter'))
+                    <details @class(['registrar-nav-menu', 'active' => request()->routeIs('transparency.*')])>
+                        <summary>Transparency</summary>
+                        <div class="registrar-nav-submenu">
+                            <a href="{{ route('transparency.citizens-charter', absolute: false) }}" @if(request()->routeIs('transparency.citizens-charter')) aria-current="page" @endif>Citizen’s Charter</a>
+                        </div>
+                    </details>
+                @endif
                 <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
             </div>
         </nav>

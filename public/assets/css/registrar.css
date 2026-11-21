@@ -72,7 +72,8 @@
     padding-block: .25rem;
 }
 
-.registrar-nav a {
+.registrar-nav a,
+.registrar-nav-menu summary {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
@@ -83,8 +84,55 @@
 }
 
 .registrar-nav a[aria-current="page"],
-.registrar-nav a:hover {
+.registrar-nav a:hover,
+.registrar-nav-menu.active summary,
+.registrar-nav-menu[open] summary,
+.registrar-nav-menu summary:hover {
     background: #edf3ff;
+}
+
+.registrar-nav-menu {
+    position: relative;
+    display: inline-block;
+    min-width: 0;
+    vertical-align: top;
+}
+
+.registrar-nav-menu summary {
+    width: 100%;
+    gap: .625rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.registrar-nav-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.registrar-nav-menu summary::after {
+    content: "";
+    flex: 0 0 .4375rem;
+    height: .4375rem;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: translateY(-2px) rotate(45deg);
+}
+
+.registrar-nav-submenu {
+    position: absolute;
+    z-index: 10;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    min-width: max-content;
+    padding: .25rem;
+    border: 1px solid #dfe6f0;
+    border-radius: .5rem;
+    background: #fff;
+    box-shadow: 0 .5rem 1.25rem #10264b26;
+}
+
+.registrar-nav-submenu a {
+    display: flex;
 }
 
 .registrar-time-bar {
@@ -177,6 +225,21 @@
     color: #0032a0;
     text-decoration: underline;
     overflow-wrap: anywhere;
+}
+
+.registrar-charter {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.registrar-charter-viewer {
+    display: block;
+    width: 100%;
+    height: clamp(22rem, 74vh, 53rem);
+    margin-block-start: 1rem;
+    border: 1px solid #dfe6f0;
+    border-radius: .5rem;
+    background: #f5f7fb;
 }
 
 .registrar-service-contact {
@@ -537,12 +600,13 @@
 
     .registrar-nav > .container {
         display: grid;
-        grid-template-columns: auto auto minmax(0, max-content) auto;
+        grid-template-columns: auto auto minmax(0, max-content) auto auto;
         justify-content: start;
         gap: .125rem;
     }
 
-    .registrar-nav a {
+    .registrar-nav a,
+    .registrar-nav-menu summary {
         justify-content: center;
         padding: .375rem clamp(.3125rem, 1.5vw, .75rem);
         font-size: .875rem;
@@ -576,6 +640,18 @@
 }
 
 @media (max-width: 37.5rem) {
+    .registrar-nav > .container:has(.registrar-nav-menu) {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+
+    .registrar-nav > .container:has(.registrar-nav-menu) > * {
+        grid-column: span 2;
+    }
+
+    .registrar-nav > .container:has(.registrar-nav-menu) > :nth-child(n + 3) {
+        grid-column: span 4;
+    }
+
     .registrar-request-options,
     .registrar-home-service-grid,
     .registrar-contact-grid {
