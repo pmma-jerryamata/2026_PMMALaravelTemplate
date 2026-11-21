@@ -34,9 +34,8 @@
             <div class="container">
                 <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
                 <a href="{{ route('services') }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
+                <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualifications &amp; Requirements</a>
                 <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
-                <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualification Requirements</a>
-                <a href="{{ route('contact') }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
             </div>
         </nav>
     </header>
@@ -50,8 +49,16 @@
 
     <footer class="registrar-footer">
         <div class="container registrar-footer-inner">
-            <span>&copy; {{ now('Asia/Manila')->year }} {{ config('branding.organization') }}</span>
-            <span>{{ config('branding.office') }}</span>
+            <div class="registrar-footer-brand">
+                <a href="https://www.gov.ph/" aria-label="Republic of the Philippines government portal">
+                    <img class="registrar-footer-seal" src="{{ asset('assets/images/republic-of-the-philippines.png') }}" alt="Coat of arms of the Republic of the Philippines" width="155" height="171" loading="lazy">
+                </a>
+                <div>
+                    <strong>{{ config('branding.office') }}</strong>
+                    <span>&copy; {{ now('Asia/Manila')->year }} {{ config('branding.organization') }}</span>
+                </div>
+            </div>
+            <a class="registrar-footer-contact" href="{{ route('contact') }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
         </div>
     </footer>
 </body>

@@ -327,3 +327,38 @@
     color: #d7e4fb;
     font-size: .875rem;
 }
+
+.registrar-footer-brand {
+    display: flex;
+    align-items: center;
+    gap: clamp(.75rem, 2vw, 1.5rem);
+}
+
+.registrar-footer-brand > a {
+    flex: none;
+}
+
+.registrar-footer-brand strong {
+    display: block;
+    margin-block-end: .25rem;
+    color: #fff;
+}
+
+.registrar-footer-seal {
+    display: block;
+    width: clamp(4rem, 8vw, 7rem);
+    height: auto;
+}
+
+.registrar-footer-contact {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: #fff;
+    text-decoration: underline;
+}
+
+.registrar-footer a:focus-visible {
+    outline: 2px solid #ffba57;
+    outline-offset: 4px;
+}
