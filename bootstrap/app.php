@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $error, \Illuminate\Http\Request $request) {
             $seconds = (int) ($error->getHeaders()['Retry-After'] ?? 60);
             $message = "Too many attempts. Please try again in {$seconds} seconds.";
+
+            if ($request->routeIs('contact.send') && ! $request->expectsJson()) {
+                return response()->view('registrar.contact', ['contactCooldown' => $message], 429, $error->getHeaders());
+            }
+
             return $request->expectsJson()
                 ? response()->json(['message' => $message, 'retry_after' => $seconds], 429, $error->getHeaders())
                 : response()->view('errors.429', compact('message', 'seconds'), 429, $error->getHeaders());

@@ -1,6 +1,6 @@
 # PMMA Registrar Portal
 
-A Laravel portal template for the Philippine Merchant Marine Academy — Office of the Registrar. It reuses the PMMA Laravel template's colors, typography and local assets. The home page has a branded masthead, navigation and a footer around an empty content area. The `/services` page explains how to request school documents online or through a representative.
+A Laravel portal template for the Philippine Merchant Marine Academy — Office of the Registrar. It reuses the PMMA Laravel template's colors, typography and local assets. The home page presents the Academy's vision and mission and links to Registrar services. The `/services` page explains how to request school documents online or through a representative.
 
 ## Run locally
 
@@ -27,5 +27,7 @@ The upstream Helpdesk demo remains available to its PHPUnit tests. Its routes, s
 ## Prepare a release
 
 Install locked dependencies with `composer install --no-dev --optimize-autoloader`. Set `APP_ENV=production`, `APP_DEBUG=false`, a stable `APP_KEY` and the HTTPS `APP_URL` in the server environment. Serve only the `public` directory and ensure `storage` and `bootstrap/cache` are writable. Use `php artisan optimize` to cache configuration, routes and views. Keep environment files, credentials and runtime data outside Git.
+
+The `/contact` form sends messages to the Registrar email in `config/registrar.php`. To enable submissions, set `MAIL_MAILER=smtp`, the SMTP provider's `MAIL_SCHEME`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME` and `MAIL_PASSWORD`, and an authorized `MAIL_FROM_ADDRESS` in the server environment. Refresh the configuration cache with `php artisan config:cache` after updating these settings. Contact details remain visible when SMTP is disabled. The form does not store submissions in a database.
 
 Keep [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the bundled license headers when reusing the template.

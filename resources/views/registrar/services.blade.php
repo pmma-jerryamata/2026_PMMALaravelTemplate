@@ -14,11 +14,13 @@
 @endsection
 
 @section('content')
+    @php($contact = config('registrar.contact'))
+
     <div class="registrar-request-options">
         <section class="portal-panel registrar-service-panel" aria-labelledby="online-requests">
             <h2 id="online-requests">Online</h2>
             <ol class="registrar-request-steps">
-                <li>Fill out the online request form. The form link will be posted here. In the meantime, <a href="mailto:registrar@pmma.edu.ph">email the Registrar</a> to get the form.</li>
+                <li>Fill out the online request form. The form link will be posted here. In the meantime, <a href="mailto:{{ $contact['email'] }}">email the Registrar</a> to get the form.</li>
                 <li>Wait for the Registrar’s message and fee assessment by email.</li>
                 <li>Pay the required fees.</li>
                 <li>Receive the requested documents by courier.</li>
@@ -43,9 +45,10 @@
     <section class="portal-panel registrar-service-panel registrar-service-contact" aria-labelledby="registrar-inquiries">
         <h2 id="registrar-inquiries">Registrar Inquiries</h2>
         <ul>
-            <li><a href="mailto:registrar@pmma.edu.ph">registrar@pmma.edu.ph</a></li>
-            <li><a href="tel:+63479132290">(047) 913-2290</a></li>
-            <li><a href="https://www.facebook.com/PMMAOfficeoftheRegistrar/">PMMA Office of the Registrar on Facebook</a></li>
+            <li><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
+            <li><a href="tel:{{ $contact['phone_uri'] }}">{{ $contact['phone'] }}</a></li>
+            <li><a href="{{ $contact['facebook'] }}">PMMA Office of the Registrar on Facebook</a></li>
+            <li><a href="{{ route('contact') }}">Contact form</a></li>
         </ul>
     </section>
 @endsection

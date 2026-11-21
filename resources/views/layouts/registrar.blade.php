@@ -36,6 +36,7 @@
                 <a href="{{ route('services') }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
                 <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
                 <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualification Requirements</a>
+                <a href="{{ route('contact') }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
             </div>
         </nav>
     </header>

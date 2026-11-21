@@ -163,6 +163,96 @@
     gap: .5rem 1.5rem;
 }
 
+.registrar-home-services {
+    margin-block-start: 2rem;
+}
+
+.registrar-home-services > h2 {
+    margin-block-end: 1rem;
+    color: #10264b;
+}
+
+.registrar-home-service-grid,
+.registrar-contact-grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.registrar-home-service-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    align-items: stretch;
+}
+
+.registrar-home-service {
+    display: block;
+    color: #10264b;
+}
+
+.registrar-home-service:hover {
+    border-color: #0032a0;
+    text-decoration: none;
+}
+
+.registrar-home-service:hover h3 {
+    text-decoration: underline;
+}
+
+.registrar-home-service .bi {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border-radius: .5rem;
+    background: #edf3ff;
+    color: #0032a0;
+    font-size: 1.375rem;
+}
+
+.registrar-home-service p,
+.registrar-service-panel > p {
+    font-size: 1rem;
+}
+
+.registrar-contact-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
+}
+
+.registrar-contact-details {
+    font-style: normal;
+}
+
+.registrar-contact-details dt {
+    color: #10264b;
+    font-weight: 700;
+}
+
+.registrar-contact-details dd + dt {
+    margin-block-start: 1rem;
+}
+
+.registrar-contact-details dd {
+    margin-inline-start: 0;
+}
+
+.registrar-contact-form .registrar-field-error {
+    margin-block: .375rem 0;
+    color: #912018;
+}
+
+.registrar-contact-form button:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.registrar-service-panel .registrar-contact-success {
+    padding: .75rem 1rem;
+    border: 1px solid #b7d9c7;
+    border-radius: .5rem;
+    background: #edf8f1;
+    color: #20563e;
+}
+
 .registrar-faq {
     margin-inline: auto;
 }

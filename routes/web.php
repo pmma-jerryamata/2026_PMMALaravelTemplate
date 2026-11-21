@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegistrarContactController;
 use App\Http\Middleware\LimitDatabaseConcurrency;
 use App\Http\Middleware\RecordActivity;
 use Illuminate\Support\Facades\Route;
@@ -15,3 +16,5 @@ Route::view('/', 'registrar.home')->name('home');
 Route::view('/services', 'registrar.services')->name('services');
 Route::view('/faq', 'registrar.faq')->name('faq');
 Route::view('/qualification-requirements', 'registrar.qualifications')->name('qualifications');
+Route::view('/contact', 'registrar.contact')->name('contact');
+Route::post('/contact', RegistrarContactController::class)->middleware('throttle:5,1')->name('contact.send');
