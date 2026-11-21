@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Console\CreateHelpdeskStaff;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! $this->app->environment('testing') || ! config('helpdesk.demo')) {
+            return;
+        }
+
+        $this->loadMigrationsFrom(database_path('helpdesk-demo'));
+        $this->commands([CreateHelpdeskStaff::class]);
+
         \Illuminate\Support\Facades\RateLimiter::for('submissions', function (\Illuminate\Http\Request $request) {
             $identity = $request->user() ? 'user:'.$request->user()->id : 'session:'.$request->session()->getId();
             return [

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console;
 
 use App\Models\User;
 use Illuminate\Console\Command;
