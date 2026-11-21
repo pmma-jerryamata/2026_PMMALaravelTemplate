@@ -1,6 +1,6 @@
 # PMMA Registrar Portal
 
-A blank Laravel portal template for the Philippine Merchant Marine Academy — Office of the Registrar. It reuses the PMMA Laravel template's colors, typography and local assets. The home page has a branded masthead, navigation and a footer around an empty content area.
+A Laravel portal template for the Philippine Merchant Marine Academy — Office of the Registrar. It reuses the PMMA Laravel template's colors, typography and local assets. The home page has a branded masthead, navigation and a footer around an empty content area. The `/services` page explains how to request school documents online or through a representative.
 
 ## Run locally
 

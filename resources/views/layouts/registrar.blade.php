@@ -33,6 +33,7 @@
         <nav class="registrar-nav" aria-label="Main navigation">
             <div class="container">
                 <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
+                <a href="{{ route('services') }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
             </div>
         </nav>
     </header>

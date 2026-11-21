@@ -12,3 +12,4 @@ if (app()->environment('testing') && config('helpdesk.demo')) {
 }
 
 Route::view('/', 'registrar.home')->name('home');
+Route::view('/services', 'registrar.services')->name('services');

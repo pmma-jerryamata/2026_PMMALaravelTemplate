@@ -115,6 +115,54 @@
     padding-block: 2rem;
 }
 
+.registrar-request-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
+    gap: 1.5rem;
+}
+
+.registrar-service-panel {
+    padding: clamp(1.125rem, 3vw, 1.875rem);
+    border-top: 3px solid #ff8c12;
+}
+
+.registrar-service-panel h2 {
+    margin: 0 0 1rem;
+    color: #10264b;
+    line-height: 1.25;
+}
+
+.registrar-request-steps {
+    list-style: decimal;
+    padding-inline-start: 1.5rem;
+}
+
+.registrar-request-steps li + li {
+    margin-top: .625rem;
+}
+
+.registrar-request-steps ul {
+    list-style: disc;
+    margin-top: .625rem;
+    padding-inline-start: 1.25rem;
+}
+
+.registrar-service-panel a {
+    color: #0032a0;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+}
+
+.registrar-service-contact {
+    margin-top: 1.5rem;
+}
+
+.registrar-service-contact ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.5rem;
+}
+
 .registrar-footer {
     padding-block: 1.25rem;
     background: #10264b;
