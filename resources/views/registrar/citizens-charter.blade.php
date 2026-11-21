@@ -18,7 +18,6 @@
     <div class="registrar-charter">
         <div>
             <h2 id="registrar-charter-heading">Registrar Unit External Services</h2>
-            <p><a href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">View the original charter pages 19–26</a></p>
             <p class="registrar-charter-scroll-hint">Scroll the transaction tables sideways to see all columns.</p>
         </div>
 
@@ -94,5 +93,10 @@
                 @endisset
             </section>
         @endforeach
+
+        <div>
+            <p><a href="{{ asset('assets/documents/pmma-citizens-charter-2026-registrar-unit.pdf') }}">View the original charter pages 19–26</a></p>
+            <p><a href="https://drive.google.com/file/d/1xDh1_8OvdRoJRLAniFjgcBfl6V2l1IwI/view">View the full PMMA Citizen’s Charter 2026</a></p>
+        </div>
     </div>
 @endsection
