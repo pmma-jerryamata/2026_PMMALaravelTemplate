@@ -72,6 +72,12 @@
     padding-block: .25rem;
 }
 
+.registrar-nav > .container {
+    display: flex;
+    align-items: center;
+    gap: .125rem;
+}
+
 .registrar-nav a,
 .registrar-nav-menu summary {
     display: inline-flex;
@@ -89,6 +95,18 @@
 .registrar-nav-menu[open] summary,
 .registrar-nav-menu summary:hover {
     background: #edf3ff;
+}
+
+.registrar-nav a.registrar-nav-login {
+    justify-content: center;
+    margin-inline-start: auto;
+    background: #ffba57;
+    color: #10264b;
+}
+
+.registrar-nav a.registrar-nav-login:hover,
+.registrar-nav a.registrar-nav-login[aria-current="page"] {
+    background: #ffd08a;
 }
 
 .registrar-nav-menu {
@@ -136,7 +154,7 @@
 }
 
 .registrar-time-bar {
-    background: #edf3ff;
+    background: #ffba57;
     color: #10264b;
 }
 
@@ -157,7 +175,7 @@
 }
 
 .registrar-time-inner [data-ph-clock-source] {
-    color: #3e5278;
+    color: inherit;
     font-size: .8125rem;
 }
 
@@ -276,6 +294,7 @@
 .registrar-home-service {
     display: block;
     color: #10264b;
+    text-align: center;
 }
 
 .registrar-home-service:hover {
@@ -289,13 +308,14 @@
 
 .registrar-home-service .bi {
     display: grid;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 3.75rem;
+    height: 3.75rem;
+    margin-inline: auto;
     place-items: center;
     border-radius: .5rem;
     background: #edf3ff;
     color: #0032a0;
-    font-size: 1.375rem;
+    font-size: 1.875rem;
 }
 
 .registrar-home-service p,
@@ -367,9 +387,12 @@
 
 .registrar-privacy-intro {
     display: grid;
-    grid-template-columns: clamp(3.75rem, 16vw, 7rem) minmax(0, 1fr);
-    align-items: start;
-    gap: clamp(.75rem, 3vw, 1.5rem);
+    gap: 1rem;
+}
+
+.registrar-privacy-intro a {
+    width: clamp(8rem, 22vw, 11rem);
+    justify-self: center;
 }
 
 .registrar-privacy-intro img {
@@ -600,7 +623,7 @@
 
     .registrar-nav > .container {
         display: grid;
-        grid-template-columns: auto auto minmax(0, max-content) auto auto;
+        grid-template-columns: auto auto minmax(0, max-content) auto auto minmax(0, 1fr);
         justify-content: start;
         gap: .125rem;
     }
@@ -613,6 +636,11 @@
         line-height: 1.25;
         text-align: center;
         overflow-wrap: anywhere;
+    }
+
+    .registrar-nav a.registrar-nav-login {
+        margin-inline-start: 0;
+        justify-self: end;
     }
 
     .registrar-time-inner {
@@ -648,7 +676,7 @@
         grid-column: span 2;
     }
 
-    .registrar-nav > .container:has(.registrar-nav-menu) > :nth-child(n + 3) {
+    .registrar-nav > .container:has(.registrar-nav-menu) > :is(:nth-child(3), .registrar-nav-menu) {
         grid-column: span 4;
     }
 

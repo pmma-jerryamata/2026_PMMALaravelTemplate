@@ -47,6 +47,7 @@
                     </div>
                 </details>
                 <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
+                <a class="registrar-nav-login" href="/login" @if(request()->routeIs('login')) aria-current="page" @endif>LOGIN</a>
             </div>
         </nav>
         @php($philippineTime = now('Asia/Manila'))

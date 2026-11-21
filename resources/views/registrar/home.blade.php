@@ -35,12 +35,12 @@
     <section class="registrar-home-services" aria-labelledby="home-services-heading">
         <h2 id="home-services-heading">Registrar Services</h2>
         <div class="registrar-home-service-grid">
-            <a class="portal-panel registrar-home-service" href="{{ route('services', absolute: false) }}#online-requests">
+            <a class="portal-panel registrar-home-service" href="{{ route('services', absolute: false) }}">
                 <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
                 <h3>Request School Documents Online</h3>
                 <p>See the request, payment, and courier delivery steps.</p>
             </a>
-            <a class="portal-panel registrar-home-service" href="{{ route('services', absolute: false) }}#representative-requests">
+            <a class="portal-panel registrar-home-service" href="{{ route('services', absolute: false) }}">
                 <i class="bi bi-person-check" aria-hidden="true"></i>
                 <h3>Request Through a Representative</h3>
                 <p>Check the authorization and ID requirements for your representative.</p>

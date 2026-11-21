@@ -18,6 +18,7 @@ Route::view('/services', 'registrar.services')->name('services');
 Route::view('/faq', 'registrar.faq')->name('faq');
 Route::view('/qualification-requirements', 'registrar.qualifications')->name('qualifications');
 Route::view('/transparency/citizens-charter', 'registrar.citizens-charter')->name('transparency.citizens-charter');
+Route::view('/login', 'registrar.enrollment-login')->name('login');
 Route::view('/contact', 'registrar.contact')->name('contact');
 Route::post('/contact', RegistrarContactController::class)->middleware('throttle:5,1')->name('contact.send');
 Route::get('/time', TimeController::class)->middleware('throttle:60,1,registrar-time')->name('time');
