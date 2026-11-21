@@ -10,7 +10,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pmma.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/registrar.css') }}?v={{ filemtime(public_path('assets/css/registrar.css')) }}">
-    <script src="{{ asset('assets/js/philippine-time.js') }}?v={{ filemtime(public_path('assets/js/philippine-time.js')) }}" defer></script>
+    @php($clockScript = public_path('assets/js/philippine-time.js'))
+    @if(is_file($clockScript))
+        <script src="{{ asset('assets/js/philippine-time.js') }}?v={{ filemtime($clockScript) }}" defer></script>
+    @endif
     @stack('page-assets')
 </head>
 <body class="registrar-portal">
@@ -43,7 +46,7 @@
         <div class="registrar-time-bar">
             <div class="container registrar-time-inner">
                 <strong>Philippine Standard Time</strong>
-                <time id="ph-clock" datetime="{{ $philippineTime->toIso8601String() }}" data-sync-url="{{ route('time') }}">{{ $philippineTime->format('M j, Y, g:i:s A') }}</time>
+                <time id="ph-clock" datetime="{{ $philippineTime->toIso8601String() }}" @if(\Illuminate\Support\Facades\Route::has('time')) data-sync-url="{{ route('time') }}" @endif>{{ $philippineTime->format('M j, Y, g:i:s A') }}</time>
                 <span data-ph-clock-source>Server clock</span>
             </div>
         </div>

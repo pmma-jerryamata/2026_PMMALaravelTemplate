@@ -57,8 +57,11 @@
     }
 
     renderClock();
-    syncClock();
     setInterval(renderClock, 1000);
+
+    if (!clock.dataset.syncUrl) return;
+
+    syncClock();
     setInterval(syncClock, 60000);
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) return;
