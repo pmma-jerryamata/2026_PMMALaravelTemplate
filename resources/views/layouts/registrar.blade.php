@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/accessibility.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pmma.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/registrar.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/registrar.css') }}?v={{ filemtime(public_path('assets/css/registrar.css')) }}">
     @stack('page-assets')
 </head>
 <body class="registrar-portal">
