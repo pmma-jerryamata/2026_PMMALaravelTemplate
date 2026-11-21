@@ -12,7 +12,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $registrar = config('registrar') ?? [];
+
+        if (! isset($registrar['contact'], $registrar['government_columns'])) {
+            config(['registrar' => $registrar + (require config_path('registrar.php'))]);
+        }
     }
 
     /**

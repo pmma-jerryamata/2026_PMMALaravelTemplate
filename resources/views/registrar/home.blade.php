@@ -2,7 +2,10 @@
 
 @push('page-assets')
     <link rel="stylesheet" href="{{ asset('assets/icons/bootstrap-icons.css') }}">
-    <script src="{{ asset('assets/js/registrar-privacy.js') }}" defer></script>
+    @php($privacyScript = public_path('assets/js/registrar-privacy.js'))
+    @if(is_file($privacyScript))
+        <script src="{{ asset('assets/js/registrar-privacy.js') }}?v={{ filemtime($privacyScript) }}" defer></script>
+    @endif
 @endpush
 
 @section('heading')
@@ -32,27 +35,23 @@
     <section class="registrar-home-services" aria-labelledby="home-services-heading">
         <h2 id="home-services-heading">Registrar Services</h2>
         <div class="registrar-home-service-grid">
-            <a class="portal-panel registrar-home-service" href="{{ route('services') }}#online-requests">
+            <a class="portal-panel registrar-home-service" href="{{ route('services', absolute: false) }}#online-requests">
                 <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
                 <h3>Request School Documents Online</h3>
                 <p>See the request, payment, and courier delivery steps.</p>
             </a>
-            <a class="portal-panel registrar-home-service" href="{{ route('services') }}#representative-requests">
+            <a class="portal-panel registrar-home-service" href="{{ route('services', absolute: false) }}#representative-requests">
                 <i class="bi bi-person-check" aria-hidden="true"></i>
                 <h3>Request Through a Representative</h3>
                 <p>Check the authorization and ID requirements for your representative.</p>
             </a>
-            <a class="portal-panel registrar-home-service" href="{{ route('contact') }}">
+            <a class="portal-panel registrar-home-service" href="{{ route('contact', absolute: false) }}">
                 <i class="bi bi-envelope" aria-hidden="true"></i>
                 <h3>Registrar Inquiries</h3>
                 <p>Ask about school documents or contact the Registrar’s office.</p>
             </a>
         </div>
     </section>
-
-    <div class="registrar-privacy-entry">
-        <button class="btn btn-secondary" type="button" data-open-privacy-policy aria-haspopup="dialog" aria-controls="registrar-privacy-policy">PMMA Data Privacy Policy</button>
-    </div>
 
     @include('registrar.partials.privacy-policy')
 @endsection

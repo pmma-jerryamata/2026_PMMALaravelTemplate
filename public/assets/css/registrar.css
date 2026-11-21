@@ -102,8 +102,10 @@
     font-size: .875rem;
 }
 
-.registrar-time-inner time {
+.registrar-time-inner #ph-clock {
+    color: #10264b;
     font-variant-numeric: tabular-nums;
+    white-space: normal;
 }
 
 .registrar-time-inner [data-ph-clock-source] {
@@ -238,11 +240,6 @@
     font-size: 1rem;
 }
 
-.registrar-privacy-entry {
-    margin-block-start: 1.5rem;
-}
-
-.registrar-privacy-entry .btn,
 .registrar-privacy-header .btn {
     min-height: 44px;
 }
@@ -443,20 +440,44 @@
     font-size: .875rem;
 }
 
-.registrar-footer-brand {
-    display: flex;
-    align-items: center;
-    gap: clamp(.75rem, 2vw, 1.5rem);
+.registrar-government-footer {
+    display: grid;
+    grid-template-columns: minmax(5rem, .55fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, .7fr);
+    align-items: start;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding-block: 1rem 2rem;
 }
 
-.registrar-footer-brand > a {
-    flex: none;
+.registrar-government-emblem {
+    justify-self: start;
 }
 
-.registrar-footer-brand strong {
-    display: block;
-    margin-block-end: .25rem;
+.registrar-government-links + .registrar-government-links {
+    margin-block-start: 1.25rem;
+}
+
+.registrar-government-links h2 {
+    margin: 0 0 .5rem;
     color: #fff;
+    font-size: .9375rem;
+    line-height: 1.35;
+}
+
+.registrar-government-links a {
+    display: block;
+    padding-block: .25rem;
+    color: inherit;
+    overflow-wrap: anywhere;
+}
+
+.registrar-government-links a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.registrar-footer-inner {
+    border-block-start: 1px solid #ffffff30;
+    padding-block-start: .5rem;
 }
 
 .registrar-footer-seal {
@@ -479,6 +500,10 @@
 }
 
 @media (max-width: 48rem) {
+    .registrar-government-footer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .registrar-header-inner {
         gap: .5rem 1rem;
         padding-block: .625rem;
@@ -571,5 +596,11 @@
 
     .registrar-footer-inner {
         gap: .5rem 1rem;
+    }
+}
+
+@media (max-width: 28rem) {
+    .registrar-government-footer {
+        grid-template-columns: minmax(0, 1fr);
     }
 }

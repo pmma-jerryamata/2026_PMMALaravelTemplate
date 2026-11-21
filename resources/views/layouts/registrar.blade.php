@@ -37,7 +37,7 @@
         <nav class="registrar-nav" aria-label="Main navigation">
             <div class="container">
                 <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
-                <a href="{{ route('services') }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
+                <a href="{{ route('services', absolute: false) }}" @if(request()->routeIs('services')) aria-current="page" @endif>Services</a>
                 <a href="{{ route('qualifications') }}" @if(request()->routeIs('qualifications')) aria-current="page" @endif>Qualifications &amp; Requirements</a>
                 <a href="{{ route('faq') }}" @if(request()->routeIs('faq')) aria-current="page" @endif>FAQs</a>
             </div>
@@ -60,17 +60,10 @@
     </main>
 
     <footer class="registrar-footer">
+        @include('registrar.partials.government-footer')
         <div class="container registrar-footer-inner">
-            <div class="registrar-footer-brand">
-                <a href="https://www.gov.ph/" aria-label="Republic of the Philippines government portal">
-                    <img class="registrar-footer-seal" src="{{ asset('assets/images/republic-of-the-philippines.png') }}" alt="Coat of arms of the Republic of the Philippines" width="155" height="171" loading="lazy">
-                </a>
-                <div>
-                    <strong>{{ config('branding.office') }}</strong>
-                    <span>&copy; {{ now('Asia/Manila')->year }} {{ config('branding.organization') }}</span>
-                </div>
-            </div>
-            <a class="registrar-footer-contact" href="{{ route('contact') }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
+            <span>&copy; {{ now('Asia/Manila')->year }} {{ config('branding.organization') }} · {{ config('branding.office') }}</span>
+            <a class="registrar-footer-contact" href="{{ route('contact', absolute: false) }}" @if(request()->routeIs('contact')) aria-current="page" @endif>Contact Us</a>
         </div>
     </footer>
 </body>

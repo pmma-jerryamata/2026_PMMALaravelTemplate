@@ -11,7 +11,7 @@
             <a href="{{ asset('assets/images/pmma-privacy-registration-seal.jpg') }}" target="_blank" rel="noopener" aria-label="View the full-size National Privacy Commission registration seal in a new tab">
                 <img src="{{ asset('assets/images/pmma-privacy-registration-seal.jpg') }}" alt="National Privacy Commission DPO/DPS Registered seal" width="768" height="1411">
             </a>
-            <p>The Philippine Merchant Marine Academy Data Privacy Office is tasked by virtue of RA 10173 to ensure the protection of the personal, private and sensitive data of all its data subjects – personnel, students, clients and third-parties.</p>
+            <p>The Data Privacy Office of the Philippine Merchant Marine Academy protects the personal and sensitive personal information of its personnel, students, clients, and third parties in accordance with Republic Act No. 10173, the Data Privacy Act of 2012.</p>
         </div>
 
         <h3>How Do We Process Your Data?</h3>

@@ -1,9 +1,5 @@
 const privacyDialog = document.getElementById('registrar-privacy-policy');
-const privacyTrigger = document.querySelector('[data-open-privacy-policy]');
-
-if (typeof privacyDialog?.showModal === 'function' && privacyTrigger) {
-    privacyTrigger.addEventListener('click', () => privacyDialog.showModal());
-
+if (typeof privacyDialog?.showModal === 'function') {
     const sessionKey = 'registrar-privacy-policy-shown';
     let showOnLoad = true;
 
