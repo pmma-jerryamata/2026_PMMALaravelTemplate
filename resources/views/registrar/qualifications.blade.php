@@ -35,7 +35,7 @@
             <h2 id="disqualification-criteria">Disqualification Criteria for Incoming Probationary Midshipmen and Midshipwomen</h2>
             <h3>Medical Disqualifications</h3>
 
-            <details class="portal-faq">
+            <details class="portal-faq" name="registrar-qualifications">
                 <summary>For Male Applicants</summary>
                 <div class="registrar-faq-answer">
                     <ol>
@@ -49,7 +49,7 @@
                 </div>
             </details>
 
-            <details class="portal-faq">
+            <details class="portal-faq" name="registrar-qualifications">
                 <summary>For Female Applicants</summary>
                 <div class="registrar-faq-answer">
                     <ol>
@@ -69,7 +69,7 @@
                 </div>
             </details>
 
-            <details class="portal-faq">
+            <details class="portal-faq" name="registrar-qualifications">
                 <summary>For Male and Female Applicants</summary>
                 <div class="registrar-faq-answer">
                     <ol>
