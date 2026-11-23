@@ -373,6 +373,21 @@
     gap: .5rem 1.5rem;
 }
 
+.registrar-request-options > .registrar-home-statement.portal-panel {
+    padding: 0;
+    overflow: hidden;
+}
+
+.registrar-home-statement > img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.registrar-home-statement-copy {
+    padding: clamp(1rem, 3vw, 1.875rem);
+}
+
 .registrar-home-services {
     margin-block-start: 2rem;
 }
@@ -396,12 +411,32 @@
 
 .registrar-home-service {
     display: block;
-    color: #10264b;
+    background: linear-gradient(180deg, #071a3f9e, #071a3fdf),
+        #10264b var(--registrar-service-image, none) center / cover no-repeat;
+    color: #fff;
     text-align: center;
+}
+
+.registrar-home-service-online {
+    --registrar-service-image: url('../images/registrar-service-online.webp');
+}
+
+.registrar-home-service-representative {
+    --registrar-service-image: url('../images/registrar-service-representative.webp');
+}
+
+.registrar-home-service-inquiries {
+    --registrar-service-image: url('../images/registrar-service-inquiries.webp');
+}
+
+.registrar-home-service h3,
+.registrar-home-service p {
+    color: #fff;
 }
 
 .registrar-home-service:hover {
     border-color: #0032a0;
+    color: #fff;
     text-decoration: none;
 }
 
@@ -422,6 +457,7 @@
 }
 
 .registrar-home-service p,
+.registrar-home-statement-copy > p,
 .registrar-service-panel > p {
     font-size: 1rem;
 }
