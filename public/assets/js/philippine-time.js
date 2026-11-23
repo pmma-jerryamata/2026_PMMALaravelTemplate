@@ -27,7 +27,10 @@
 
     function showSource(label) {
         clock.title = label;
-        if (source) source.textContent = label;
+        if (source) {
+            source.textContent = label;
+            source.hidden = label === '';
+        }
     }
 
     async function syncClock() {
@@ -47,7 +50,7 @@
 
             monotonicAnchor = performance.now();
             timeAnchor = data.timestamp + (monotonicAnchor - started) / 2;
-            showSource(data.synced ? 'Source: PAGASA' : 'Server clock · PAGASA unavailable');
+            showSource(data.synced ? '' : 'Server clock · PAGASA unavailable');
             renderClock();
         } catch {
             showSource('Time sync unavailable');

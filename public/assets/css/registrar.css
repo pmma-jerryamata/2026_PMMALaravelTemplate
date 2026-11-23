@@ -477,6 +477,10 @@
     line-height: 1.2;
 }
 
+#registrar-privacy-title:focus {
+    outline: none;
+}
+
 .registrar-privacy-header .btn {
     padding-inline: .75rem;
     background: #fff;
